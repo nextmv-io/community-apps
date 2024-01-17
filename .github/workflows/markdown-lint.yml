@@ -1,0 +1,12 @@
+name: markdown lint
+on: [push]
+jobs:
+  community-apps-markdown-lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: git clone
+        uses: actions/checkout@v4
+
+      - uses: DavidAnson/markdownlint-cli2-action@v14
+        with:
+          globs: "**/*.md"

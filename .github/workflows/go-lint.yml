@@ -1,0 +1,25 @@
+name: go lint
+on: [push]
+jobs:
+  community-apps-go-lint:
+    runs-on: ubuntu-latest
+    # Use a matrix strategy to test all the modules simultaneously.
+    strategy:
+      fail-fast: false
+      matrix:
+        MOD_PATH: [./mip, ./nextroute, ./shift-scheduling]
+    steps:
+      - name: set up go
+        uses: actions/setup-go@v5
+        with:
+          go-version: 1.19.3
+        id: go
+
+      - name: git clone
+        uses: actions/checkout@v4
+
+      - name: golangci-lint
+        uses: golangci/golangci-lint-action@v3
+        with:
+          version: v1.54.1
+          working-directory: ${{ matrix.MOD_PATH }}

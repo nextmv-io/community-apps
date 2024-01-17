@@ -1,0 +1,176 @@
+# Options for analysis running. Details: https://golangci-lint.run/usage/configuration/#run-configuration
+run:
+  timeout: 5m
+  go: "1.19"
+
+# Configures linters. Details: https://golangci-lint.run/usage/linters
+linters-settings:
+  # Pick up duplicate code after severe repetition.
+  dupl:
+    threshold: 200
+  # Only allow certain modules to be imported.
+  gomodguard:
+    allowed:
+      modules:
+        - github.com/nextmv-io/sdk
+        - github.com/nextmv-io/sdk/route
+        - github.com/nextmv-io/sdk/route/osrm
+        - github.com/nextmv-io/sdk/route/here
+        - github.com/nextmv-io/sdk/route/google
+        - github.com/nextmv-io/sdk/route/routingkit
+        - github.com/nextmv-io/sdk/measure/here
+        - github.com/nextmv-io/sdk/measure/osrm
+        - github.com/nextmv-io/sdk/measure/google
+        - github.com/nextmv-io/sdk/measure/routingkit
+        - googlemaps.github.io/maps
+        - github.com/dgraph-io/ristretto
+        - go.uber.org/mock
+        - github.com/google/go-cmp
+        - github.com/hashicorp/golang-lru
+        - github.com/nextmv-io/go-routingkit
+        - github.com/twpayne/go-polyline
+        - googlemaps.github.io/maps
+        - github.com/itzg/go-flagsfiller
+        - github.com/gorilla/schema
+        - github.com/google/uuid
+        - github.com/xeipuuv/gojsonschema
+        - github.com/danielgtaylor/huma
+  # Functions cannot exceed this cyclomatic complexity.
+  gocyclo:
+    min-complexity: 20
+  # Set correct go version.
+  gosimple:
+    go: "1.19"
+  staticcheck:
+    go: "1.19"
+  stylecheck:
+    go: "1.19"
+  # Check case of struct tags
+  tagliatelle:
+    case:
+      use-field-name: true
+      rules:
+        json: snake
+  # Check line length
+  lll:
+    line-length: 120
+
+# Specifies which linters are enabled. Full list: https://golangci-lint.run/usage/linters/
+linters:
+  # Some linters are just too strict.
+  disable-all: true
+  enable:
+    # Checks whether HTTP response body is closed successfully.
+    - bodyclose
+    # containedctx is a linter that detects struct contained context.Context field.
+    - containedctx
+    # Check the function whether use a non-inherited context.
+    - contextcheck
+    # Finds unused code. WARN [runner] The linter 'deadcode' is deprecated
+    # (since v1.49.0) due to: The owner seems to have abandoned the linter.
+    # Replaced by unused.
+    # - deadcode
+    # check declaration order and count of types, constants, variables and functions.
+    - decorder
+    # Checks assignments with too many blank identifiers (e.g. x, , , _, := f())
+    - dogsled
+    # Tool for code clone detection
+    - dupl
+    # Errcheck is a program for checking for unchecked errors in go programs.
+    # These unchecked errors can be critical bugs in some cases.
+    - errcheck
+    # Gci controls golang package import order and makes it always deterministic.
+    - gci
+    # Finds repeated strings that could be replaced by a constant.
+    - goconst
+    # Provides diagnostics that check for bugs, performance and style issues.
+    # Extensible without recompilation through dynamic rules. Dynamic rules are
+    # written declaratively with AST patterns, filters, report message and
+    # optional suggestion.
+    - gocritic
+    # Computes and checks the cyclomatic complexity of functions.
+    - gocyclo
+    # Check if comments end in a period.
+    - godot
+    # Gofmt checks whether code was gofmt-ed. By default this tool runs with -s
+    # option to check for code simplification.
+    - gofmt
+    # In addition to fixing imports, goimports also formats your code in the
+    # same style as gofmt.
+    - goimports
+    # Allow and block list linter for direct Go module dependencies. This is
+    # different from depguard where there are different block types for example
+    # version constraints and module recommendations.
+    - gomodguard
+    # gosec offers another set of security checks in addition to govet
+    - gosec
+    # Linter for Go source code that specializes in simplifying a code.
+    - gosimple
+    # Vet examines Go source code and reports suspicious constructs, such as
+    # Printf calls whose arguments do not align with the format string.
+    - govet
+    # Enforces consistent import aliases.
+    - importas
+    # Detects when assignments to existing variables are not used.
+    - ineffassign
+    # Reports long lines.
+    - lll
+    # Finds commonly misspelled English words in comments.
+    - misspell
+    # Finds naked returns in functions greater than a specified function length.
+    - nakedret
+    # Reports deeply nested if statements.
+    - nestif
+    # Finds the code that returns nil even if it checks that the error is not nil.
+    - nilerr
+    # noctx finds sending http request without context.Context.
+    - noctx
+    # Finds slice declarations that could potentially be preallocated.
+    - prealloc
+    # Find code that shadows one of Go's predeclared identifiers.
+    - predeclared
+    # Fast, configurable, extensible, flexible, and beautiful linter for Go.
+    # Drop-in replacement of golint.
+    - revive
+    # Staticcheck is a go vet on steroids, applying a ton of static analysis checks.
+    - staticcheck
+    # Finds unused struct fields. WARN [runner] The linter 'structcheck' is
+    # deprecated (since v1.49.0) due to: The owner seems to have abandoned the
+    # linter.  Replaced by unused.
+    # - structcheck
+    # Stylecheck is a replacement for golint.
+    - stylecheck
+    # Checks the struct tags.
+    - tagliatelle
+    # Like the front-end of a Go compiler, parses and type-checks Go code.
+    - typecheck
+    # Remove unnecessary type conversions.
+    - unconvert
+    # Reports unused function parameters.
+    - unparam
+    # Checks Go code for unused constants, variables, functions and types.
+    - unused
+    # Finds unused global variables and constants. WARN [runner] The linter
+    # 'varcheck' is deprecated (since v1.49.0) due to: The owner seems to have
+    # abandoned the linter.  Replaced by unused.
+    # - varcheck
+    # wastedassign finds wasted assignment statements.
+    - wastedassign
+    # Tool for detection of leading and trailing whitespace.
+    - whitespace
+
+# List of regexps of issue texts to exclude. Details: https://golangci-lint.run/usage/configuration/#issues-configuration
+issues:
+  # Disable default exclude patterns to surface commonly-ignored linting errors.
+  exclude-use-default: false
+  exclude-rules:
+    - path: shift-scheduling/main\.go
+      linters:
+        - gocyclo
+        - nestif
+    # json tags are too long and unmarshal does not throw an error where one is
+    # needed for the signature of the function.
+    - path: shift-scheduling/schema\.go
+      linters:
+        - lll
+        - unparam
