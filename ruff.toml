@@ -1,0 +1,16 @@
+target-version="py312"
+
+# Rule selection.
+select = [
+    "E",  # pycodestyle errors
+    "W",  # pycodestyle warnings
+    "F",  # pyflakes
+    "I",  # isort
+    "C",  # flake8-comprehensions
+    "B",  # flake8-bugbear
+    "UP",  # pyupgrade
+]
+
+# Rule configuration.
+line-length = 120
+
