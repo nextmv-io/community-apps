@@ -1,0 +1,19 @@
+{
+  "folders": [
+    {
+      "path": "."
+    }
+  ],
+  "launch": {
+    "configurations": [
+      {
+        "name": "Python: Module",
+        "type": "python",
+        "request": "launch",
+        "module": "main",
+        "justMyCode": true,
+        "args": ["-input", "input.json", "-output", "output.json"]
+      }
+    ]
+  }
+}

@@ -1,0 +1,5 @@
+# This manifest holds the information the app needs to run on the Nextmv Cloud.
+type: sdk
+features:
+  - sdk
+  - mip-highs # Replace if using a different solver provider in your app.

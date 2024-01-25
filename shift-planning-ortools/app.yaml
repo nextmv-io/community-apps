@@ -1,0 +1,4 @@
+type: python
+runtime: ghcr.io/nextmv-io/runtime/ortools:latest
+files:
+    - main.py
