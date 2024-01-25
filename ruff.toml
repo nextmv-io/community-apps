@@ -14,3 +14,5 @@ select = [
 # Rule configuration.
 line-length = 120
 
+# Allow generous cyclomatic complexity for examples.
+mccabe.max-complexity = 25

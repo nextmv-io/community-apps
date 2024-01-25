@@ -35,9 +35,9 @@ linters-settings:
         - github.com/google/uuid
         - github.com/xeipuuv/gojsonschema
         - github.com/danielgtaylor/huma
-  # Functions cannot exceed this cyclomatic complexity.
+  # Allow increased cyclomatic complexity for examples.
   gocyclo:
-    min-complexity: 20
+    min-complexity: 45
   # Set correct go version.
   gosimple:
     go: "1.19"
