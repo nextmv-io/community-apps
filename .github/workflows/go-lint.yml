@@ -7,7 +7,13 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        MOD_PATH: [./mip, ./nextroute, ./shift-scheduling]
+        MOD_PATH:
+          [
+            ./knapsack-gosdk,
+            ./nextroute,
+            ./order-fulfillment-gosdk,
+            ./shift-scheduling-gosdk,
+          ]
     steps:
       - name: set up go
         uses: actions/setup-go@v5

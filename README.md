@@ -11,26 +11,48 @@ Before starting:
 
 Visit the [docs][docs] for more information.
 
-* [`mip`][mip]: use the Nextmv Go SDK to solve Mixed Integer Programming
-  problems. Contains a knapsack problem as an example.
-* [`nextroute`][nextroute]: use the Nextmv Go SDK to solve vehicle routing
+* [`knapsack-gosdk`][knapsack-gosdk] use the Nextmv Go SDK to solve a knapsack
+      problem.
+* [`knapsack-java-ortools`][knapsack-java-ortools] use Java and OR-Tools to
+      solve a knapsack problem.
+* [`knapsack-ortools`][knapsack-ortools] use Python and OR-Tools to solve a
+      knapsack problem.
+* [`knapsack-pyomo`][knapsack-pyomo] use Python and Pyomo to solve a knapsack
+      problem.
+* [`nextroute`][nextroute] use the Nextmv Go SDK to solve vehicle routing
       problems.
-* [`ortools`][ortools]: use Python and Google OR-Tools for various optimization
-      problems. Contains a knapsack problem as an example.
-* [`pyomo`][pyomo]: use Python and Pyomo to solve various optimization
-      problems. Contains a knapsack problem as an example.
-* [`shift-scheduling`][shift-scheduling]: use the Nextmv Go SDK to solve shift
-      scheduling problems.
-* [`xpress`][xpress]: use FICO-Xpress to solve various optimization problems.
+* [`order-fulfillment-gosdk`][order-fulfillment-gosdk] use the Nextmv Go SDK to
+      solve order fulfillment problems.
+* [`routing-ortools`][routing-ortools] use Python and OR-Tools to solve vehicle
+      routing problems.
+* [`shift-assignment-ortools`][shift-assignment-ortools] use Python and
+      OR-Tools to solve shift assignment problems.
+* [`shift-assignment-pyomo`][shift-assignment-pyomo] use Python and Pyomo to
+      solve shift assignment problems.
+* [`shift-planning-ortools`][shift-planning-ortools] use Python and OR-Tools to
+      solve shift planning problems.
+* [`shift-planning-pyomo`][shift-planning-pyomo] use Python and Pyomo to solve
+      shift planning problems.
+* [`shift-scheduling-gosdk`][shift-scheduling-gosdk] use the Nextmv Go SDK to
+      solve shift scheduling problems.
+* [`xpress`][xpress] use FICO-Xpress to solve various optimization problems.
       Contains a knapsack problem as an example.
 
 [subscription-apps]: https://nextmv.io/docs/platform/deploy-app/subscription-apps
 [installation]: https://nextmv.io/docs/platform/installation
 [docs]: https://nextmv.io/docs
 [signup]: https://cloud.nextmv.io
-[mip]: /mip/README.md
-[nextroute]: /nextroute/README.md
-[ortools]: /ortools/README.md
-[pyomo]: /pyomo/README.md
-[shift-scheduling]: /shift-scheduling/README.md
-[xpress]: /xpress/README.md
+
+[knapsack-gosdk]: ./knapsack-gosdk/README.md
+[knapsack-java-ortools]: ./knapsack-java-ortools/README.md
+[knapsack-ortools]: ./knapsack-ortools/README.md
+[knapsack-pyomo]: ./knapsack-pyomo/README.md
+[nextroute]: ./nextroute/README.md
+[order-fulfillment-gosdk]: ./order-fulfillment-gosdk/README.md
+[routing-ortools]: ./routing-ortools/README.md
+[shift-assignment-ortools]: ./shift-assignment-ortools/README.md
+[shift-assignment-pyomo]: ./shift-assignment-pyomo/README.md
+[shift-planning-ortools]: ./shift-planning-ortools/README.md
+[shift-planning-pyomo]: ./shift-planning-pyomo/README.md
+[shift-scheduling-gosdk]: ./shift-scheduling-gosdk/README.md
+[xpress]: ./xpress/README.md
