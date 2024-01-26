@@ -3,3 +3,4 @@ type: java
 runtime: ghcr.io/nextmv-io/runtime/java:latest
 files:
   - main.jar
+pre-build: mvn package
