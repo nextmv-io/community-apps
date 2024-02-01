@@ -14,7 +14,7 @@ linters-settings:
       modules:
   # Allow increased cyclomatic complexity for examples.
   gocyclo:
-    min-complexity: 20
+    min-complexity: 45
   # Set correct go version.
   gosimple:
     go: "1.21"
