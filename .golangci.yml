@@ -1,7 +1,7 @@
 # Options for analysis running. Details: https://golangci-lint.run/usage/configuration/#run-configuration
 run:
   timeout: 5m
-  go: "1.19"
+  go: "1.21"
 
 # Configures linters. Details: https://golangci-lint.run/usage/linters
 linters-settings:
@@ -12,39 +12,16 @@ linters-settings:
   gomodguard:
     allowed:
       modules:
-        - github.com/nextmv-io/sdk
-        - github.com/nextmv-io/sdk/route
-        - github.com/nextmv-io/sdk/route/osrm
-        - github.com/nextmv-io/sdk/route/here
-        - github.com/nextmv-io/sdk/route/google
-        - github.com/nextmv-io/sdk/route/routingkit
-        - github.com/nextmv-io/sdk/measure/here
-        - github.com/nextmv-io/sdk/measure/osrm
-        - github.com/nextmv-io/sdk/measure/google
-        - github.com/nextmv-io/sdk/measure/routingkit
-        - googlemaps.github.io/maps
-        - github.com/dgraph-io/ristretto
-        - go.uber.org/mock
-        - github.com/google/go-cmp
-        - github.com/hashicorp/golang-lru
-        - github.com/nextmv-io/go-routingkit
-        - github.com/twpayne/go-polyline
-        - googlemaps.github.io/maps
-        - github.com/itzg/go-flagsfiller
-        - github.com/gorilla/schema
-        - github.com/google/uuid
-        - github.com/xeipuuv/gojsonschema
-        - github.com/danielgtaylor/huma
   # Allow increased cyclomatic complexity for examples.
   gocyclo:
-    min-complexity: 45
+    min-complexity: 20
   # Set correct go version.
   gosimple:
-    go: "1.19"
+    go: "1.21"
   staticcheck:
-    go: "1.19"
+    go: "1.21"
   stylecheck:
-    go: "1.19"
+    go: "1.21"
   # Check case of struct tags
   tagliatelle:
     case:

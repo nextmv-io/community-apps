@@ -1,0 +1,31 @@
+apps:
+  - name: knapsack-gosdk
+    type: go
+    sdk_version: latest
+  - name: knapsack-java-ortools
+    type: java
+  - name: knapsack-ortools
+    type: python
+  - name: knapsack-pyomo
+    type: python
+  - name: nextroute
+    type: go
+    sdk_version: latest
+  - name: order-fulfillment-gosdk
+    type: go
+    sdk_version: latest
+  - name: routing-ortools
+    type: python
+  - name: shift-assignment-ortools
+    type: python
+  - name: shift-assignment-pyomo
+    type: python
+  - name: shift-planning-ortools
+    type: python
+  - name: shift-planning-pyomo
+    type: python
+  - name: shift-scheduling-gosdk
+    type: go
+    sdk_version: latest
+  - name: xpress
+    type: python
