@@ -101,6 +101,25 @@ def main():
     )
 
 
+def get_manifest(
+    client: s3Client,
+    bucket: str,
+    folder: str,
+    manifest_file: str,
+) -> dict[str, Any]:
+    """Returns the manifest from the S3 bucket."""
+
+    result = client.get_object(Bucket=bucket, Key=f"{folder}/{manifest_file}")
+    return yaml.safe_load(result["Body"].read())
+
+
+def read_yaml(filepath: str) -> dict[str, Any]:
+    """Returns the YAML file in the path."""
+
+    with open(filepath) as f:
+        return yaml.safe_load(f)
+
+
 def update_app(name: str, version: str, workflow_configuration: dict[str, Any]):
     """Updates the app with the new version."""
 
@@ -134,16 +153,20 @@ def update_app(name: str, version: str, workflow_configuration: dict[str, Any]):
         )
 
 
-def get_manifest(
-    client: s3Client,
-    bucket: str,
-    folder: str,
-    manifest_file: str,
+def update_manifest(
+    old: dict[str, Any],
+    app: dict[str, Any],
 ) -> dict[str, Any]:
-    """Returns the manifest from the S3 bucket."""
+    """Updates the manifest with the new apps."""
 
-    result = client.get_object(Bucket=bucket, Key=f"{folder}/{manifest_file}")
-    return yaml.safe_load(result["Body"].read())
+    new = copy.deepcopy(old)
+    for manifest_app in new["apps"]:
+        if manifest_app["name"] == app["name"]:
+            manifest_app["latest"] = app["version"]
+            manifest_app["versions"].append(app["version"])
+            break
+
+    return new
 
 
 def upload_manifest(
@@ -166,29 +189,6 @@ def upload_manifest(
         Key=f"{folder}/{manifest_file}",
         Body=yaml.dump(manifest, Dumper=Dumper, default_flow_style=False),
     )
-
-
-def update_manifest(
-    old: dict[str, Any],
-    app: dict[str, Any],
-) -> dict[str, Any]:
-    """Updates the manifest with the new apps."""
-
-    new = copy.deepcopy(old)
-    for manifest_app in new["apps"]:
-        if manifest_app["name"] == app["name"]:
-            manifest_app["latest"] = app["version"]
-            manifest_app["versions"].append(app["version"])
-            break
-
-    return new
-
-
-def read_yaml(filepath: str) -> dict[str, Any]:
-    """Returns the YAML file in the path."""
-
-    with open(filepath) as f:
-        return yaml.safe_load(f)
 
 
 if __name__ == "__main__":
