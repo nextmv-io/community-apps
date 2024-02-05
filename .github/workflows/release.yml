@@ -1,0 +1,64 @@
+name: release
+run-name: Deploy to ${{ inputs.TARGET_ENVIRONMENT }} by @${{ github.actor }} from ${{ github.ref_name }}
+
+on:
+  push:
+    branches:
+      - develop
+  workflow_dispatch:
+    inputs:
+      TARGET_ENVIRONMENT:
+        type: choice
+        description: "The environment to release to (dev, staging, prod)"
+        default: "dev"
+        required: true
+        options:
+          - dev
+          - staging
+          - prod
+      APPS:
+        type: string
+        description: "The apps to release with this format: `app1=version1,app2=version2`. E. g.: `knapsack-gosdk=v1.2.0,knapsack-java-ortools=v1.2.0`"
+        required: true
+
+permissions:
+  contents: read
+  packages: read
+
+jobs:
+  upload_s3:
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.TARGET_ENVIRONMENT || 'dev' }}
+    env:
+      BUCKET: ${{ secrets.S3_BUCKET }}
+      FOLDER: ${{ secrets.S3_FOLDER }}
+      MANIFEST: ${{ secrets.S3_MANIFEST }}
+      ROLE: ${{ secrets.AWS_DEVTOOLS_ROLE }}
+      REGION: ${{ secrets.AWS_REGION }}
+    permissions:
+      id-token: write
+      contents: write
+    steps:
+      - name: Git clone
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ env.ROLE }}
+          aws-region: ${{ env.REGION }}
+          role-duration-seconds: 1200
+
+      - name: Upload apps and update manifest
+        run: |
+          python update_apps.py \
+            --apps "${{ inputs.APPS }}" \
+            --bucket "${{ env.BUCKET }}" \
+            --folder "${{ env.FOLDER }}" \
+            --manifest "${{ env.MANIFEST }}"
+        working-directory: ./.nextmv
