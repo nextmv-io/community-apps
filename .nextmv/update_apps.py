@@ -3,7 +3,9 @@ This script updates one or more applications by:
 
 1. Updating the version.
 2. Updating the SDK version (if the app is written in Go).
-3. Updating the manifest file and uploading it.
+3. Creating a tarball of the app.
+4. Uploading the tarball to the S3 bucket.
+5. Updating and uploading the manifest file.
 
 Execute from the ./nextmv directory:
 
@@ -20,6 +22,7 @@ import argparse
 import copy
 import os
 import subprocess
+import tarfile
 from typing import Any
 
 import yaml
@@ -71,24 +74,38 @@ def main():
     ]
     apps.sort(key=lambda x: x["name"])
     client = s3Client("s3")
+    bucket = args.bucket
+    folder = args.folder
+    manifest_file = args.manifest
 
     manifest = get_manifest(
         client=client,
-        bucket=args.bucket,
-        folder=args.folder,
-        manifest_file=args.manifest,
+        bucket=bucket,
+        folder=folder,
+        manifest_file=manifest_file,
     )
     workflow_configuration = read_yaml(
         filepath=os.path.join(os.getcwd(), "workflow-configuration.yml"),
     )
     for app in apps:
-        if "v" not in app["version"]:
-            app["version"] = f"v{app['version']}"
+        name = app["name"]
+        version = app["version"]
+        if "v" not in version:
+            version = f"v{version}"
 
         update_app(
-            name=app["name"],
-            version=app["version"],
+            name=name,
+            version=version,
             workflow_configuration=workflow_configuration,
+        )
+        tarball = tar_app(name=name, version=version)
+        upload_tarball(
+            client=client,
+            bucket=bucket,
+            folder=folder,
+            name=name,
+            version=version,
+            tarball=tarball,
         )
         manifest = update_manifest(manifest, app)
 
@@ -113,6 +130,18 @@ def get_manifest(
     return yaml.safe_load(result["Body"].read())
 
 
+def tar_app(name: str, version: str) -> str:
+    """Create a tarbal of the app. Returns the name of the tarball."""
+
+    app_dir = os.path.join(os.getcwd(), "..", name)
+    filename = f"{name}_{version}.tar.gz"
+
+    with tarfile.open(filename, "w:gz") as tar:
+        tar.add(app_dir, arcname=os.path.basename(app_dir))
+
+    return filename
+
+
 def read_yaml(filepath: str) -> dict[str, Any]:
     """Returns the YAML file in the path."""
 
@@ -134,7 +163,7 @@ def update_app(name: str, version: str, workflow_configuration: dict[str, Any]):
 
     if workflow_info["type"] == "go":
         sdk_version = workflow_info["sdk_version"]
-        if "v" not in sdk_version:
+        if sdk_version != "latest" and "v" not in sdk_version:
             sdk_version = f"v{sdk_version}"
 
         _ = subprocess.run(
@@ -189,6 +218,26 @@ def upload_manifest(
         Key=f"{folder}/{manifest_file}",
         Body=yaml.dump(manifest, Dumper=Dumper, default_flow_style=False),
     )
+
+
+def upload_tarball(
+    client: s3Client,
+    bucket: str,
+    folder: str,
+    name: str,
+    version: str,
+    tarball: str,
+):
+    """Uploads the tarball to the S3 bucket."""
+
+    with open(tarball, "rb") as f:
+        client.put_object(
+            Bucket=bucket,
+            Key=f"{folder}/{name}/{version}/{tarball}",
+            Body=f,
+        )
+
+    os.remove(tarball)
 
 
 if __name__ == "__main__":
