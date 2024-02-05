@@ -12,29 +12,6 @@ linters-settings:
   gomodguard:
     allowed:
       modules:
-        - github.com/nextmv-io/sdk
-        - github.com/nextmv-io/sdk/route
-        - github.com/nextmv-io/sdk/route/osrm
-        - github.com/nextmv-io/sdk/route/here
-        - github.com/nextmv-io/sdk/route/google
-        - github.com/nextmv-io/sdk/route/routingkit
-        - github.com/nextmv-io/sdk/measure/here
-        - github.com/nextmv-io/sdk/measure/osrm
-        - github.com/nextmv-io/sdk/measure/google
-        - github.com/nextmv-io/sdk/measure/routingkit
-        - googlemaps.github.io/maps
-        - github.com/dgraph-io/ristretto
-        - go.uber.org/mock
-        - github.com/google/go-cmp
-        - github.com/hashicorp/golang-lru
-        - github.com/nextmv-io/go-routingkit
-        - github.com/twpayne/go-polyline
-        - googlemaps.github.io/maps
-        - github.com/itzg/go-flagsfiller
-        - github.com/gorilla/schema
-        - github.com/google/uuid
-        - github.com/xeipuuv/gojsonschema
-        - github.com/danielgtaylor/huma
   # Allow increased cyclomatic complexity for examples.
   gocyclo:
     min-complexity: 45
