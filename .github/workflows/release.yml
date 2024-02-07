@@ -70,12 +70,19 @@ jobs:
           pip install -r requirements.txt
         working-directory: ./community-apps/.nextmv
 
-      - name: Configure AWS credentials
+      - name: Set up AWS CLI
         uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: ${{ env.ROLE }}
           aws-region: ${{ env.REGION }}
           role-duration-seconds: 1200
+
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: corretto
+          java-version: 21
+          cache: "maven"
 
       - name: Upload apps and update manifest
         run: |

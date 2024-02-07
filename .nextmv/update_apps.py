@@ -229,11 +229,18 @@ def update_manifest(
 ) -> dict[str, Any]:
     """Updates the manifest with the new apps."""
 
+    name = app["name"]
+    version = app["version"]
+
     new = copy.deepcopy(old)
-    for manifest_app in new["apps"]:
-        if manifest_app["name"] == app["name"]:
-            manifest_app["latest"] = app["version"]
-            manifest_app["versions"].append(app["version"])
+    manifest_apps = new["apps"]
+
+    for manifest_app in manifest_apps:
+        if name == manifest_app["name"]:
+            versions = manifest_app["versions"]
+            manifest_app["latest"] = version
+            if version not in versions:
+                versions.append(version)
             break
 
     return new
