@@ -91,8 +91,8 @@ jobs:
           curl -sS "https://$CONSOLE_URL/install-cli.txt" | bash -
 
       - name: Set up Nextmv CLI
-        shell: bash -l {0}
         run: |
+          export PATH=$PATH:~/.nextmv # Make CLI available in non-interactive shell
           nextmv configure \
             --api-key $MARKETPLACE_API_KEY \
             -e $API_ENDPOINT
@@ -100,8 +100,8 @@ jobs:
           nextmv sdk install
 
       - name: Upload apps and update manifest
-        shell: bash -l {0}
         run: |
+          export PATH=$PATH:~/.nextmv # Make CLI available in non-interactive shell
           python update_apps.py \
             --apps "${{ inputs.APPS }}" \
             --bucket "${{ env.BUCKET }}" \
