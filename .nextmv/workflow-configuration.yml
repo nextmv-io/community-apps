@@ -2,30 +2,56 @@ apps:
   - name: knapsack-gosdk
     type: go
     sdk_version: latest
+    app_id: knapsack-gosdk
+    marketplace_app_id: knapsack.gosdk
   - name: knapsack-java-ortools
     type: java
+    app_id: knapsack-jortools
+    marketplace_app_id: knapsack.jortools
   - name: knapsack-ortools
     type: python
+    app_id: knapsack-ortools
+    marketplace_app_id: knapsack.ortools
   - name: knapsack-pyomo
     type: python
+    app_id: knapsack-pyomo
+    marketplace_app_id: knapsack.pyomo
   - name: nextroute
     type: go
     sdk_version: latest
+    app_id: nextroute
+    marketplace_app_id: nextroute
   - name: order-fulfillment-gosdk
     type: go
     sdk_version: latest
+    app_id: order-fulfill-gosdk
+    marketplace_app_id: order.fulfill.gosdk
   - name: routing-ortools
     type: python
+    app_id: routing-ortools
+    marketplace_app_id: routing.ortools
   - name: shift-assignment-ortools
     type: python
+    app_id: shift-assign-ortools
+    marketplace_app_id: shift.assign.ortools
   - name: shift-assignment-pyomo
     type: python
+    app_id: shift-assign-pyomo
+    marketplace_app_id: shift.assign.pyomo
   - name: shift-planning-ortools
     type: python
+    app_id: shift-plan-ortools
+    marketplace_app_id: shift.plan.ortools
   - name: shift-planning-pyomo
     type: python
+    app_id: shift-plan-pyomo
+    marketplace_app_id: shift.plan.pyomo
   - name: shift-scheduling-gosdk
     type: go
     sdk_version: latest
+    app_id: shift-scheduling
+    marketplace_app_id: shift.scheduling
   - name: xpress
     type: python
+    app_id:
+    marketplace_app_id:

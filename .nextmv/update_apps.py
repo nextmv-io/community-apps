@@ -5,7 +5,8 @@ This script updates one or more applications by:
 2. Updating the SDK version (if the app is written in Go).
 3. Creating a tarball of the app.
 4. Uploading the tarball to the S3 bucket.
-5. Updating and uploading the manifest file.
+5. Pushing the app to Nextmv Marketplace.
+6. Updating and uploading the manifest file.
 
 Execute from the ./nextmv directory:
 
@@ -84,20 +85,13 @@ def main():
         folder=folder,
         manifest_file=manifest_file,
     )
-    workflow_configuration = read_yaml(
-        filepath=os.path.join(os.getcwd(), "workflow-configuration.yml"),
-    )
     for app in apps:
         name = app["name"]
         version = app["version"]
         if "v" not in version:
             version = f"v{version}"
 
-        update_app(
-            name=name,
-            version=version,
-            workflow_configuration=workflow_configuration,
-        )
+        update_app(name=name, version=version)
         tarball = tar_app(name=name, version=version)
         upload_tarball(
             client=client,
@@ -107,6 +101,7 @@ def main():
             version=version,
             tarball=tarball,
         )
+        push_app(name=name, version=version)
         manifest = update_manifest(manifest, app)
 
     upload_manifest(
@@ -116,6 +111,21 @@ def main():
         manifest_file=args.manifest,
         manifest=manifest,
     )
+
+
+def app_workflow_info(name: str) -> dict[str, Any]:
+    """Gets the app information from the workflow configuration."""
+
+    workflow_configuration = read_yaml(
+        filepath=os.path.join(os.getcwd(), "workflow-configuration.yml"),
+    )
+    workflow_info = {}
+    for app in workflow_configuration["apps"]:
+        if app["name"] == name:
+            workflow_info = app
+            break
+
+    return workflow_info
 
 
 def get_manifest(
@@ -130,6 +140,40 @@ def get_manifest(
     return yaml.safe_load(result["Body"].read())
 
 
+def push_app(name: str, version: str):
+    """Pushes the app to the Nextmv Marketplace."""
+
+    workflow_info = app_workflow_info(name)
+    app_id = workflow_info["app_id"]
+    marketplace_app_id = workflow_info["marketplace_app_id"]
+    if app_id == "" or marketplace_app_id == "":
+        return
+
+    try:
+        _ = subprocess.run(
+            ["bash", "push_app.sh"],
+            env={
+                "APP_DIR": os.path.join("..", name),
+                "APP_ID": app_id,
+                "MARKETPLACE_APP_ID": marketplace_app_id,
+                "VERSION_ID": version,
+            },
+            check=True,
+            capture_output=True,
+            text=True,
+        )
+
+    except subprocess.CalledProcessError as e:
+        raise Exception(e.stderr) from e
+
+
+def read_yaml(filepath: str) -> dict[str, Any]:
+    """Returns the YAML file in the path."""
+
+    with open(filepath) as f:
+        return yaml.safe_load(f)
+
+
 def tar_app(name: str, version: str) -> str:
     """Create a tarbal of the app. Returns the name of the tarball."""
 
@@ -142,21 +186,10 @@ def tar_app(name: str, version: str) -> str:
     return filename
 
 
-def read_yaml(filepath: str) -> dict[str, Any]:
-    """Returns the YAML file in the path."""
-
-    with open(filepath) as f:
-        return yaml.safe_load(f)
-
-
-def update_app(name: str, version: str, workflow_configuration: dict[str, Any]):
+def update_app(name: str, version: str):
     """Updates the app with the new version."""
 
-    workflow_info = {}
-    for app in workflow_configuration["apps"]:
-        if app["name"] == name:
-            workflow_info = app
-            break
+    workflow_info = app_workflow_info(name)
 
     with open(os.path.join(os.getcwd(), "..", name, "VERSION"), "w") as f:
         f.write(version + "\n")
@@ -166,20 +199,27 @@ def update_app(name: str, version: str, workflow_configuration: dict[str, Any]):
         if sdk_version != "latest" and "v" not in sdk_version:
             sdk_version = f"v{sdk_version}"
 
-        _ = subprocess.run(
-            ["go", "get", f"github.com/nextmv-io/sdk@{sdk_version}"],
-            capture_output=True,
-            text=True,
-            check=True,
-            cwd=os.path.join("..", name),
-        )
-        _ = subprocess.run(
-            ["go", "mod", "tidy"],
-            capture_output=True,
-            text=True,
-            check=True,
-            cwd=os.path.join("..", name),
-        )
+        try:
+            _ = subprocess.run(
+                ["go", "get", f"github.com/nextmv-io/sdk@{sdk_version}"],
+                check=True,
+                capture_output=True,
+                text=True,
+                cwd=os.path.join("..", name),
+            )
+        except subprocess.CalledProcessError as e:
+            raise Exception(e.stderr) from e
+
+        try:
+            _ = subprocess.run(
+                ["go", "mod", "tidy"],
+                check=True,
+                capture_output=True,
+                text=True,
+                cwd=os.path.join("..", name),
+            )
+        except subprocess.CalledProcessError as e:
+            raise Exception(e.stderr) from e
 
 
 def update_manifest(
