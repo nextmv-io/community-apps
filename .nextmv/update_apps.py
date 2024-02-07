@@ -23,6 +23,7 @@ import argparse
 import copy
 import os
 import subprocess
+import sys
 import tarfile
 from typing import Any
 
@@ -153,7 +154,7 @@ def get_manifest(
 def log(message: str):
     """Logs a message to the console."""
 
-    print(message)
+    print(message, file=sys.stdout)
 
 
 def push_app(name: str, version: str):
