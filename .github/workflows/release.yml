@@ -53,7 +53,7 @@ jobs:
           chmod 600 ~/.ssh/signing.key
 
           git config --global user.name "nextmv-bot"
-          git config --global user.email "donotemailme@nextmv.io"
+          git config --global user.email "tech+gh-nextmv-bot@nextmv.io"
           git config --global gpg.format ssh
           git config --global user.signingkey ~/.ssh/signing.key
 
