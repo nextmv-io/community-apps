@@ -37,6 +37,9 @@ jobs:
       ROLE: ${{ secrets.AWS_DEVTOOLS_ROLE }}
       REGION: ${{ secrets.AWS_REGION }}
       GH_TOKEN: ${{ github.token }}
+      API_ENDPOINT: ${{ secrets.API_ENDPOINT }}
+      CONSOLE_URL: ${{ secrets.CONSOLE_URL }}
+      MARKETPLACE_API_KEY: ${{ secrets.MARKETPLACE_API_KEY }}
       SSH_AUTH_SOCK: /tmp/ssh_agent.sock
     permissions:
       id-token: write
@@ -84,7 +87,23 @@ jobs:
           java-version: 21
           cache: "maven"
 
+      - name: Install Nextmv CLI
+        run: |
+          export NEXTMV_API_KEY=$MARKETPLACE_API_KEY
+          export NEXTMV_BASE_URL=https://$API_ENDPOINT
+          curl -sS "https://$CONSOLE_URL/install-cli.txt" | bash -
+
+      - name: Set up Nextmv CLI
+        shell: bash -l {0}
+        run: |
+          nextmv configure \
+            --api-key $MARKETPLACE_API_KEY \
+            -e $API_ENDPOINT
+          nextmv activate
+          nextmv sdk install
+
       - name: Upload apps and update manifest
+        shell: bash -l {0}
         run: |
           python update_apps.py \
             --apps "${{ inputs.APPS }}" \
