@@ -116,6 +116,8 @@ def main():
 def app_workflow_info(name: str) -> dict[str, Any]:
     """Gets the app information from the workflow configuration."""
 
+    log(f"Getting workflow info for app: {name}")
+
     workflow_configuration = read_yaml(
         filepath=os.path.join(os.getcwd(), "workflow-configuration.yml"),
     )
@@ -124,6 +126,8 @@ def app_workflow_info(name: str) -> dict[str, Any]:
         if app["name"] == name:
             workflow_info = app
             break
+
+    log(f"Obtained workflow info for app {name}: {workflow_info}")
 
     return workflow_info
 
@@ -136,12 +140,26 @@ def get_manifest(
 ) -> dict[str, Any]:
     """Returns the manifest from the S3 bucket."""
 
+    log("Getting manifest from S3 bucket.")
+
     result = client.get_object(Bucket=bucket, Key=f"{folder}/{manifest_file}")
-    return yaml.safe_load(result["Body"].read())
+    manifest = yaml.safe_load(result["Body"].read())
+
+    log("Obtained manifest from S3 bucket.")
+
+    return manifest
+
+
+def log(message: str):
+    """Logs a message to the console."""
+
+    print(message)
 
 
 def push_app(name: str, version: str):
     """Pushes the app to the Nextmv Marketplace."""
+
+    log(f"Pushing app: {name}; version: {version} to the Marketplace.")
 
     workflow_info = app_workflow_info(name)
     app_id = workflow_info.get("app_id") or None
@@ -167,6 +185,8 @@ def push_app(name: str, version: str):
     except subprocess.CalledProcessError as e:
         raise Exception(e.stderr) from e
 
+    log(f"Pushed app: {name}; version: {version} to the Marketplace.")
+
 
 def read_yaml(filepath: str) -> dict[str, Any]:
     """Returns the YAML file in the path."""
@@ -178,17 +198,23 @@ def read_yaml(filepath: str) -> dict[str, Any]:
 def tar_app(name: str, version: str) -> str:
     """Create a tarbal of the app. Returns the name of the tarball."""
 
+    log(f"Creating tarball for app: {name}; version: {version}")
+
     app_dir = os.path.join(os.getcwd(), "..", name)
     filename = f"{name}_{version}.tar.gz"
 
     with tarfile.open(filename, "w:gz") as tar:
         tar.add(app_dir, arcname=os.path.basename(app_dir))
 
+    log(f"Created tarball for app: {name}; version: {version}")
+
     return filename
 
 
 def update_app(name: str, version: str):
     """Updates the app with the new version."""
+
+    log(f"Updating app: {name}; version: {version}")
 
     workflow_info = app_workflow_info(name)
 
@@ -199,6 +225,8 @@ def update_app(name: str, version: str):
         sdk_version = workflow_info["sdk_version"]
         if sdk_version != "latest" and "v" not in sdk_version:
             sdk_version = f"v{sdk_version}"
+
+        log(f"Updating SDK for app: {name}; version: {version}; SDK version: {sdk_version}")
 
         try:
             _ = subprocess.run(
@@ -222,12 +250,16 @@ def update_app(name: str, version: str):
         except subprocess.CalledProcessError as e:
             raise Exception(e.stderr) from e
 
+    log(f"Updated app: {name}; version: {version}")
+
 
 def update_manifest(
     old: dict[str, Any],
     app: dict[str, Any],
 ) -> dict[str, Any]:
     """Updates the manifest with the new apps."""
+
+    log(f"Updating manifest with app: {app}.")
 
     name = app["name"]
     version = app["version"]
@@ -243,6 +275,8 @@ def update_manifest(
                 versions.append(version)
             break
 
+    log(f"Updated manifest with app: {app}.")
+
     return new
 
 
@@ -254,6 +288,8 @@ def upload_manifest(
     manifest: dict[str, Any],
 ):
     """Uploads the manifest to the S3 bucket."""
+
+    log("Uploading manifest to S3 bucket.")
 
     class Dumper(yaml.Dumper):
         """Custom YAML dumper that does not use the default flow style."""
@@ -267,6 +303,8 @@ def upload_manifest(
         Body=yaml.dump(manifest, Dumper=Dumper, default_flow_style=False),
     )
 
+    log("Uploaded manifest to S3 bucket.")
+
 
 def upload_tarball(
     client: s3Client,
@@ -278,6 +316,8 @@ def upload_tarball(
 ):
     """Uploads the tarball to the S3 bucket."""
 
+    log(f"Uploading tarball to S3 bucket: {name}; version: {version}; tarball: {tarball}.")
+
     with open(tarball, "rb") as f:
         client.put_object(
             Bucket=bucket,
@@ -286,6 +326,8 @@ def upload_tarball(
         )
 
     os.remove(tarball)
+
+    log(f"Uploaded tarball to S3 bucket: {name}; version: {version}; removed tarball: {tarball}.")
 
 
 if __name__ == "__main__":
