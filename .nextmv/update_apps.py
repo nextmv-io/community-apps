@@ -144,15 +144,16 @@ def push_app(name: str, version: str):
     """Pushes the app to the Nextmv Marketplace."""
 
     workflow_info = app_workflow_info(name)
-    app_id = workflow_info["app_id"]
-    marketplace_app_id = workflow_info["marketplace_app_id"]
-    if app_id == "" or marketplace_app_id == "":
+    app_id = workflow_info.get("app_id") or None
+    marketplace_app_id = workflow_info.get("marketplace_app_id", "") or None
+    if app_id is None or marketplace_app_id is None:
         return
 
     try:
         _ = subprocess.run(
             ["bash", "push_app.sh"],
-            env={
+            env=os.environ
+            | {
                 "APP_DIR": os.path.join("..", name),
                 "APP_ID": app_id,
                 "MARKETPLACE_APP_ID": marketplace_app_id,

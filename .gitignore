@@ -165,3 +165,6 @@ go.work.sum
 
 # VSCode stuff
 .vscode/
+
+# Java stuff
+main.jar
