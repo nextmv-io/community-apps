@@ -104,7 +104,9 @@ jobs:
           echo "Updating path"
           export PATH=$PATH:~/.nextmv # Make CLI available in non-interactive shell
           echo "Path updated"
-          python test.py
+          ls -lah
+          pwd
+          python main.py
           python update_apps.py \
             --apps "${{ inputs.APPS }}" \
             --bucket "${{ env.BUCKET }}" \
