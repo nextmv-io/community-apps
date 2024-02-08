@@ -154,7 +154,7 @@ def get_manifest(
 def log(message: str):
     """Logs a message to the console."""
 
-    print(message, file=sys.stdout, flush=True)
+    print(message, file=sys.stdout)
 
 
 def push_app(name: str, version: str):

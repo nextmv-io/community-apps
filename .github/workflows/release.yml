@@ -103,18 +103,12 @@ jobs:
 
       - name: Upload apps and update manifest
         run: |
-          echo "Updating path"
           export PATH=$PATH:~/.nextmv # Make CLI available in non-interactive shell
-          echo "Path updated"
-          ls -lah
-          pwd
-          python main.py
           python update_apps.py \
             --apps "${{ inputs.APPS }}" \
             --bucket "${{ env.BUCKET }}" \
             --folder "${{ env.FOLDER }}" \
             --manifest "${{ env.MANIFEST }}"
-          exit 1
         working-directory: ./community-apps/.nextmv
 
       - name: Commit new versions
