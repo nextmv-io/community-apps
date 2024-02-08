@@ -57,3 +57,5 @@ apps:
     marketplace_app_id:
   - name: cost-flow-ortools
     type: python
+    app_id:
+    marketplace_app_id:
