@@ -169,7 +169,7 @@ def push_app(name: str, version: str):
         return
 
     try:
-        _ = subprocess.run(
+        result = subprocess.run(
             ["bash", "push_app.sh"],
             env=os.environ
             | {
@@ -182,6 +182,7 @@ def push_app(name: str, version: str):
             capture_output=True,
             text=True,
         )
+        print(result.stdout)
 
     except subprocess.CalledProcessError as e:
         raise Exception(e.stderr) from e
@@ -230,24 +231,28 @@ def update_app(name: str, version: str):
         log(f"Updating SDK for app: {name}; version: {version}; SDK version: {sdk_version}")
 
         try:
-            _ = subprocess.run(
+            result = subprocess.run(
                 ["go", "get", f"github.com/nextmv-io/sdk@{sdk_version}"],
                 check=True,
                 capture_output=True,
                 text=True,
                 cwd=os.path.join("..", name),
             )
+            print(result.stdout)
+
         except subprocess.CalledProcessError as e:
             raise Exception(e.stderr) from e
 
         try:
-            _ = subprocess.run(
+            result = subprocess.run(
                 ["go", "mod", "tidy"],
                 check=True,
                 capture_output=True,
                 text=True,
                 cwd=os.path.join("..", name),
             )
+            print(result.stdout)
+
         except subprocess.CalledProcessError as e:
             raise Exception(e.stderr) from e
 

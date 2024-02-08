@@ -82,7 +82,7 @@ jobs:
       - name: Set up JDK
         uses: actions/setup-java@v4
         with:
-          distribution: corretto
+          distribution: temurin
           java-version: 21
           cache: "maven"
 
