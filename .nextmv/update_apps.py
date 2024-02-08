@@ -143,10 +143,15 @@ def get_manifest(
 
     log("Getting manifest from S3 bucket.")
 
-    result = client.get_object(Bucket=bucket, Key=f"{folder}/{manifest_file}")
-    manifest = yaml.safe_load(result["Body"].read())
+    manifest = {}
+    try:
+        result = client.get_object(Bucket=bucket, Key=f"{folder}/{manifest_file}")
+        manifest = yaml.safe_load(result["Body"].read())
+        log("Obtained manifest from S3 bucket.")
 
-    log("Obtained manifest from S3 bucket.")
+    except client.exceptions.NoSuchKey:
+        log("No manifest in S3 bucket.")
+        pass
 
     return manifest
 
@@ -154,7 +159,7 @@ def get_manifest(
 def log(message: str):
     """Logs a message to the console."""
 
-    print(message, file=sys.stdout, flush=True)
+    print(f"🐰 {message}", file=sys.stdout, flush=True)
 
 
 def push_app(name: str, version: str):
@@ -271,15 +276,32 @@ def update_manifest(
     version = app["version"]
 
     new = copy.deepcopy(old)
+    if new == {}:
+        new = {"apps": []}
+
     manifest_apps = new["apps"]
 
+    found = False
     for manifest_app in manifest_apps:
         if name == manifest_app["name"]:
             versions = manifest_app["versions"]
             manifest_app["latest"] = version
             if version not in versions:
                 versions.append(version)
+
+            found = True
             break
+
+    if not found:
+        workflow_info = app_workflow_info(name)
+        manifest_apps.append(
+            {
+                "latest": version,
+                "name": name,
+                "type": workflow_info["type"],
+                "versions": [version],
+            }
+        )
 
     log(f"Updated manifest with app: {app}.")
 
