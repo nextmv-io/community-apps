@@ -59,7 +59,9 @@ jobs:
 
           git clone git@github.com:nextmv-io/community-apps.git
           cd community-apps
+          git fetch --all
           git checkout ${{ github.ref_name }}
+          git pull
 
       - name: Set up Python
         uses: actions/setup-python@v5
