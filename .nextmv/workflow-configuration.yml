@@ -29,3 +29,5 @@ apps:
     sdk_version: latest
   - name: xpress
     type: python
+  - name: cost-flow-ortools
+    type: python
