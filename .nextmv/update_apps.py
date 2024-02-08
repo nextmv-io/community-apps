@@ -171,6 +171,7 @@ def push_app(name: str, version: str):
     app_id = workflow_info.get("app_id") or None
     marketplace_app_id = workflow_info.get("marketplace_app_id", "") or None
     if app_id is None or marketplace_app_id is None:
+        log(f"App: {name} has not app_id or marketplace_app_id, skipping push to Cloud.")
         return
 
     try:
