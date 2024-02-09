@@ -117,7 +117,7 @@ def main():
 def app_workflow_info(name: str) -> dict[str, Any]:
     """Gets the app information from the workflow configuration."""
 
-    log(f"Getting workflow info for app: {name}")
+    log(f"Getting workflow info for app: {name}.")
 
     workflow_configuration = read_yaml(
         filepath=os.path.join(os.getcwd(), "workflow-configuration.yml"),
@@ -128,7 +128,7 @@ def app_workflow_info(name: str) -> dict[str, Any]:
             workflow_info = app
             break
 
-    log(f"Obtained workflow info for app {name}: {workflow_info}")
+    log(f"Obtained workflow info for app {name}: {workflow_info}.")
 
     return workflow_info
 
@@ -191,7 +191,10 @@ def push_app(name: str, version: str):
         print(result.stdout)
 
     except subprocess.CalledProcessError as e:
-        raise Exception(e.stderr) from e
+        raise Exception(
+            f"error attempting app push: {name}; version: {version}; "
+            f"app_id: {app_id}; marketplace_app_id: {marketplace_app_id}: {e.stderr}"
+        ) from e
 
     log(f"Pushed app: {name}; version: {version} to the Marketplace.")
 
@@ -206,7 +209,7 @@ def read_yaml(filepath: str) -> dict[str, Any]:
 def tar_app(name: str, version: str) -> str:
     """Create a tarbal of the app. Returns the name of the tarball."""
 
-    log(f"Creating tarball for app: {name}; version: {version}")
+    log(f"Creating tarball for app: {name}; version: {version}.")
 
     app_dir = os.path.join(os.getcwd(), "..", name)
     filename = f"{name}_{version}.tar.gz"
@@ -214,7 +217,7 @@ def tar_app(name: str, version: str) -> str:
     with tarfile.open(filename, "w:gz") as tar:
         tar.add(app_dir, arcname=os.path.basename(app_dir))
 
-    log(f"Created tarball for app: {name}; version: {version}")
+    log(f"Created tarball for app: {name}; version: {version}.")
 
     return filename
 
@@ -222,7 +225,7 @@ def tar_app(name: str, version: str) -> str:
 def update_app(name: str, version: str):
     """Updates the app with the new version."""
 
-    log(f"Updating app: {name}; version: {version}")
+    log(f"Updating app: {name}; version: {version}.")
 
     workflow_info = app_workflow_info(name)
 
@@ -247,7 +250,10 @@ def update_app(name: str, version: str):
             print(result.stdout)
 
         except subprocess.CalledProcessError as e:
-            raise Exception(e.stderr) from e
+            raise Exception(
+                f"error attempting go get github.com/nextmv-io/sdk with app: {name}; version: {version}; "
+                f"sdk_version: {sdk_version}: {e.stderr}"
+            ) from e
 
         try:
             result = subprocess.run(
@@ -260,9 +266,12 @@ def update_app(name: str, version: str):
             print(result.stdout)
 
         except subprocess.CalledProcessError as e:
-            raise Exception(e.stderr) from e
+            raise Exception(
+                f"error attempting go mod tidy with app: {name}; version: {version}; "
+                f"sdk_version: {sdk_version}: {e.stderr}"
+            ) from e
 
-    log(f"Updated app: {name}; version: {version}")
+    log(f"Updated app: {name}; version: {version}.")
 
 
 def update_manifest(
