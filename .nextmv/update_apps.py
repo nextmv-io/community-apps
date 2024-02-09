@@ -5,7 +5,8 @@ This script updates one or more applications by:
 2. Updating the SDK version (if the app is written in Go).
 3. Creating a tarball of the app.
 4. Uploading the tarball to the S3 bucket.
-5. Updating and uploading the manifest file.
+5. Pushing the app to Nextmv Marketplace.
+6. Updating and uploading the manifest file.
 
 Execute from the ./nextmv directory:
 
@@ -22,6 +23,7 @@ import argparse
 import copy
 import os
 import subprocess
+import sys
 import tarfile
 from typing import Any
 
@@ -84,20 +86,13 @@ def main():
         folder=folder,
         manifest_file=manifest_file,
     )
-    workflow_configuration = read_yaml(
-        filepath=os.path.join(os.getcwd(), "workflow-configuration.yml"),
-    )
     for app in apps:
         name = app["name"]
         version = app["version"]
         if "v" not in version:
             version = f"v{version}"
 
-        update_app(
-            name=name,
-            version=version,
-            workflow_configuration=workflow_configuration,
-        )
+        update_app(name=name, version=version)
         tarball = tar_app(name=name, version=version)
         upload_tarball(
             client=client,
@@ -107,6 +102,7 @@ def main():
             version=version,
             tarball=tarball,
         )
+        push_app(name=name, version=version)
         manifest = update_manifest(manifest, app)
 
     upload_manifest(
@@ -118,6 +114,25 @@ def main():
     )
 
 
+def app_workflow_info(name: str) -> dict[str, Any]:
+    """Gets the app information from the workflow configuration."""
+
+    log(f"Getting workflow info for app: {name}.")
+
+    workflow_configuration = read_yaml(
+        filepath=os.path.join(os.getcwd(), "workflow-configuration.yml"),
+    )
+    workflow_info = {}
+    for app in workflow_configuration["apps"]:
+        if app["name"] == name:
+            workflow_info = app
+            break
+
+    log(f"Obtained workflow info for app {name}: {workflow_info}.")
+
+    return workflow_info
+
+
 def get_manifest(
     client: s3Client,
     bucket: str,
@@ -126,20 +141,62 @@ def get_manifest(
 ) -> dict[str, Any]:
     """Returns the manifest from the S3 bucket."""
 
-    result = client.get_object(Bucket=bucket, Key=f"{folder}/{manifest_file}")
-    return yaml.safe_load(result["Body"].read())
+    log("Getting manifest from S3 bucket.")
+
+    manifest = {}
+    try:
+        result = client.get_object(Bucket=bucket, Key=f"{folder}/{manifest_file}")
+        manifest = yaml.safe_load(result["Body"].read())
+        log("Obtained manifest from S3 bucket.")
+
+    except client.exceptions.NoSuchKey:
+        log("No manifest in S3 bucket.")
+        pass
+
+    return manifest
 
 
-def tar_app(name: str, version: str) -> str:
-    """Create a tarbal of the app. Returns the name of the tarball."""
+def log(message: str):
+    """Logs a message to the console."""
 
-    app_dir = os.path.join(os.getcwd(), "..", name)
-    filename = f"{name}_{version}.tar.gz"
+    print(f"🐰 {message}", file=sys.stdout, flush=True)
 
-    with tarfile.open(filename, "w:gz") as tar:
-        tar.add(app_dir, arcname=os.path.basename(app_dir))
 
-    return filename
+def push_app(name: str, version: str):
+    """Pushes the app to the Nextmv Marketplace."""
+
+    log(f"Pushing app: {name}; version: {version} to the Marketplace.")
+
+    workflow_info = app_workflow_info(name)
+    app_id = workflow_info.get("app_id") or None
+    marketplace_app_id = workflow_info.get("marketplace_app_id", "") or None
+    if app_id is None or marketplace_app_id is None:
+        log(f"App: {name} either app_id or marketplace_app_id is not defined; skipping push to Cloud.")
+        return
+
+    try:
+        result = subprocess.run(
+            ["bash", "push_app.sh"],
+            env=os.environ
+            | {
+                "APP_DIR": os.path.join("..", name),
+                "APP_ID": app_id,
+                "MARKETPLACE_APP_ID": marketplace_app_id,
+                "VERSION_ID": version,
+            },
+            check=True,
+            capture_output=True,
+            text=True,
+        )
+        print(result.stdout)
+
+    except subprocess.CalledProcessError as e:
+        raise Exception(
+            f"error attempting app push: {name}; version: {version}; "
+            f"app_id: {app_id}; marketplace_app_id: {marketplace_app_id}: {e.stderr}"
+        ) from e
+
+    log(f"Pushed app: {name}; version: {version} to the Marketplace.")
 
 
 def read_yaml(filepath: str) -> dict[str, Any]:
@@ -149,14 +206,28 @@ def read_yaml(filepath: str) -> dict[str, Any]:
         return yaml.safe_load(f)
 
 
-def update_app(name: str, version: str, workflow_configuration: dict[str, Any]):
+def tar_app(name: str, version: str) -> str:
+    """Create a tarbal of the app. Returns the name of the tarball."""
+
+    log(f"Creating tarball for app: {name}; version: {version}.")
+
+    app_dir = os.path.join(os.getcwd(), "..", name)
+    filename = f"{name}_{version}.tar.gz"
+
+    with tarfile.open(filename, "w:gz") as tar:
+        tar.add(app_dir, arcname=os.path.basename(app_dir))
+
+    log(f"Created tarball for app: {name}; version: {version}.")
+
+    return filename
+
+
+def update_app(name: str, version: str):
     """Updates the app with the new version."""
 
-    workflow_info = {}
-    for app in workflow_configuration["apps"]:
-        if app["name"] == name:
-            workflow_info = app
-            break
+    log(f"Updating app: {name}; version: {version}.")
+
+    workflow_info = app_workflow_info(name)
 
     with open(os.path.join(os.getcwd(), "..", name, "VERSION"), "w") as f:
         f.write(version + "\n")
@@ -166,20 +237,41 @@ def update_app(name: str, version: str, workflow_configuration: dict[str, Any]):
         if sdk_version != "latest" and "v" not in sdk_version:
             sdk_version = f"v{sdk_version}"
 
-        _ = subprocess.run(
-            ["go", "get", f"github.com/nextmv-io/sdk@{sdk_version}"],
-            capture_output=True,
-            text=True,
-            check=True,
-            cwd=os.path.join("..", name),
-        )
-        _ = subprocess.run(
-            ["go", "mod", "tidy"],
-            capture_output=True,
-            text=True,
-            check=True,
-            cwd=os.path.join("..", name),
-        )
+        log(f"Updating SDK for app: {name}; version: {version}; SDK version: {sdk_version}")
+
+        try:
+            result = subprocess.run(
+                ["go", "get", f"github.com/nextmv-io/sdk@{sdk_version}"],
+                check=True,
+                capture_output=True,
+                text=True,
+                cwd=os.path.join("..", name),
+            )
+            print(result.stdout)
+
+        except subprocess.CalledProcessError as e:
+            raise Exception(
+                f"error attempting go get github.com/nextmv-io/sdk with app: {name}; version: {version}; "
+                f"sdk_version: {sdk_version}: {e.stderr}"
+            ) from e
+
+        try:
+            result = subprocess.run(
+                ["go", "mod", "tidy"],
+                check=True,
+                capture_output=True,
+                text=True,
+                cwd=os.path.join("..", name),
+            )
+            print(result.stdout)
+
+        except subprocess.CalledProcessError as e:
+            raise Exception(
+                f"error attempting go mod tidy with app: {name}; version: {version}; "
+                f"sdk_version: {sdk_version}: {e.stderr}"
+            ) from e
+
+    log(f"Updated app: {name}; version: {version}.")
 
 
 def update_manifest(
@@ -188,12 +280,40 @@ def update_manifest(
 ) -> dict[str, Any]:
     """Updates the manifest with the new apps."""
 
+    log(f"Updating manifest with app: {app}.")
+
+    name = app["name"]
+    version = app["version"]
+
     new = copy.deepcopy(old)
-    for manifest_app in new["apps"]:
-        if manifest_app["name"] == app["name"]:
-            manifest_app["latest"] = app["version"]
-            manifest_app["versions"].append(app["version"])
+    if new == {}:
+        new = {"apps": []}
+
+    manifest_apps = new["apps"]
+
+    found = False
+    for manifest_app in manifest_apps:
+        if name == manifest_app["name"]:
+            versions = manifest_app["versions"]
+            manifest_app["latest"] = version
+            if version not in versions:
+                versions.append(version)
+
+            found = True
             break
+
+    if not found:
+        workflow_info = app_workflow_info(name)
+        manifest_apps.append(
+            {
+                "latest": version,
+                "name": name,
+                "type": workflow_info["type"],
+                "versions": [version],
+            }
+        )
+
+    log(f"Updated manifest with app: {app}.")
 
     return new
 
@@ -207,6 +327,8 @@ def upload_manifest(
 ):
     """Uploads the manifest to the S3 bucket."""
 
+    log("Uploading manifest to S3 bucket.")
+
     class Dumper(yaml.Dumper):
         """Custom YAML dumper that does not use the default flow style."""
 
@@ -219,6 +341,8 @@ def upload_manifest(
         Body=yaml.dump(manifest, Dumper=Dumper, default_flow_style=False),
     )
 
+    log("Uploaded manifest to S3 bucket.")
+
 
 def upload_tarball(
     client: s3Client,
@@ -230,6 +354,8 @@ def upload_tarball(
 ):
     """Uploads the tarball to the S3 bucket."""
 
+    log(f"Uploading tarball to S3 bucket: {name}; version: {version}; tarball: {tarball}.")
+
     with open(tarball, "rb") as f:
         client.put_object(
             Bucket=bucket,
@@ -238,6 +364,8 @@ def upload_tarball(
         )
 
     os.remove(tarball)
+
+    log(f"Uploaded tarball to S3 bucket: {name}; version: {version}; removed tarball: {tarball}.")
 
 
 if __name__ == "__main__":

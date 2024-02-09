@@ -2,9 +2,6 @@ name: release
 run-name: Deploy to ${{ inputs.TARGET_ENVIRONMENT }} by @${{ github.actor }} from ${{ github.ref_name }}
 
 on:
-  push:
-    branches:
-      - develop
   workflow_dispatch:
     inputs:
       TARGET_ENVIRONMENT:
@@ -18,7 +15,7 @@ on:
           - prod
       APPS:
         type: string
-        description: "The apps to release with this format: `app1=version1,app2=version2`. E. g.: `knapsack-gosdk=v1.2.0,knapsack-java-ortools=v1.2.0`"
+        description: "The apps to release with this format: `app-dir1=version1,app-dir2=version2`. E. g.: `knapsack-gosdk=v1.2.0,knapsack-java-ortools=v1.2.0`"
         required: true
 
 permissions:
@@ -37,6 +34,9 @@ jobs:
       ROLE: ${{ secrets.AWS_DEVTOOLS_ROLE }}
       REGION: ${{ secrets.AWS_REGION }}
       GH_TOKEN: ${{ github.token }}
+      API_ENDPOINT: ${{ secrets.API_ENDPOINT }}
+      CONSOLE_URL: ${{ secrets.CONSOLE_URL }}
+      MARKETPLACE_API_KEY: ${{ secrets.MARKETPLACE_API_KEY }}
       SSH_AUTH_SOCK: /tmp/ssh_agent.sock
     permissions:
       id-token: write
@@ -58,6 +58,10 @@ jobs:
           git config --global user.signingkey ~/.ssh/signing.key
 
           git clone git@github.com:nextmv-io/community-apps.git
+          cd community-apps
+          git fetch --all
+          git checkout ${{ github.ref_name }}
+          git pull
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -70,15 +74,38 @@ jobs:
           pip install -r requirements.txt
         working-directory: ./community-apps/.nextmv
 
-      - name: Configure AWS credentials
+      - name: Set up AWS CLI
         uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: ${{ env.ROLE }}
           aws-region: ${{ env.REGION }}
           role-duration-seconds: 1200
 
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+          cache: "maven"
+
+      - name: Install Nextmv CLI
+        run: |
+          export NEXTMV_API_KEY=$MARKETPLACE_API_KEY
+          export NEXTMV_BASE_URL=https://$API_ENDPOINT
+          curl -sS "https://$CONSOLE_URL/install-cli.txt" | bash -
+
+      - name: Set up Nextmv CLI
+        run: |
+          export PATH=$PATH:~/.nextmv # Make CLI available in non-interactive shell
+          nextmv configure \
+            --api-key $MARKETPLACE_API_KEY \
+            -e $API_ENDPOINT
+          nextmv activate
+          nextmv sdk install
+
       - name: Upload apps and update manifest
         run: |
+          export PATH=$PATH:~/.nextmv # Make CLI available in non-interactive shell
           python update_apps.py \
             --apps "${{ inputs.APPS }}" \
             --bucket "${{ env.BUCKET }}" \
