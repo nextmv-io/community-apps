@@ -114,6 +114,7 @@ jobs:
         working-directory: ./community-apps/.nextmv
 
       - name: Commit new versions
+        if: ${{ github.ref_name == 'develop' && inputs.TARGET_ENVIRONMENT == 'prod' }}
         run: |
           git add */VERSION
           git commit -S -m "Bump app versions: ${{ inputs.APPS }}"
