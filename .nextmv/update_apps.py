@@ -284,6 +284,7 @@ def update_manifest(
 
     name = app["name"]
     version = app["version"]
+    workflow_info = app_workflow_info(name)
 
     new = copy.deepcopy(old)
     if new == {}:
@@ -296,6 +297,7 @@ def update_manifest(
         if name == manifest_app["name"]:
             versions = manifest_app["versions"]
             manifest_app["latest"] = version
+            manifest_app["description"] = workflow_info["description"]
             if version not in versions:
                 versions.append(version)
 
@@ -303,9 +305,9 @@ def update_manifest(
             break
 
     if not found:
-        workflow_info = app_workflow_info(name)
         manifest_apps.append(
             {
+                "description": workflow_info["description"],
                 "latest": version,
                 "name": name,
                 "type": workflow_info["type"],

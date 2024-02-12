@@ -1,61 +1,75 @@
 apps:
+  - name: cost-flow-ortools
+    type: python
+    app_id:
+    marketplace_app_id:
+    description: Solve a cost-flow problem using Google OR-Tools in Python.
   - name: knapsack-gosdk
     type: go
     sdk_version: latest
     app_id: knapsack-gosdk
     marketplace_app_id: knapsack.gosdk
+    description: Solve a knapsack problem using the Nextmv Go SDK.
   - name: knapsack-java-ortools
     type: java
     app_id: knapsack-jortools
     marketplace_app_id: knapsack.jortools
+    description: Solve a knapsack problem using Google OR-Tools in Java.
   - name: knapsack-ortools
     type: python
     app_id: knapsack-ortools
     marketplace_app_id: knapsack.ortools
+    description: Solve a knapsack problem using Google OR-Tools in Python.
   - name: knapsack-pyomo
     type: python
     app_id: knapsack-pyomo
     marketplace_app_id: knapsack.pyomo
+    description: Solve a knapsack problem using Pyomo.
   - name: nextroute
     type: go
     sdk_version: latest
     app_id: nextroute
     marketplace_app_id: nextroute
+    description: Solve a vehicle routing problem using Nextmv’s Nextroute.
   - name: order-fulfillment-gosdk
     type: go
     sdk_version: latest
     app_id: order-fulfill-gosdk
     marketplace_app_id: order.fulfill.gosdk
+    description: Solve an order fulfillment problem using the Nextmv Go SDK.
   - name: routing-ortools
     type: python
     app_id: routing-ortools
     marketplace_app_id: routing.ortools
+    description: Solve a vehicle routing problem using Google OR-Tools in Python.
   - name: shift-assignment-ortools
     type: python
     app_id: shift-assign-ortools
     marketplace_app_id: shift.assign.ortools
+    description: Solve a shift assignment problem using Google OR-Tools in Python.
   - name: shift-assignment-pyomo
     type: python
     app_id: shift-assign-pyomo
     marketplace_app_id: shift.assign.pyomo
+    description: Solve a shift assignment problem using Pyomo.
   - name: shift-planning-ortools
     type: python
     app_id: shift-plan-ortools
     marketplace_app_id: shift.plan.ortools
+    description: Solve a shift planning problem using Google OR-Tools in Python.
   - name: shift-planning-pyomo
     type: python
     app_id: shift-plan-pyomo
     marketplace_app_id: shift.plan.pyomo
+    description: Solve a shift planning problem using Pyomo.
   - name: shift-scheduling-gosdk
     type: go
     sdk_version: latest
     app_id: shift-scheduling
     marketplace_app_id: shift.scheduling
+    description: Solve a shift scheduling problem using the Nextmv Go SDK.
   - name: xpress
     type: python
     app_id:
     marketplace_app_id:
-  - name: cost-flow-ortools
-    type: python
-    app_id:
-    marketplace_app_id:
+    description: Solve a knapsack problem using Xpress in Python.
