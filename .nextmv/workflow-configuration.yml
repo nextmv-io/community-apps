@@ -1,8 +1,8 @@
 apps:
   - name: cost-flow-ortools
     type: python
-    app_id:
-    marketplace_app_id:
+    app_id: cost-flow-ortools
+    marketplace_app_id: cost.flow.ortools
     description: Solve a cost-flow problem using Google OR-Tools in Python.
   - name: knapsack-gosdk
     type: go
