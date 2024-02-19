@@ -1,0 +1,213 @@
+"""
+Template for working with AMPL.
+"""
+
+import argparse
+import json
+import sys
+import time
+from typing import Any
+
+from amplpy import AMPL, modules
+
+# Duration parameter for the solver.
+SUPPORTED_PROVIDER_DURATIONS = {
+    "baron": "maxtime",
+    "cbc": "timelimit",
+    "conopt": "maxftime",
+    "copt": "timelimit",
+    "cplex": "timelimit",
+    "gcg": "timelimit",
+    "gurobi": "timelimit",
+    "highs": "timelimit",
+    "ilogcp": "timelimit",
+    "knitro": "maxtime_cpu",
+    "lgo": "timelim",
+    "lindoglobal": "maxtime",
+    "loqo": "timlim",
+    "mosek": "timelimit",
+    "scip": "timelimit",
+    "xpress": "timelimit",
+}
+
+# Status of the solver after optimizing.
+STATUS = [
+    {"lb": 0, "ub": 99, "status": "optimal"},
+    {"lb": 100, "ub": 199, "status": "solved?"},
+    {"lb": 200, "ub": 299, "status": "infeasible"},
+    {"lb": 300, "ub": 399, "status": "unbounded"},
+    {"lb": 400, "ub": 499, "status": "limit"},
+    {"lb": 500, "ub": 599, "status": "failure"},
+]
+
+
+def main() -> None:
+    """Entry point for the template."""
+
+    parser = argparse.ArgumentParser(description="Solve problems with AMPL.")
+    parser.add_argument(
+        "-input",
+        default="",
+        help="Path to input file. Default is stdin.",
+    )
+    parser.add_argument(
+        "-output",
+        default="",
+        help="Path to output file. Default is stdout.",
+    )
+    parser.add_argument(
+        "-duration",
+        default=30,
+        help="Max runtime duration (in seconds). Default is 30.",
+        type=int,
+    )
+    parser.add_argument(
+        "-provider",
+        default="cbc",
+        help="Solver provider. Default is cbc.",
+    )
+    args = parser.parse_args()
+
+    # Activate license.
+    key = read_key()
+    modules.activate(key)
+
+    # Read input "data", solve the problem and write the solution.
+    input_data = read_input(args.input)
+    log("Solving knapsack problem:")
+    log(f"  - items: {len(input_data.get('items', []))}")
+    log(f"  - capacity: {input_data.get('weight_capacity', 0)}")
+    log(f"  - max duration: {args.duration} seconds")
+    solution = solve(input_data, args.duration, args.provider)
+    write_output(args.output, solution)
+
+
+def solve(input_data: dict[str, Any], duration: int, provider: str) -> dict[str, Any]:
+    """Solves the given problem and returns the solution."""
+
+    start_time = time.time()
+
+    # Make sure the provider is supported.
+    if provider not in SUPPORTED_PROVIDER_DURATIONS:
+        raise ValueError(
+            f"Unsupported provider: {provider}. The supported providers are: "
+            f"{', '.join(SUPPORTED_PROVIDER_DURATIONS.keys())}"
+        )
+
+    # Defines the model.
+    ampl = AMPL()
+    ampl.eval(
+        """
+    # Sets
+    set I; # Set of items.
+
+    # Parameters
+    param W >= 0; # Maximum weight capacity.
+    param v {I} >= 0; # Value of each item.
+    param w {I} >= 0; # Weight of each item.
+
+    # Variables
+    var x {I} binary; # 1 if item is selected, 0 otherwise.
+
+    # Objective
+    maximize z: sum {i in I} v[i] * x[i];
+
+    # Constraints
+    s.t. weight_limit: sum {i in I} w[i] * x[i] <= W;
+    """
+    )
+
+    # Sets the solver and options.
+    ampl.option["solver"] = provider
+    ampl.option[f"{provider}_options"] = f"{SUPPORTED_PROVIDER_DURATIONS[provider]}={duration}"
+    ampl.option["solver_msg"] = 0
+    ampl.option["outlev"] = 0
+
+    # Set the data on the model.
+    ampl.set["I"] = [item["id"] for item in input_data["items"]]
+    ampl.param["W"] = input_data["weight_capacity"]
+    ampl.param["v"] = {item["id"]: item["value"] for item in input_data["items"]}
+    ampl.param["w"] = {item["id"]: item["weight"] for item in input_data["items"]}
+
+    # Solves the problem.
+    ampl.solve()
+
+    # Convert to solution format.
+    value = ampl.get_objective("z")
+    chosen_items = []
+    if value:
+        chosen_items = [item for item in input_data["items"] if ampl.get_variable("x")[item["id"]].value() > 0.9]
+
+    solve_result = ampl.solve_result_num
+    status = "unknown"
+    for s in STATUS:
+        lb = s.get("lb")
+        ub = s.get("ub")
+        if lb is not None and ub is not None and lb <= solve_result <= ub:
+            status = s.get("status")
+            break
+
+    # Creates the statistics.
+    statistics = {
+        "result": {
+            "custom": {
+                "constraints": ampl.get_constraints().size(),
+                "provider": provider,
+                "status": status,
+                "variables": ampl.get_variables().size(),
+            },
+            "duration": ampl.get_value("_total_solve_time"),
+            "value": value.value(),
+        },
+        "run": {
+            "duration": time.time() - start_time,
+        },
+        "schema": "v1",
+    }
+
+    return {
+        "solutions": [{"items": chosen_items}],
+        "statistics": statistics,
+    }
+
+
+def log(message: str) -> None:
+    """Logs a message. We need to use stderr since stdout is used for the
+    solution."""
+
+    print(message, file=sys.stderr)
+
+
+def read_input(input_path) -> dict[str, Any]:
+    """Reads the input from stdin or a given input file."""
+
+    input_file = {}
+    if input_path:
+        with open(input_path, encoding="utf-8") as file:
+            input_file = json.load(file)
+    else:
+        input_file = json.load(sys.stdin)
+
+    return input_file
+
+
+def write_output(output_path, output) -> None:
+    """Writes the output to stdout or a given output file."""
+
+    content = json.dumps(output, indent=2)
+    if output_path:
+        with open(output_path, "w", encoding="utf-8") as file:
+            file.write(content + "\n")
+    else:
+        print(content)
+
+
+def read_key() -> str:
+    """Reads the key needed to authenticate from a KEY file."""
+
+    with open("KEY") as file:
+        return file.read().strip()
+
+
+if __name__ == "__main__":
+    main()

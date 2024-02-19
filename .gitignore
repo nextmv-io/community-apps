@@ -168,3 +168,9 @@ go.work.sum
 
 # Java stuff
 main.jar
+
+# Secrets
+KEY
+
+# Outputs
+*output*
