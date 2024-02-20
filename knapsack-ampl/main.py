@@ -74,10 +74,10 @@ def main() -> None:
 
     # Read input "data", solve the problem and write the solution.
     input_data = read_input(args.input)
-    log("Solving knapsack problem:")
-    log(f"  - items: {len(input_data.get('items', []))}")
-    log(f"  - capacity: {input_data.get('weight_capacity', 0)}")
-    log(f"  - max duration: {args.duration} seconds")
+    # log("Solving knapsack problem:")
+    # log(f"  - items: {len(input_data.get('items', []))}")
+    # log(f"  - capacity: {input_data.get('weight_capacity', 0)}")
+    # log(f"  - max duration: {args.duration} seconds")
     solution = solve(input_data, args.duration, args.provider)
     write_output(args.output, solution)
 

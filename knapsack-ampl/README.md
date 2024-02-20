@@ -1,12 +1,11 @@
-# Nextmv OR-Tools Python template
+# Nextmv AMPL Python template
 
 This template demonstrates how to solve a Mixed Integer Programming problem
-using the open source software suite [OR-Tools][or-tools].
+using the AMPL Python package [amplpy][amplpy].
 
 To solve a Mixed Integer Problem (MIP) is to optimize a linear objective
 function of many variables, subject to linear constraints. We demonstrate this
-by solving the knapsack problem using the [integer
-optimzation][integer-optimization] interface.
+by solving the knapsack problem.
 
 Knapsack is a classic combinatorial optimization problem. Given a collection of
 items with a value and weight, our objective is to maximize the total value
@@ -15,10 +14,14 @@ without exceeding the weight capacity of the knapsack.
 The input defines a number of items which have an id to identify the item, a
 weight and a value. Additionally there is a weight capacity.
 
-The most important files created are `main.py` and `input.json`.
+The most important files created are `main.py`, `input.json`, and
+`KEY.template`.
 
 * `main.py` implements a MIP knapsack solver.
 * `input.json` is a sample input file.
+* `KEY.template` is a file demonstrating how to use the AMPL UUID license key.
+  Copy this file into a `KEY` file and replace the contents with your actual
+  license key.
 
 Follow these steps to run locally.
 
@@ -28,13 +31,14 @@ Follow these steps to run locally.
     pip3 install -r requirements.txt
     ```
 
-1. Run the command below to check that everything works as expected:
+2. Run the command below to check that everything works as expected:
 
     ```bash
-    python3 main.py -input input.json -output output.json -duration 30
+    python3 main.py -input input.json -output output.json \
+      -duration 30 -provider cbc
     ```
 
-1. A file `output.json` should have been created with the optimal knapsack
+3. A file `output.json` should have been created with the optimal knapsack
    solution.
 
 ## Next steps
@@ -45,5 +49,4 @@ Follow these steps to run locally.
   our [documentation site](https://docs.nextmv.io).
 * Need more assistance? Send us an [email](mailto:support@nextmv.io)!
 
-[or-tools]: https://developers.google.com/optimization
-[integer-optimization]: https://developers.google.com/optimization/mip
+[amplpy]: https://amplpy.ampl.com/en/latest/?_gl=1*16ca5pw*_ga*Nzk4OTUwMDgwLjE3MDgzNTIzMzg.*_ga_FY84K2YRRE*MTcwODQ0NTgwMy42LjEuMTcwODQ0NTgzOC4wLjAuMA..
