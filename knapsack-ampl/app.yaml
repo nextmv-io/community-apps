@@ -5,4 +5,4 @@ runtime: ghcr.io/nextmv-io/runtime/ampl:latest
 # (e.g.: configs/*.json) is supported.
 files:
   - main.py
-  - KEY # Store your license UUID here.
+  - KEY # Store your license information here.
