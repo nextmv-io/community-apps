@@ -20,8 +20,8 @@ The most important files created are `main.py`, `input.json`, and
 * `main.py` implements a MIP knapsack solver.
 * `input.json` is a sample input file.
 * `KEY.template` is a file demonstrating how to use the AMPL UUID license key.
-  Copy this file into a `KEY` file and replace the contents with your actual
-  license key.
+  Remove the `.template` extension and replace the contents with your actual
+  license key to be left with a file named `KEY`.
 
 Follow these steps to run locally.
 

@@ -8,24 +8,14 @@ import sys
 import time
 from typing import Any
 
-from amplpy import AMPL, modules
+from amplpy import AMPL, ErrorHandler, OutputHandler, modules
 
 # Duration parameter for the solver.
 SUPPORTED_PROVIDER_DURATIONS = {
-    "baron": "maxtime",
-    "cbc": "timelimit",
-    "conopt": "maxftime",
     "copt": "timelimit",
-    "cplex": "timelimit",
-    "gcg": "timelimit",
     "gurobi": "timelimit",
     "highs": "timelimit",
-    "ilogcp": "timelimit",
-    "knitro": "maxtime_cpu",
     "lgo": "timelim",
-    "lindoglobal": "maxtime",
-    "loqo": "timlim",
-    "mosek": "timelimit",
     "scip": "timelimit",
     "xpress": "timelimit",
 }
@@ -39,6 +29,28 @@ STATUS = [
     {"lb": 400, "ub": 499, "status": "limit"},
     {"lb": 500, "ub": 599, "status": "failure"},
 ]
+
+
+class CollectOutput(OutputHandler):
+    def __init__(self):
+        self.buffer = ""
+
+    def output(self, kind, msg):
+        self.buffer += msg
+
+
+output_handler = CollectOutput()
+
+
+class CollectWarnings(ErrorHandler):
+    def __init__(self):
+        self.buffer = ""
+
+    def warning(self, exception):
+        self.buffer += str(exception)
+
+
+error_handler = CollectWarnings()
 
 
 def main() -> None:
@@ -74,10 +86,10 @@ def main() -> None:
 
     # Read input "data", solve the problem and write the solution.
     input_data = read_input(args.input)
-    # log("Solving knapsack problem:")
-    # log(f"  - items: {len(input_data.get('items', []))}")
-    # log(f"  - capacity: {input_data.get('weight_capacity', 0)}")
-    # log(f"  - max duration: {args.duration} seconds")
+    log("Solving knapsack problem:")
+    log(f"  - items: {len(input_data.get('items', []))}")
+    log(f"  - capacity: {input_data.get('weight_capacity', 0)}")
+    log(f"  - max duration: {args.duration} seconds")
     solution = solve(input_data, args.duration, args.provider)
     write_output(args.output, solution)
 
@@ -87,41 +99,35 @@ def solve(input_data: dict[str, Any], duration: int, provider: str) -> dict[str,
 
     start_time = time.time()
 
-    # Make sure the provider is supported.
-    if provider not in SUPPORTED_PROVIDER_DURATIONS:
-        raise ValueError(
-            f"Unsupported provider: {provider}. The supported providers are: "
-            f"{', '.join(SUPPORTED_PROVIDER_DURATIONS.keys())}"
-        )
-
     # Defines the model.
     ampl = AMPL()
+    ampl.set_output_handler(output_handler)
+    ampl.set_error_handler(error_handler)
     ampl.eval(
+        r"""
+        # Sets
+        set I; # Set of items.
+
+        # Parameters
+        param W >= 0; # Maximum weight capacity.
+        param v {I} >= 0; # Value of each item.
+        param w {I} >= 0; # Weight of each item.
+
+        # Variables
+        var x {I} binary; # 1 if item is selected, 0 otherwise.
+
+        # Objective
+        maximize z: sum {i in I} v[i] * x[i];
+
+        # Constraints
+        s.t. weight_limit: sum {i in I} w[i] * x[i] <= W;
         """
-    # Sets
-    set I; # Set of items.
-
-    # Parameters
-    param W >= 0; # Maximum weight capacity.
-    param v {I} >= 0; # Value of each item.
-    param w {I} >= 0; # Weight of each item.
-
-    # Variables
-    var x {I} binary; # 1 if item is selected, 0 otherwise.
-
-    # Objective
-    maximize z: sum {i in I} v[i] * x[i];
-
-    # Constraints
-    s.t. weight_limit: sum {i in I} w[i] * x[i] <= W;
-    """
     )
 
     # Sets the solver and options.
     ampl.option["solver"] = provider
-    ampl.option[f"{provider}_options"] = f"{SUPPORTED_PROVIDER_DURATIONS[provider]}={duration}"
-    ampl.option["solver_msg"] = 0
-    ampl.option["outlev"] = 0
+    if provider in SUPPORTED_PROVIDER_DURATIONS:
+        ampl.option[f"{provider}_options"] = f"{SUPPORTED_PROVIDER_DURATIONS[provider]}={duration}"
 
     # Set the data on the model.
     ampl.set["I"] = [item["id"] for item in input_data["items"]]
@@ -129,8 +135,11 @@ def solve(input_data: dict[str, Any], duration: int, provider: str) -> dict[str,
     ampl.param["v"] = {item["id"]: item["value"] for item in input_data["items"]}
     ampl.param["w"] = {item["id"]: item["weight"] for item in input_data["items"]}
 
-    # Solves the problem.
-    ampl.solve()
+    # Solves the problem. Verbose mode is turned off to avoid printing to
+    # stdout. Only the output should be printed to stdout.
+    ampl.solve(verbose=False)
+    log(f"AMPL output after solving: {output_handler.buffer}")
+    log(f"AMPL errors after solving: {error_handler.buffer}")
 
     # Convert to solution format.
     value = ampl.get_objective("z")
@@ -151,10 +160,10 @@ def solve(input_data: dict[str, Any], duration: int, provider: str) -> dict[str,
     statistics = {
         "result": {
             "custom": {
-                "constraints": ampl.get_constraints().size(),
+                "constraints": ampl.get_value("_ncons"),
                 "provider": provider,
                 "status": status,
-                "variables": ampl.get_variables().size(),
+                "variables": ampl.get_value("_nvars"),
             },
             "duration": ampl.get_value("_total_solve_time"),
             "value": value.value(),
