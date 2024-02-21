@@ -171,6 +171,7 @@ main.jar
 
 # Secrets
 KEY
+gurobi.lic
 
 # Outputs
 *output*
