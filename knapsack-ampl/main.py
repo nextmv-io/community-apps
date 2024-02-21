@@ -80,10 +80,6 @@ def main() -> None:
     )
     args = parser.parse_args()
 
-    # Activate license.
-    key = read_key()
-    modules.activate(key)
-
     # Read input "data", solve the problem and write the solution.
     input_data = read_input(args.input)
     log("Solving knapsack problem:")
@@ -98,6 +94,10 @@ def solve(input_data: dict[str, Any], duration: int, provider: str) -> dict[str,
     """Solves the given problem and returns the solution."""
 
     start_time = time.time()
+
+    # Activate license.
+    key = read_key()
+    modules.activate(key)
 
     # Defines the model.
     ampl = AMPL()
