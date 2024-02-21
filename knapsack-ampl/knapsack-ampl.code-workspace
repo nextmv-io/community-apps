@@ -18,7 +18,7 @@
           "-output",
           "output.json",
           "-provider",
-          "cbc",
+          "highs",
           "-duration",
           "5"
         ]

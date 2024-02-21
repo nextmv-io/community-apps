@@ -75,8 +75,8 @@ def main() -> None:
     )
     parser.add_argument(
         "-provider",
-        default="cbc",
-        help="Solver provider. Default is cbc.",
+        default="highs",
+        help="Solver provider. Default is highs.",
     )
     args = parser.parse_args()
 
@@ -126,7 +126,7 @@ def solve(input_data: dict[str, Any], duration: int, provider: str) -> dict[str,
 
     # Sets the solver and options.
     ampl.option["solver"] = provider
-    if provider in SUPPORTED_PROVIDER_DURATIONS:
+    if provider in SUPPORTED_PROVIDER_DURATIONS.keys():
         ampl.option[f"{provider}_options"] = f"{SUPPORTED_PROVIDER_DURATIONS[provider]}={duration}"
 
     # Set the data on the model.
