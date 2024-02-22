@@ -1,1 +1,8 @@
+# OR-Tools packages.
 ortools==9.6.2534
+
+# Other packages.
+nextmv==0.2.1
+numpy==1.26.3
+pandas==2.1.4
+scipy==1.11.2

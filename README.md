@@ -11,31 +11,37 @@ Before starting:
 
 Visit the [docs][docs] for more information.
 
-* [`knapsack-gosdk`][knapsack-gosdk] use the Nextmv Go SDK to solve a knapsack
+* [`cost-flow-ortools`][cost-flow-ortools]: use Python and OR-Tools to solve a
+      cost flow problem.
+* [`knapsack-ampl`][knapsack-ampl]: use Python and AMPL to solve a knapsack
       problem.
-* [`knapsack-java-ortools`][knapsack-java-ortools] use Java and OR-Tools to
-      solve a knapsack problem.
-* [`knapsack-ortools`][knapsack-ortools] use Python and OR-Tools to solve a
+* [`knapsack-gosdk`][knapsack-gosdk]: use the Nextmv Go SDK to solve a knapsack
+      problem.
+* [`knapsack-gurobi`][knapsack-gurobi]: use Python and Gurobi to solve a
       knapsack problem.
-* [`knapsack-pyomo`][knapsack-pyomo] use Python and Pyomo to solve a knapsack
+* [`knapsack-java-ortools`][knapsack-java-ortools]: use Java and OR-Tools to
+      solve a knapsack problem.
+* [`knapsack-ortools`][knapsack-ortools]: use Python and OR-Tools to solve a
+      knapsack problem.
+* [`knapsack-pyomo`][knapsack-pyomo]: use Python and Pyomo to solve a knapsack
       problem.
-* [`nextroute`][nextroute] use the Nextmv Go SDK to solve vehicle routing
+* [`nextroute`][nextroute]: use the Nextmv Go SDK to solve vehicle routing
       problems.
-* [`order-fulfillment-gosdk`][order-fulfillment-gosdk] use the Nextmv Go SDK to
+* [`order-fulfillment-gosdk`][order-fulfillment-gosdk]: use the Nextmv Go SDK to
       solve order fulfillment problems.
-* [`routing-ortools`][routing-ortools] use Python and OR-Tools to solve vehicle
+* [`routing-ortools`][routing-ortools]: use Python and OR-Tools to solve vehicle
       routing problems.
-* [`shift-assignment-ortools`][shift-assignment-ortools] use Python and
+* [`shift-assignment-ortools`][shift-assignment-ortools]: use Python and
       OR-Tools to solve shift assignment problems.
-* [`shift-assignment-pyomo`][shift-assignment-pyomo] use Python and Pyomo to
+* [`shift-assignment-pyomo`][shift-assignment-pyomo]: use Python and Pyomo to
       solve shift assignment problems.
-* [`shift-planning-ortools`][shift-planning-ortools] use Python and OR-Tools to
+* [`shift-planning-ortools`][shift-planning-ortools]: use Python and OR-Tools to
       solve shift planning problems.
-* [`shift-planning-pyomo`][shift-planning-pyomo] use Python and Pyomo to solve
+* [`shift-planning-pyomo`][shift-planning-pyomo]: use Python and Pyomo to solve
       shift planning problems.
-* [`shift-scheduling-gosdk`][shift-scheduling-gosdk] use the Nextmv Go SDK to
+* [`shift-scheduling-gosdk`][shift-scheduling-gosdk]: use the Nextmv Go SDK to
       solve shift scheduling problems.
-* [`xpress`][xpress] use FICO-Xpress to solve various optimization problems.
+* [`xpress`][xpress]: use FICO-Xpress to solve various optimization problems.
       Contains a knapsack problem as an example.
 
 [subscription-apps]: https://nextmv.io/docs/platform/deploy-app/subscription-apps
@@ -43,7 +49,10 @@ Visit the [docs][docs] for more information.
 [docs]: https://nextmv.io/docs
 [signup]: https://cloud.nextmv.io
 
+[cost-flow-ortools]: ./cost-flow-ortools/README.md
+[knapsack-ampl]: ./knapsack-ampl/README.md
 [knapsack-gosdk]: ./knapsack-gosdk/README.md
+[knapsack-gurobi]: ./knapsack-gurobi/README.md
 [knapsack-java-ortools]: ./knapsack-java-ortools/README.md
 [knapsack-ortools]: ./knapsack-ortools/README.md
 [knapsack-pyomo]: ./knapsack-pyomo/README.md
