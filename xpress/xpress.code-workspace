@@ -8,11 +8,18 @@
     "configurations": [
       {
         "name": "Python: Module",
-        "type": "python",
+        "type": "debugpy",
         "request": "launch",
         "module": "main",
         "justMyCode": true,
-        "args": ["-input", "input.json", "-output", "output.json"]
+        "args": [
+          "-input",
+          "input.json",
+          "-output",
+          "output.json",
+          "-duration",
+          "5"
+        ]
       }
     ]
   }
