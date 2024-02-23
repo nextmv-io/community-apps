@@ -35,6 +35,7 @@ ampl-module-xpress==20240115
 # ampl-module-snopt==20211109
 
 # Other packages.
+nextmv==0.2.1
 numpy==1.26.4
 pandas==2.2.0
 scipy==1.12.0

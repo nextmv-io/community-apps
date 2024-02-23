@@ -25,20 +25,23 @@ The most important files created are `main.py`, `input.json`, and
 
 Follow these steps to run locally.
 
-1. Make sure that all the required packages are installed:
+1. The packages listed in the `requirements.txt` file are available when using
+   the runtime specified in the `app.yaml` manifest. This runtime is used when
+   making remote runs. When working locally, make sure that all the required
+   packages are installed:
 
     ```bash
     pip3 install -r requirements.txt
     ```
 
-2. Run the command below to check that everything works as expected:
+1. Run the command below to check that everything works as expected:
 
     ```bash
     python3 main.py -input input.json -output output.json \
       -duration 30 -provider cbc
     ```
 
-3. A file `output.json` should have been created with the optimal knapsack
+1. A file `output.json` should have been created with the optimal knapsack
    solution.
 
 ## Next steps
