@@ -4,10 +4,12 @@ apps:
     app_id: cost-flow-ortools
     marketplace_app_id: cost.flow.ortools
     description: Solve a cost-flow problem using Google OR-Tools in Python.
+  # AMPL is not pushed to Marketplace yet until we decide what is the best
+  # way to handle licensing.
   - name: knapsack-ampl
     type: python
-    app_id: knapsack-ampl
-    marketplace_app_id: knapsack.ampl
+    app_id:
+    marketplace_app_id:
     description: Solve a knapsack problem using AMPL in Python.
   - name: knapsack-gosdk
     type: go
@@ -15,10 +17,12 @@ apps:
     app_id: knapsack-gosdk
     marketplace_app_id: knapsack.gosdk
     description: Solve a knapsack problem using the Nextmv Go SDK.
+  # Gurobi is not pushed to Marketplace yet until we decide what is the best
+  # way to handle licensing.
   - name: knapsack-gurobi
     type: python
-    app_id: knapsack-gurobi
-    marketplace_app_id: knapsack.gurobi
+    app_id:
+    marketplace_app_id:
     description: Solve a knapsack problem using Gurobi in Python.
   - name: knapsack-java-ortools
     type: java
