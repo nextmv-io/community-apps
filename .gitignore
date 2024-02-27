@@ -170,8 +170,10 @@ go.work.sum
 main.jar
 
 # Secrets
-KEY
-gurobi.lic
+ampl_license_uuid*
+!ampl_license_uuid.template
+gurobi.lic*
+!gurobi.lic.template
 
 # Outputs
 *output*

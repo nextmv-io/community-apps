@@ -96,8 +96,8 @@ def solve(input_data: dict[str, Any], duration: int, provider: str) -> dict[str,
     start_time = time.time()
 
     # Activate license.
-    key = read_key()
-    modules.activate(key)
+    license = read_license_uuid()
+    modules.activate(license)
 
     # Defines the model.
     ampl = AMPL()
@@ -211,10 +211,10 @@ def write_output(output_path, output) -> None:
         print(content)
 
 
-def read_key() -> str:
-    """Reads the key needed to authenticate from a KEY file."""
+def read_license_uuid() -> str:
+    """Reads the license needed to authenticate."""
 
-    with open("KEY") as file:
+    with open("ampl_license_uuid") as file:
         return file.read().strip()
 
 
