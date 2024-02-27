@@ -12,13 +12,18 @@ from amplpy import AMPL, ErrorHandler, OutputHandler, modules
 
 # Duration parameter for the solver.
 SUPPORTED_PROVIDER_DURATIONS = {
+    "cbc": "timelimit",
     "copt": "timelimit",
+    "gcg": "timelimit",
     "gurobi": "timelimit",
     "highs": "timelimit",
     "lgo": "timelim",
     "scip": "timelimit",
     "xpress": "timelimit",
 }
+
+# Open source solvers.
+OSS_SOLVERS = ["cbc", "gcg", "gecode", "highs", "scip"]
 
 # Status of the solver after optimizing.
 STATUS = [
@@ -96,8 +101,9 @@ def solve(input_data: dict[str, Any], duration: int, provider: str) -> dict[str,
     start_time = time.time()
 
     # Activate license.
-    license = read_license_uuid()
-    modules.activate(license)
+    if provider not in OSS_SOLVERS:
+        license = read_license_uuid()
+        modules.activate(license)
 
     # Defines the model.
     ampl = AMPL()
