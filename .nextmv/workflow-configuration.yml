@@ -87,3 +87,13 @@ apps:
     app_id:
     marketplace_app_id:
     description: Solve a knapsack problem using Xpress in Python.
+
+# Main supported language versions.
+language-support:
+  go:
+    version: 1.19.3
+  python:
+    version: 3.11
+  java:
+    version: 21
+    distribution: temurin

@@ -2,7 +2,9 @@
 
 This directory contains functionality for managing community apps.
 
-## Requirements
+## Update Apps
+
+### Requirements
 
 - For Python scripts please install the packages in `requirements.txt`:
 
@@ -10,7 +12,7 @@ This directory contains functionality for managing community apps.
   pip install -r requirements.txt
   ```
 
-## Use
+### Usage
 
 - To update one or more apps. Standing in the `./nextmv` directory, run:
 
@@ -21,3 +23,21 @@ This directory contains functionality for managing community apps.
     -f FOLDER \
     -m MANIFEST_FILE
   ```
+
+## Run README Tests
+
+### Requirements
+
+Make sure the local environment is set according to the associated
+[readme-test workflow](../.github/workflows/readme-test.yml). This encompasses the
+main language versions denoted by [workflow-configuration.yml](workflow-configuration.yml)
+as well. Any additional requirements given by `requirements.txt` files will be
+installed automatically by the script.
+
+### Usage
+
+To run the tests, standing in the `./nextmv` directory, run:
+
+```bash
+python run_readme_tests.py
+```
