@@ -15,7 +15,7 @@ COMMUNITY_APPS=$(find . -mindepth 2 -maxdepth 2 -not -path '*/\.*' -name README.
 
 # Make sure nextmv command is installed & accessible
 echo "🐰 Checking nextmv command"
-export PATH=$PATH:$HOME/.nextmv/nextmv
+export PATH=$PATH:$HOME/.nextmv
 nextmv version
 
 # Iterate over apps.
