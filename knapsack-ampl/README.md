@@ -15,13 +15,13 @@ The input defines a number of items which have an id to identify the item, a
 weight and a value. Additionally there is a weight capacity.
 
 The most important files created are `main.py`, `input.json`, and
-`KEY.template`.
+`ampl_license_uuid.template`.
 
 * `main.py` implements a MIP knapsack solver.
 * `input.json` is a sample input file.
-* `KEY.template` is a file demonstrating how to use the AMPL UUID license key.
-  Remove the `.template` extension and replace the contents with your actual
-  license key to be left with a file named `KEY`.
+* `ampl_license_uuid.template` is a file demonstrating how to use the AMPL UUID
+  license key. Remove the `.template` extension and replace the contents with
+  your actual license key to be left with a file named `ampl_license_uuid`.
 
 Follow these steps to run locally.
 

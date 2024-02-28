@@ -4,9 +4,11 @@
 
 # AMPL packages.
 amplpy==0.13.3
-ampltools==0.7.4
+ampltools==0.7.5
 ampl-module-base==20240126
 ampl-module-copt==20240115
+ampl-module-cbc==20240115
+ampl-module-gcg==20240221
 ampl-module-gecode==20220504
 ampl-module-gokestrel==20211022
 ampl-module-gurobi==20240115
@@ -19,11 +21,9 @@ ampl-module-xpress==20240115
 # These packages are not available for an ARM64 architecture.
 # ampl-module-amplgsl==20231107
 # ampl-module-baron==20230405
-# ampl-module-cbc==20240115
 # ampl-module-coin==20240115
 # ampl-module-conopt==20211109
 # ampl-module-cplex==20240115
-# ampl-module-gcg==20230919
 # ampl-module-gjh==20231111
 # ampl-module-ilogcp==20230228
 # ampl-module-knitro==20240209
@@ -35,7 +35,7 @@ ampl-module-xpress==20240115
 # ampl-module-snopt==20211109
 
 # Other packages.
-nextmv==0.2.1
+nextmv==0.3.0
 numpy==1.26.4
 pandas==2.2.0
 scipy==1.12.0
