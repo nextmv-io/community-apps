@@ -13,6 +13,11 @@ SKIP_APPS="knapsack-ampl knapsack-gurobi"
 # the app name.
 COMMUNITY_APPS=$(find . -mindepth 2 -maxdepth 2 -not -path '*/\.*' -name README.md | xargs -n 1 dirname | xargs -n 1 basename)
 
+# Make sure nextmv command is installed & accessible
+echo "🐰 Checking nextmv command"
+export PATH=$PATH:$HOME/.nextmv/nextmv
+nextmv version
+
 # Iterate over apps.
 for APP in $COMMUNITY_APPS; do
     # Skip specific apps.

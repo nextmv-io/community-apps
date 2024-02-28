@@ -70,6 +70,4 @@ jobs:
 
       # Run tests.
       - name: run tests
-        run: |
-          export PATH=$PATH:$HOME/.nextmv/nextmv
-          bash .nextmv/run_readme_tests.sh
+        run: bash .nextmv/run_readme_tests.sh
