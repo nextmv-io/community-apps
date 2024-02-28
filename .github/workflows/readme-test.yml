@@ -72,4 +72,4 @@ jobs:
       - name: run tests
         run: |
           export PATH=$PATH:$HOME/.nextmv/nextmv
-          bash core/scripts/test-community-apps.sh
+          bash .nextmv/run_readme_tests.sh
