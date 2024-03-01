@@ -1,0 +1,73 @@
+# The readme-test workflow runs all commands contained in the README files of the apps.
+name: readme-test
+on:
+  workflow_dispatch:
+  pull_request:
+    types: [opened, ready_for_review]
+jobs:
+  readme-test:
+    runs-on: ubuntu-latest
+    steps:
+      # Checks out the changes.
+      - name: git clone
+        uses: actions/checkout@v4
+        with:
+          lfs: true
+
+      # Determine main language versions we support.
+      - name: set python and go versions
+        run: |
+          export GO_VERSION=$(yq '.language-support.go.version' workflow-configuration.yml)
+          echo "This is the Go version => $GO_VERSION"
+          echo "GO_VERSION=${GO_VERSION}" >> $GITHUB_ENV
+          export PYTHON_VERSION=$(yq '.language-support.python.version' workflow-configuration.yml)
+          echo "This is the Python version => $PYTHON_VERSION"
+          echo "PYTHON_VERSION=${PYTHON_VERSION}" >> $GITHUB_ENV
+          export JAVA_VERSION=$(yq '.language-support.java.version' workflow-configuration.yml)
+          echo "This is the Java version => $JAVA_VERSION"
+          echo "JAVA_VERSION=${JAVA_VERSION}" >> $GITHUB_ENV
+          export JAVA_DISTRIBUTION=$(yq '.language-support.java.distribution' workflow-configuration.yml)
+          echo "This is the Java distribution => $JAVA_DISTRIBUTION"
+          echo "JAVA_DISTRIBUTION=${JAVA_DISTRIBUTION}" >> $GITHUB_ENV
+        working-directory: .nextmv/
+
+      # Set up Go, Python, and Java according to previously determined versions.
+      - name: set up go
+        uses: actions/setup-go@v5
+        with:
+          go-version: ${{ env.GO_VERSION }}
+          cache-dependency-path: "**/*.sum"
+      - name: set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: "pip"
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: ${{ env.JAVA_DISTRIBUTION }}
+          java-version: ${{ env.JAVA_VERSION }}
+          cache: "maven"
+
+      # Install further custom dependencies for some apps.
+      - name: Install custom dependencies
+        run: |
+          sudo apt-get update
+          echo "Installing pyomo dependencies"
+          sudo apt-get install -y coinor-cbc coinor-libcbc-dev
+          sudo apt-get install -y glpk-utils
+
+      # Install nextmv CLI (used to install plugins).
+      - name: install nextmv plugins
+        run: |
+          export NEXTMV_API_KEY=${{ secrets.API_KEY_PROD }}
+          export NEXTMV_BASE_URL=https://api.cloud.nextmv.io
+          curl -sS "https://cloud.nextmv.io/install-cli.txt" | bash -
+          ~/.nextmv/nextmv configure -a $NEXTMV_API_KEY
+          ~/.nextmv/nextmv activate
+          ~/.nextmv/nextmv version
+          ~/.nextmv/nextmv sdk install
+
+      # Run tests.
+      - name: run tests
+        run: bash .nextmv/run_readme_tests.sh
