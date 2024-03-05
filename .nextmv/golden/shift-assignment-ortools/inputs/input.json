@@ -1,0 +1,138 @@
+{
+  "workers": [
+    {
+      "id": "Louis Hardy",
+      "qualifications": ["welding"],
+      "rules": "standard",
+      "preferences": {
+        "welder_monday-early": 1,
+        "welder_monday-late": 1
+      },
+      "availability": [
+        {
+          "start_time": "2023-11-20T00:00:00+02:00",
+          "end_time": "2023-11-21T00:00:00+02:00"
+        },
+        {
+          "start_time": "2023-11-21T00:00:00+02:00",
+          "end_time": "2023-11-22T00:00:00+02:00"
+        }
+      ]
+    },
+    {
+      "id": "Jacob Cunningham",
+      "qualifications": ["welding"],
+      "rules": "standard",
+      "preferences": {
+        "welder_monday-early": 1,
+        "normal_monday-early": 1
+      },
+      "availability": [
+        {
+          "start_time": "2023-11-20T00:00:00+02:00",
+          "end_time": "2023-11-21T00:00:00+02:00"
+        },
+        {
+          "start_time": "2023-11-21T00:00:00+02:00",
+          "end_time": "2023-11-22T00:00:00+02:00"
+        }
+      ]
+    },
+    {
+      "id": "Ray Heard",
+      "qualifications": ["welding"],
+      "rules": "standard",
+      "preferences": {
+        "welder_monday-early": 1,
+        "normal_monday-early": 1
+      },
+      "availability": [
+        {
+          "start_time": "2023-11-20T00:00:00+02:00",
+          "end_time": "2023-11-21T00:00:00+02:00"
+        },
+        {
+          "start_time": "2023-11-21T00:00:00+02:00",
+          "end_time": "2023-11-22T00:00:00+02:00"
+        }
+      ]
+    },
+    {
+      "id": "Mark Leath",
+      "qualifications": [],
+      "rules": "standard",
+      "preferences": {
+        "normal_monday-late": 1
+      },
+      "availability": [
+        {
+          "start_time": "2023-11-20T00:00:00+02:00",
+          "end_time": "2023-11-21T00:00:00+02:00"
+        },
+        {
+          "start_time": "2023-11-21T00:00:00+02:00",
+          "end_time": "2023-11-22T00:00:00+02:00"
+        }
+      ]
+    },
+    {
+      "id": "Dylan Mccormack",
+      "qualifications": [],
+      "rules": "standard",
+      "availability": [
+        {
+          "start_time": "2023-11-20T00:00:00+02:00",
+          "end_time": "2023-11-21T00:00:00+02:00"
+        },
+        {
+          "start_time": "2023-11-21T00:00:00+02:00",
+          "end_time": "2023-11-22T00:00:00+02:00"
+        }
+      ]
+    }
+  ],
+  "rules": [
+    {
+      "id": "standard",
+      "min_rest_hours_between_shifts": 11
+    }
+  ],
+  "shifts": [
+    {
+      "id": "welder_monday-early",
+      "shift_id": "welder",
+      "time_id": "monday-early",
+      "start_time": "2023-11-20T06:00:00+02:00",
+      "end_time": "2023-11-20T14:00:00+02:00",
+      "qualification": "welding",
+      "count": 1
+    },
+    {
+      "id": "welder_monday-late",
+      "shift_id": "welder",
+      "time_id": "monday-late",
+      "start_time": "2023-11-20T14:00:00+02:00",
+      "end_time": "2023-11-20T22:00:00+02:00",
+      "qualification": "welding",
+      "count": 1
+    },
+    {
+      "id": "normal_monday-early",
+      "shift_id": "normal",
+      "time_id": "monday-early",
+      "start_time": "2023-11-20T06:00:00+02:00",
+      "end_time": "2023-11-20T14:00:00+02:00",
+      "qualification": "",
+      "count": 2
+    },
+    {
+      "id": "normal_monday-late",
+      "shift_id": "normal",
+      "time_id": "monday-late",
+      "start_time": "2023-11-20T14:00:00+02:00",
+      "end_time": "2023-11-20T22:00:00+02:00",
+      "qualification": "",
+      "count": 1
+    }
+  ]
+}

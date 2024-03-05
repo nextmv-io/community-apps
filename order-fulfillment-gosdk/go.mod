@@ -1,8 +1,14 @@
 module example.com/your_project/order-fulfillment-gosdk
 
-go 1.19
+go 1.21
 
-require github.com/nextmv-io/sdk v1.2.0
+toolchain go1.22.0
+
+require (
+	github.com/nextmv-io/go-highs v0.0.0-20240223130259-9fd2d9190f18
+	github.com/nextmv-io/go-mip v0.0.0-20240221135914-bf2265519acb
+	github.com/nextmv-io/sdk v1.3.1-0.20240220144909-88ba9907052f
+)
 
 require (
 	github.com/danielgtaylor/huma v1.14.1 // indirect

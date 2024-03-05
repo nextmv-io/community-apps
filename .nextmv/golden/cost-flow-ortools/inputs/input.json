@@ -1,0 +1,51 @@
+{
+  "projects": [
+    {
+      "id": "project-1",
+      "required_skills": ["programming"],
+      "value": 3000,
+      "required_time": 2
+    },
+    {
+      "id": "project-2",
+      "required_skills": ["programming", "design"],
+      "value": 4500,
+      "required_time": 4
+    },
+    {
+      "id": "project-3",
+      "required_skills": ["design"],
+      "value": 3500,
+      "required_time": 3
+    },
+    {
+      "id": "project-4",
+      "required_skills": ["design"],
+      "value": 2450,
+      "required_time": 2
+    },
+    {
+      "id": "project-5",
+      "required_skills": ["programming"],
+      "value": 4000,
+      "required_time": 5
+    }
+  ],
+  "workers": [
+    {
+      "id": "worker-1",
+      "skills": ["programming"],
+      "available_time": 3
+    },
+    {
+      "id": "worker-2",
+      "skills": ["programming", "design"],
+      "available_time": 9
+    },
+    {
+      "id": "worker-3",
+      "skills": ["design"],
+      "available_time": 4
+    }
+  ]
+}

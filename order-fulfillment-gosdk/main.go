@@ -8,8 +8,9 @@ import (
 	"log"
 	"math"
 
+	"github.com/nextmv-io/go-highs"
+	"github.com/nextmv-io/go-mip"
 	"github.com/nextmv-io/sdk"
-	"github.com/nextmv-io/sdk/mip"
 	"github.com/nextmv-io/sdk/model"
 	"github.com/nextmv-io/sdk/run"
 	"github.com/nextmv-io/sdk/run/schema"
@@ -418,10 +419,7 @@ func solver(_ context.Context, i input, opts options) (schema.Output, error) {
 	}
 
 	// We create a solver using the 'highs' provider.
-	solver, err := mip.NewSolver("highs", m)
-	if err != nil {
-		return schema.Output{}, err
-	}
+	solver := highs.NewSolver(m)
 
 	// We create the solve options we will use.
 	solveOptions := mip.SolveOptions{}
