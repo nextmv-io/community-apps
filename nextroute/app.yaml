@@ -1,4 +1,3 @@
 # This manifest holds the information the app needs to run on the Nextmv Cloud.
-type: sdk
-features:
-  - sdk
+type: go
+runtime: ghcr.io/nextmv-io/runtime/default:latest
