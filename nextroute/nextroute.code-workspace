@@ -4,9 +4,6 @@
       "path": "."
     }
   ],
-  "settings": {
-    "go.goroot": "~/.nextmv/go"
-  },
   "launch": {
     "configurations": [
       {
@@ -14,18 +11,7 @@
         "type": "go",
         "request": "launch",
         "mode": "auto",
-        // this has to point the directory (NOT the file or debugging
-        // won't work!) which contains the file which has the main
-        // method
         "program": "${workspaceFolder}",
-        "substitutePath": [
-          {
-            "from": "${workspaceFolder}",
-            // this has to match the module name
-            "to": "example.com/your_project/nextroute"
-          }
-        ],
-        "buildFlags": "-trimpath -tags=debug",
         "args": [
           "-runner.input.path",
           "input.json",
