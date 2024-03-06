@@ -2,7 +2,7 @@ module apps-golden-file-tests
 
 go 1.22.0
 
-require github.com/nextmv-io/sdk v1.3.1-0.20240306043258-f998ee7b8b5d
+require github.com/nextmv-io/sdk v1.3.1-0.20240306052119-2e1ec3a04773
 
 require (
 	github.com/sergi/go-diff v1.3.1 // indirect
