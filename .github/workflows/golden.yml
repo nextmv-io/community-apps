@@ -34,26 +34,37 @@ jobs:
               - '.nextmv/golden/${{ matrix.apps.name }}/**'
               - '${{ matrix.apps.name }}/**'
 
+      - name: Confirm matrix inputs
+        run: |
+          echo "Running tests for ${{ matrix.apps.name }}"
+          echo "Language: ${{ matrix.apps.language }}"
+          echo "Language Version: ${{ matrix.apps.language-version }}"
+          echo "Distribution: ${{ matrix.apps.distribution }}"
+          echo "IsPython: ${{ matrix.apps.language == 'python' }}"
+          echo "IsGo: ${{ matrix.apps.language == 'go' }}"
+          echo "IsJava: ${{ matrix.apps.language == 'java' }}"
+          echo "Changes: ${{ steps.changes.outputs.src }}"
+
       - name: Set up Python
-        if: ${{ matrix.apps.language == 'python' }} && steps.changes.outputs.src == 'true'
+        if: ${{ matrix.apps.language == 'python' && steps.changes.outputs.src == 'true' }}
         uses: actions/setup-python@v5
         with:
           python-version: ${{ env.PYTHON_VERSION }}
           cache: "pip"
 
       - name: Install Python dependencies
-        if: ${{ matrix.apps.language == 'python' }} && steps.changes.outputs.src == 'true'
+        if: ${{ matrix.apps.language == 'python' && steps.changes.outputs.src == 'true' }}
         run: |
           pip install -r ${{ matrix.apps.name }}/requirements.txt
 
       - name: Set up Go
-        if: ${{ matrix.apps.language == 'go' }} && steps.changes.outputs.src == 'true'
+        if: ${{ matrix.apps.language == 'go' && steps.changes.outputs.src == 'true' }}
         uses: actions/setup-go@v5
         with:
           go-version: ${{ env.GO_VERSION }}
 
       - name: Set up Java
-        if: ${{ matrix.apps.language == 'java' }} && steps.changes.outputs.src == 'true'
+        if: ${{ matrix.apps.language == 'java' && steps.changes.outputs.src == 'true' }}
         uses: actions/setup-java@v4
         with:
           java-version: ${{ matrix.apps.language-version }}
