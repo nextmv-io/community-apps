@@ -49,7 +49,7 @@ jobs:
         if: ${{ matrix.apps.language == 'python' && steps.changes.outputs.src == 'true' }}
         uses: actions/setup-python@v5
         with:
-          python-version: ${{ env.PYTHON_VERSION }}
+          python-version: ${{ matrix.apps.language-version }}
           cache: "pip"
 
       - name: Install Python dependencies
@@ -61,7 +61,7 @@ jobs:
         if: ${{ matrix.apps.language == 'go' && steps.changes.outputs.src == 'true' }}
         uses: actions/setup-go@v5
         with:
-          go-version: ${{ env.GO_VERSION }}
+          go-version: ${{ matrix.apps.language-version }}
 
       - name: Set up Java
         if: ${{ matrix.apps.language == 'java' && steps.changes.outputs.src == 'true' }}
