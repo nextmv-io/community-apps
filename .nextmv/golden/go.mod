@@ -1,6 +1,6 @@
 module apps-golden-file-tests
 
-go 1.22.0
+go 1.22
 
 require github.com/nextmv-io/sdk v1.3.1-0.20240306052119-2e1ec3a04773
 
