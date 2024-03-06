@@ -31,6 +31,10 @@ func TestGolden(t *testing.T) {
 					Replacement: golden.StableFloat,
 				},
 			},
+			// We ignore stdout here, as it may contain community license
+			// warnings depending on whether a license was set up or not (not
+			// the intention of the test).
+			IgnoreStdOut: true,
 			ExecutionConfig: &golden.ExecutionConfig{
 				Command:    "python3",
 				Args:       []string{"../../../xpress/main.py"},
