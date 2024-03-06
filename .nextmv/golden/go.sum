@@ -4,12 +4,8 @@ github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSs
 github.com/kr/pretty v0.1.0/go.mod h1:dAy3ld7l9f0ibDNOQOHHMYYIIbhfbHSm3C4ZsoJORNo=
 github.com/kr/pty v1.1.1/go.mod h1:pFQYn66WHrOpPYNljwOMqo10TkYh1fy3cYio2l3bCsQ=
 github.com/kr/text v0.1.0/go.mod h1:4Jbv+DJW3UT/LiOwJeYQe1efqtUx/iVham/4vfdArNI=
-github.com/nextmv-io/sdk v1.3.1-0.20240220144909-88ba9907052f h1:OLDqQkL/FK8CX7//qZGa6A4rTnHqUPYBCMmlSupVvOk=
-github.com/nextmv-io/sdk v1.3.1-0.20240220144909-88ba9907052f/go.mod h1:lA3YgE1vdclPwQfPH3jFo76WXx5snk9XOWX2PCMO8cc=
-github.com/nextmv-io/sdk v1.3.1-0.20240304235812-1f27b2e85b5e h1:W5tX1dtmHd0+O1FGGJ7ZTKGr+mpuobo2UXgBIaUdnUQ=
-github.com/nextmv-io/sdk v1.3.1-0.20240304235812-1f27b2e85b5e/go.mod h1:lA3YgE1vdclPwQfPH3jFo76WXx5snk9XOWX2PCMO8cc=
-github.com/nextmv-io/sdk v1.3.1-0.20240305004956-1705e525b4b8 h1:ezD/VcbFw9NepjGzteZJHl8WdmVCxtdYvrOiq7iHWEE=
-github.com/nextmv-io/sdk v1.3.1-0.20240305004956-1705e525b4b8/go.mod h1:lA3YgE1vdclPwQfPH3jFo76WXx5snk9XOWX2PCMO8cc=
+github.com/nextmv-io/sdk v1.3.1-0.20240305021916-90ffd9af09bb h1:Zc/HdWNz3HLswIxXHlE5dezXRtnG4R+VM3jF6hjU/os=
+github.com/nextmv-io/sdk v1.3.1-0.20240305021916-90ffd9af09bb/go.mod h1:lA3YgE1vdclPwQfPH3jFo76WXx5snk9XOWX2PCMO8cc=
 github.com/pmezard/go-difflib v1.0.0 h1:4DBwDE0NGyQoBHbLQYPwSUPoCMWR5BEzIk/f1lZbAQM=
 github.com/pmezard/go-difflib v1.0.0/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZNVY4sRDYZ/4=
 github.com/sergi/go-diff v1.3.1 h1:xkr+Oxo4BOQKmkn/B9eMK0g5Kg/983T9DqqPHwYqD+8=

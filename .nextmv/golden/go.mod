@@ -4,8 +4,6 @@ go 1.22.0
 
 require github.com/nextmv-io/sdk v1.3.1-0.20240305021916-90ffd9af09bb
 
-replace github.com/nextmv-io/sdk => /home/marius/go/src/sdk
-
 require (
 	github.com/sergi/go-diff v1.3.1 // indirect
 	github.com/xeipuuv/gojsonpointer v0.0.0-20190905194746-02993c407bfb // indirect
