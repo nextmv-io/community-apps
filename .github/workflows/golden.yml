@@ -70,6 +70,13 @@ jobs:
           java-version: ${{ matrix.apps.language-version }}
           distribution: ${{ matrix.apps.distribution }}
 
+      - name: Install additional dependencies
+        if: steps.changes.outputs.src == 'true'
+        run: |
+          if [ -f ${{ matrix.apps.name }}/setup.sh ]; then
+            ./${{ matrix.apps.name }}/setup.sh
+          fi
+
       - name: Run tests
         if: steps.changes.outputs.src == 'true'
         run: |
