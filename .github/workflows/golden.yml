@@ -73,7 +73,7 @@ jobs:
       - name: Install additional dependencies
         if: steps.changes.outputs.src == 'true'
         run: |
-          if [ -f ${{ matrix.apps.name }}/setup.sh ]; then
+          if [ -f setup.sh ]; then
             ./setup.sh
           fi
         working-directory: .nextmv/golden/${{ matrix.apps.name }}
