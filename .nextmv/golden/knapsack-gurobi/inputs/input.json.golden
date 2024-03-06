@@ -49,7 +49,7 @@
     "result": {
       "custom": {
         "constraints": 1,
-        "provider": "SCIP",
+        "provider": "gurobi",
         "status": "optimal",
         "variables": 11
       },

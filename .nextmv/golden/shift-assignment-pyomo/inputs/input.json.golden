@@ -10,13 +10,13 @@
         },
         {
           "end_time": "2023-11-20T14:00:00+02:00",
-          "shift_id": "welder_monday-early",
+          "shift_id": "normal_monday-early",
           "start_time": "2023-11-20T06:00:00+02:00",
           "worker_id": "Jacob Cunningham"
         },
         {
           "end_time": "2023-11-20T14:00:00+02:00",
-          "shift_id": "normal_monday-early",
+          "shift_id": "welder_monday-early",
           "start_time": "2023-11-20T06:00:00+02:00",
           "worker_id": "Ray Heard"
         },
@@ -40,7 +40,7 @@
       "custom": {
         "active_workers": 5,
         "constraints": 44,
-        "provider": "SCIP",
+        "provider": "cbc",
         "status": "optimal",
         "total_workers": 5,
         "variables": 20
