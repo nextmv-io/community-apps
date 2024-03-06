@@ -8,8 +8,8 @@ import (
 	"log"
 	"math"
 
-	"github.com/nextmv-io/go-highs"
-	"github.com/nextmv-io/go-mip"
+	highs "github.com/nextmv-io/go-highs"
+	mip "github.com/nextmv-io/go-mip"
 	"github.com/nextmv-io/sdk"
 	"github.com/nextmv-io/sdk/model"
 	"github.com/nextmv-io/sdk/run"

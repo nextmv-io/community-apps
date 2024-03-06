@@ -8,8 +8,8 @@ import (
 	"math"
 	"time"
 
-	"github.com/nextmv-io/go-highs"
-	"github.com/nextmv-io/go-mip"
+	highs "github.com/nextmv-io/go-highs"
+	mip "github.com/nextmv-io/go-mip"
 	"github.com/nextmv-io/go-mip/model"
 	"github.com/nextmv-io/sdk/run"
 	"github.com/nextmv-io/sdk/run/schema"
