@@ -74,8 +74,9 @@ jobs:
         if: steps.changes.outputs.src == 'true'
         run: |
           if [ -f ${{ matrix.apps.name }}/setup.sh ]; then
-            ./${{ matrix.apps.name }}/setup.sh
+            ./setup.sh
           fi
+        working-directory: .nextmv/golden/${{ matrix.apps.name }}
 
       - name: Run tests
         if: steps.changes.outputs.src == 'true'
