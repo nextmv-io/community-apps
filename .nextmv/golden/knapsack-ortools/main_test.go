@@ -33,7 +33,7 @@ func TestGolden(t *testing.T) {
 			},
 			ExecutionConfig: &golden.ExecutionConfig{
 				Command:    "python3",
-				Args:       []string{"../../../knapsack-gurobi/main.py"},
+				Args:       []string{"../../../knapsack-ortools/main.py"},
 				InputFlag:  "-input",
 				OutputFlag: "-output",
 			},
