@@ -2,8 +2,6 @@ module example.com/your_project/nextroute
 
 go 1.21
 
-toolchain go1.22.0
-
 require (
 	github.com/nextmv-io/nextroute v0.0.0-20240304154834-a0d98049b5c7
 	github.com/nextmv-io/sdk v1.3.1-0.20240220144909-88ba9907052f

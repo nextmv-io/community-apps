@@ -2,8 +2,6 @@ module example.com/your_project/shift-scheduling-gosdk
 
 go 1.21
 
-toolchain go1.22.0
-
 require (
 	github.com/nextmv-io/go-highs v0.0.0-20240304150021-94d2d68aea08
 	github.com/nextmv-io/go-mip v0.0.0-20240304150015-5953e5a27333

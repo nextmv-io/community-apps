@@ -2,8 +2,6 @@ module example.com/your_project/order-fulfillment-gosdk
 
 go 1.21
 
-toolchain go1.22.0
-
 require (
 	github.com/nextmv-io/go-highs v0.0.0-20240223130259-9fd2d9190f18
 	github.com/nextmv-io/go-mip v0.0.0-20240221135914-bf2265519acb
