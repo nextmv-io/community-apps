@@ -61,23 +61,23 @@ public class Output {
     .mapToDouble(v -> v.getDistance()).sum();
     this.statistics.result.value = solution.value;
     
-    // fill custom section
+    // Fill custom section.
     this.statistics.result.custom = new StatisticsResultCustom();
 
-    // a vehicle is activated if it has at least three stops. The first and last
+    // A vehicle is activated if it has at least three stops. The first and last
     // stop are the depot, so the vehicle has at least one customer stop.
     this.statistics.result.custom.activatedVehicles = (int) vehicles.stream()
         .filter(v -> v.getStops().size() > 3).count();
       
-    // find the vehicle with the maximum route distance
+    // Find the vehicle with the maximum route distance.
     this.statistics.result.custom.maxRouteDistance = (int) vehicles.stream()
         .mapToDouble(v -> v.getDistance()).max().orElse(0);
 
-    // find the vehicle with the maximum number of stops
+    // Find the vehicle with the maximum number of stops.
     this.statistics.result.custom.maxStopsInVehicle = (int) vehicles.stream()
         .mapToDouble(v -> v.getStops().size()-2).max().orElse(0);
 
-    // find the vehicle with the minimum number of stops
+    // Find the vehicle with the minimum number of stops.
     this.statistics.result.custom.minStopsInVehicle = (int) vehicles.stream()
         .mapToDouble(v -> v.getStops().size()-2).min().orElse(0);
   }
