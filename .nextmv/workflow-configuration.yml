@@ -51,6 +51,11 @@ apps:
     app_id: order-fulfill-gosdk
     marketplace_app_id: order.fulfill.gosdk
     description: Solve an order fulfillment problem using the Nextmv Go SDK.
+  - name: routing-java-ortools
+    type: java
+    app_id:
+    marketplace_app_id:
+    description: Solve a vehicle routing problem using Google OR-Tools in Java.
   - name: routing-ortools
     type: python
     app_id: routing-ortools
