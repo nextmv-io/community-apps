@@ -22,8 +22,6 @@ SUPPORTED_PROVIDER_DURATIONS = {
     "xpress": "timelimit",
 }
 
-# Open source solvers.
-OSS_SOLVERS = ["cbc", "gcg", "gecode", "highs", "scip"]
 
 # Status of the solver after optimizing.
 STATUS = [
@@ -101,9 +99,14 @@ def solve(input_data: dict[str, Any], duration: int, provider: str) -> dict[str,
     start_time = time.time()
 
     # Activate license.
-    if provider not in OSS_SOLVERS:
-        license = read_license_uuid()
-        modules.activate(license)
+    modules.activate("nextmv")
+
+    # If you have an AMPL license, uncomment the following block.
+    # try:
+    #     license = read_license_uuid()
+    #     modules.activate(license)
+    # except Exception:
+    #     log("Using default AMPL license for Nextmv")
 
     # Defines the model.
     ampl = AMPL()

@@ -20,8 +20,14 @@ The most important files created are `main.py`, `input.json`, and
 * `main.py` implements a MIP knapsack solver.
 * `input.json` is a sample input file.
 * `ampl_license_uuid.template` is a file demonstrating how to use the AMPL UUID
-  license key. Remove the `.template` extension and replace the contents with
-  your actual license key to be left with a file named `ampl_license_uuid`.
+  license key.
+  * If you have an AMPL license, remove the `.template` extension and replace
+    the contents with your actual license key to be left with a file named
+    `ampl_license_uuid`. Modify the `app.yaml` file to include the
+    `ampl_license_uuid` in the files list.
+  * If you are just testing and don’t have an AMPL license, you don’t need to
+    do anything, as this community app ships with a special license that allows
+    you to test AMPL with some limits.
 
 Follow these steps to run locally.
 
@@ -34,14 +40,14 @@ Follow these steps to run locally.
     pip3 install -r requirements.txt
     ```
 
-1. Run the command below to check that everything works as expected:
+2. Run the command below to check that everything works as expected:
 
     ```bash
     python3 main.py -input input.json -output output.json \
       -duration 30 -provider cbc
     ```
 
-1. A file `output.json` should have been created with the optimal knapsack
+3. A file `output.json` should have been created with the optimal knapsack
    solution.
 
 ## Next steps
