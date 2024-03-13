@@ -5,7 +5,7 @@ be executed on the Nextmv platform.
 
 ## Usage
 
-Java templates in Nextmv require a `main.jar` as an entry point. Running the
+Java apps in Nextmv require a `main.jar` as an entry point. Running the
 following command will generate a `main.jar` in the root direcotry of the
 project.
 

@@ -15,7 +15,7 @@ import java.util.List;
 
 public final class Main {
   public static void main(String[] args) {
-    // record start time of the program
+    // Record start time of the program.
     long startTime = System.currentTimeMillis();
     // Parse arguments. Exit on error.
     Options options = Options.fromArguments(args);
