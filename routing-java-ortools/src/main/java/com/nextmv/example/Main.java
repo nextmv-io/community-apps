@@ -25,7 +25,7 @@ public final class Main {
 
     Loader.loadNativeLibraries();
 
-    // Create Routing Index Manager
+    // Create Routing Index Manager.
     RoutingIndexManager manager = new RoutingIndexManager(input.distanceMatrix.length, input.vehicleNumber,
         input.depot);
 
@@ -43,7 +43,7 @@ public final class Main {
     // Define cost of each arc.
     routing.setArcCostEvaluatorOfAllVehicles(transitCallbackIndex);
 
-    // set the duration of the search
+    // Set the duration of the search.
     Duration duration = Duration.newBuilder().setSeconds(options.getDuration()).build();
 
     // Setting first solution heuristic.
@@ -54,7 +54,7 @@ public final class Main {
         .build();
 
     // Solve the problem.
-    // record solve start time
+    // Record solve start time
     long solveStartTime = System.currentTimeMillis();
     Assignment solution = routing.solveWithParameters(searchParameters);
 
@@ -88,19 +88,19 @@ public final class Main {
       maxRouteDistance = Math.max(routeDistance, maxRouteDistance);
     }
 
-    // compute solve duration
+    // Compute solve duration.
     long endTime = System.currentTimeMillis();
     double duration = endTime - solveStartTime;
-    // convert duration to seconds
+    // Convert duration to seconds.
     duration = duration / 1000.0;
 
-    // compute total duration
+    // Compute total duration.
     endTime = System.currentTimeMillis();
     double runDuration = endTime - startTime;
-    // convert duration to seconds
+    // Convert duration to seconds.
     runDuration = runDuration / 1000.0;
 
-    // create output
+    // Create output.
     return new Output(
         vehicles,
         duration,
