@@ -27,7 +27,7 @@ The most important files created are `main.py`, `input.json`, and
     `ampl_license_uuid` in the files list.
   * If you are just testing and don’t have an AMPL license, you don’t need to
     do anything, as this community app ships with a special license that allows
-    you to test AMPL with some limits.
+    you to test AMPL with limits per AMPL's website.
 
 Follow these steps to run locally.
 
