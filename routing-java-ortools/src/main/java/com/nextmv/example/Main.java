@@ -104,7 +104,6 @@ public final class Main {
     return new Output(
         vehicles,
         duration,
-        runDuration,
-        solution.objectiveValue());
+        runDuration);
   }
 }

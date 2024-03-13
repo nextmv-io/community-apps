@@ -45,19 +45,21 @@ public class Output {
   public Output(
       List<Vehicle> vehicles,
       double duration,
-      double runDuration,
-      double value) {
+      double runDuration) {
     this.solutions = new ArrayList<Solution>();
     Solution solution = new Solution();
     solution.vehicles = vehicles;
-    solution.value = value;
     this.solutions.add(solution);
     this.statistics = new Statistics();
     this.statistics.run = new StatisticsRun();
     this.statistics.run.duration = runDuration;
     this.statistics.result = new StatisticsResult();
-    this.statistics.result.value = value;
     this.statistics.result.duration = duration;
+    
+    // we are using the sum of the route distances as the value
+    solution.value = vehicles.stream()
+    .mapToDouble(v -> v.getDistance()).sum();
+    this.statistics.result.value = solution.value;
     
     // fill custom section
     this.statistics.result.custom = new StatisticsResultCustom();
@@ -69,7 +71,7 @@ public class Output {
       
     // find the vehicle with the maximum route distance
     this.statistics.result.custom.maxRouteDistance = (int) vehicles.stream()
-        .mapToDouble(v -> v.getDistance()-2).max().orElse(0);
+        .mapToDouble(v -> v.getDistance()).max().orElse(0);
 
     // find the vehicle with the maximum number of stops
     this.statistics.result.custom.maxStopsInVehicle = (int) vehicles.stream()
