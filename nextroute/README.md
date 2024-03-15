@@ -12,7 +12,7 @@ definition in `main.go`.
 Run the command below to check that everything works as expected:
 
 ```bash
-nextmv sdk run . -- -runner.input.path input.json \
+go run . -runner.input.path input.json \
   -runner.output.path output.json -solve.duration 10s
 ```
 
