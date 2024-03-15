@@ -6,8 +6,7 @@ apps:
     language: python
     language-version: 3.11
   - name: knapsack-gosdk
-    language: go
-    language-version: 1.22
+    language: go # we always use our main version
   - name: knapsack-gurobi
     language: python
     language-version: 3.11
@@ -22,11 +21,9 @@ apps:
     language: python
     language-version: 3.11
   - name: nextroute
-    language: go
-    language-version: 1.22
+    language: go # we always use our main version
   - name: order-fulfillment-gosdk
-    language: go
-    language-version: 1.22
+    language: go # we always use our main version
   - name: routing-ortools
     language: python
     language-version: 3.11
@@ -43,8 +40,7 @@ apps:
     language: python
     language-version: 3.11
   - name: shift-scheduling-gosdk
-    language: go
-    language-version: 1.22
+    language: go # we always use our main version
   - name: xpress
     language: python
     language-version: 3.11

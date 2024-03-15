@@ -45,6 +45,12 @@ jobs:
           echo "IsJava: ${{ matrix.apps.language == 'java' }}"
           echo "Changes: ${{ steps.changes.outputs.src }}"
 
+      # We always need to set up Go as it is also used by the golden file testing framework
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: 1.22
+
       - name: Set up Python
         if: ${{ matrix.apps.language == 'python' && steps.changes.outputs.src == 'true' }}
         uses: actions/setup-python@v5
@@ -56,12 +62,6 @@ jobs:
         if: ${{ matrix.apps.language == 'python' && steps.changes.outputs.src == 'true' }}
         run: |
           pip install -r ${{ matrix.apps.name }}/requirements.txt
-
-      - name: Set up Go
-        if: ${{ matrix.apps.language == 'go' && steps.changes.outputs.src == 'true' }}
-        uses: actions/setup-go@v5
-        with:
-          go-version: ${{ matrix.apps.language-version }}
 
       - name: Set up Java
         if: ${{ matrix.apps.language == 'java' && steps.changes.outputs.src == 'true' }}
