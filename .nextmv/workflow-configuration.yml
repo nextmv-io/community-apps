@@ -82,7 +82,7 @@ apps:
     description: Solve a shift planning problem using Pyomo.
   - name: shift-scheduling-gosdk
     type: go
-    sdk_version: latest
+    sdk_version: v1.2.0
     app_id: shift-scheduling
     marketplace_app_id: shift.scheduling
     description: Solve a shift scheduling problem using the Nextmv Go SDK.
