@@ -24,9 +24,6 @@ SUPPORTED_PROVIDER_DURATIONS = {
     "xpress": "timelimit",
 }
 
-# Open source solvers.
-OSS_SOLVERS = ["cbc", "gcg", "gecode", "highs", "scip"]
-
 
 # Status of the solver after optimizing.
 STATUS = [
