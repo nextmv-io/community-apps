@@ -70,7 +70,7 @@ jobs:
           export PYTHON_VERSION=$(yq '.language-support.python.version' workflow-configuration.yml)
           echo "This is the Python version => $PYTHON_VERSION"
           echo "PYTHON_VERSION=${PYTHON_VERSION}" >> $GITHUB_ENV
-        working-directory: .nextmv/
+        working-directory: ./community-apps/.nextmv
 
       - name: set up Python
         uses: actions/setup-python@v5
@@ -82,7 +82,7 @@ jobs:
           export GO_VERSION=$(yq '.language-support.go.version' workflow-configuration.yml)
           echo "This is the Go version => $GO_VERSION"
           echo "GO_VERSION=${GO_VERSION}" >> $GITHUB_ENV
-        working-directory: .nextmv/
+        working-directory: ./community-apps/.nextmv
 
       - name: set up go
         uses: actions/setup-go@v5
