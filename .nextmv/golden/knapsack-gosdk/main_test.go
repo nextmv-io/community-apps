@@ -14,6 +14,7 @@ func TestMain(m *testing.M) {
 }
 
 func TestGolden(t *testing.T) {
+	t.Skip("skipping until we have a path forward for go-mip and go-highs")
 	golden.FileTests(
 		t,
 		"inputs",
@@ -34,7 +35,7 @@ func TestGolden(t *testing.T) {
 				Duration: time.Duration(5) * time.Second,
 			},
 			ExecutionConfig: &golden.ExecutionConfig{
-				Command:    "go",
+				Command:    "nextmv",
 				Args:       []string{"run", "."},
 				InputFlag:  "-runner.input.path",
 				OutputFlag: "-runner.output.path",

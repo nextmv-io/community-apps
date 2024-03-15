@@ -8,9 +8,8 @@ import (
 	"math"
 	"time"
 
-	"github.com/nextmv-io/go-highs"
-	"github.com/nextmv-io/go-mip"
-	"github.com/nextmv-io/go-mip/model"
+	"github.com/nextmv-io/sdk/mip"
+	"github.com/nextmv-io/sdk/model"
 	"github.com/nextmv-io/sdk/run"
 	"github.com/nextmv-io/sdk/run/schema"
 )
@@ -31,7 +30,10 @@ func solver(_ context.Context, input input, options options) (out schema.Output,
 	demands := demands(input, potentialAssignments)
 	m, x := newMIPModel(input, potentialAssignments, potentialAssignmentsPerWorker, demands, options)
 
-	solver := highs.NewSolver(m)
+	solver, err := mip.NewSolver(mip.Highs, m)
+	if err != nil {
+		return schema.Output{}, err
+	}
 
 	solution, err := solver.Solve(options.Solve)
 	if err != nil {
@@ -95,7 +97,7 @@ func newMIPModel(
 		}, input.RequiredWorkers)
 
 	overSupplySlack := model.NewMultiMap(
-		func(_ ...requiredWorker) mip.Float {
+		func(demand ...requiredWorker) mip.Float {
 			return m.NewFloat(0, math.MaxFloat64)
 		}, input.RequiredWorkers)
 

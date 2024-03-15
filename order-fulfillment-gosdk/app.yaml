@@ -1,6 +1,5 @@
 # This manifest holds the information the app needs to run on the Nextmv Cloud.
-type: go
-runtime: ghcr.io/nextmv-io/runtime/default:latest
-pre-push: GOOS=linux GOARCH=arm64 go build -o main
-files:
-  - main
+type: sdk
+features:
+  - sdk
+  - mip-highs

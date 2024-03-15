@@ -13,6 +13,7 @@ func TestMain(m *testing.M) {
 }
 
 func TestGolden(t *testing.T) {
+	t.Skip("skipping until we have a path forward for go-mip and go-highs")
 	golden.FileTests(
 		t,
 		"inputs",

@@ -3,7 +3,7 @@ package main
 import (
 	"time"
 
-	"github.com/nextmv-io/go-mip"
+	"github.com/nextmv-io/sdk/mip"
 )
 
 // output holds the output data of the solution.
