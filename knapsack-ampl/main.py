@@ -4,8 +4,10 @@ Template for working with AMPL.
 
 import argparse
 import json
+import os
 import sys
 import time
+from platform import uname
 from typing import Any
 
 from amplpy import AMPL, ErrorHandler, OutputHandler, modules
@@ -21,6 +23,9 @@ SUPPORTED_PROVIDER_DURATIONS = {
     "scip": "timelimit",
     "xpress": "timelimit",
 }
+
+# Open source solvers.
+OSS_SOLVERS = ["cbc", "gcg", "gecode", "highs", "scip"]
 
 
 # Status of the solver after optimizing.
@@ -99,14 +104,7 @@ def solve(input_data: dict[str, Any], duration: int, provider: str) -> dict[str,
     start_time = time.time()
 
     # Activate license.
-    modules.activate("nextmv")
-
-    # If you have an AMPL license, uncomment the following block.
-    # try:
-    #     license = read_license_uuid()
-    #     modules.activate(license)
-    # except Exception:
-    #     log("Using default AMPL license for Nextmv")
+    license_used = activate_license()
 
     # Defines the model.
     ampl = AMPL()
@@ -179,6 +177,9 @@ def solve(input_data: dict[str, Any], duration: int, provider: str) -> dict[str,
         },
         "run": {
             "duration": time.time() - start_time,
+            "custom": {
+                "license_used": license_used,
+            },
         },
         "schema": "v1",
     }
@@ -187,6 +188,40 @@ def solve(input_data: dict[str, Any], duration: int, provider: str) -> dict[str,
         "solutions": [{"items": chosen_items}],
         "statistics": statistics,
     }
+
+
+def activate_license() -> str:
+    """
+    Activates de AMPL license based on the use case for the app. If there is a
+    license configured in the file, and it is different from the template
+    message, it activates the license. Otherwise, use a special module if
+    running on Nextmv Cloud. No further action required for testing locally.
+
+    Returns:
+        str: The license that was activated: "license", "nextmv" or
+        "not_activated".
+    """
+
+    # Check if the ampl_license_uuid file exists. NOTE: When running in Nextmv
+    # Cloud with a valid license, make sure to run on a premium execution
+    # class. Contact support for more information.
+    if os.path.isfile("ampl_license_uuid"):
+        with open("ampl_license_uuid") as file:
+            license = file.read().strip()
+
+        # If the license is not the template message, activate it.
+        if license != "secret-key-123":
+            modules.activate(license)
+            return "license"
+
+    # A valid AMPL license has not been configured. When running on Nextmv
+    # Cloud, use a special module.
+    system_info = uname()
+    if system_info.system == "Linux" and "aarch64" in system_info.machine:
+        modules.activate("nextmv")
+        return "nextmv"
+
+    return "demo"
 
 
 def log(message: str) -> None:
@@ -218,13 +253,6 @@ def write_output(output_path, output) -> None:
             file.write(content + "\n")
     else:
         print(content)
-
-
-def read_license_uuid() -> str:
-    """Reads the license needed to authenticate."""
-
-    with open("ampl_license_uuid") as file:
-        return file.read().strip()
 
 
 if __name__ == "__main__":
