@@ -3,11 +3,13 @@ on: [push]
 jobs:
   community-apps-python-lint:
     runs-on: ubuntu-latest
+    env:
+      PYTHON_VERSION: ""
     steps:
       - name: git clone
         uses: actions/checkout@v4
 
-      - name: set python version
+      - name: set Python version
         run: |
           export PYTHON_VERSION=$(yq '.language-support.python.version' workflow-configuration.yml)
           echo "This is the Python version => $PYTHON_VERSION"
