@@ -5,4 +5,4 @@ runtime: ghcr.io/nextmv-io/runtime/gurobi:latest
 # (e.g.: configs/*.json) is supported.
 files:
   - main.py
-  - gurobi.lic # Store your license information here.
+  - gurobi.lic # Store your license information in this file.

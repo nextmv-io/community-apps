@@ -2,7 +2,7 @@
 ortools==9.8.3296
 
 # Other packages.
-nextmv==0.3.0
+nextmv==0.4.0
 numpy==1.26.4
 pandas==2.2.0
 scipy==1.12.0
