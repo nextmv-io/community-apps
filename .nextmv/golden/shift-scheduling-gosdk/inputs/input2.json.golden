@@ -68,6 +68,8 @@
     "schema": "v1"
   },
   "version": {
+    "go-highs": "VERSION",
+    "go-mip": "VERSION",
     "sdk": "VERSION"
   }
 }

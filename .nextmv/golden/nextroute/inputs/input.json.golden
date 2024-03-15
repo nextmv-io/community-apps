@@ -622,6 +622,7 @@
     "schema": "v1"
   },
   "version": {
+    "nextroute": "VERSION",
     "sdk": "VERSION"
   }
 }

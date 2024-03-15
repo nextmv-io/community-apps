@@ -3,9 +3,9 @@ module example.com/your_project/order-fulfillment-gosdk
 go 1.22
 
 require (
-	github.com/nextmv-io/go-highs v0.0.0-20240223130259-9fd2d9190f18
-	github.com/nextmv-io/go-mip v0.0.0-20240221135914-bf2265519acb
-	github.com/nextmv-io/sdk v1.3.1-0.20240220144909-88ba9907052f
+	github.com/nextmv-io/go-highs v1.5.0
+	github.com/nextmv-io/go-mip v1.5.0
+	github.com/nextmv-io/sdk v1.5.0
 )
 
 require (

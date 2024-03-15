@@ -1,4 +1,22 @@
 {
+  "options": {
+    "solve": {
+      "control": {
+        "bool": [],
+        "float": [],
+        "int": [],
+        "string": []
+      },
+      "duration": 3000000000,
+      "mip": {
+        "gap": {
+          "absolute": 0.000001,
+          "relative": 0.0001
+        }
+      },
+      "verbosity": "off"
+    }
+  },
   "solutions": [
     {
       "assignments": [
@@ -15,7 +33,7 @@
           "quantity": 2
         },
         {
-          "carrier_id": "carrier1",
+          "carrier_id": "carrier2",
           "distribution_center_id": "distribution_center_1",
           "item_id": "sneaker",
           "quantity": 1
@@ -36,7 +54,7 @@
           "carrier_id": "carrier1",
           "distribution_center_id": "distribution_center_2",
           "item_id": "hydrating gel",
-          "quantity": 1
+          "quantity": 2
         },
         {
           "carrier_id": "carrier1",
@@ -48,7 +66,7 @@
           "carrier_id": "carrier1",
           "distribution_center_id": "distribution_center_2",
           "item_id": "hydrating gel",
-          "quantity": 5
+          "quantity": 4
         },
         {
           "carrier_id": "carrier1",
@@ -82,8 +100,8 @@
         "distribution_center_2-carrier2": 10
       },
       "cartons": {
-        "distribution_center_1-carrier1": 0.1,
-        "distribution_center_1-carrier2": 0.15000000000000002,
+        "distribution_center_1-carrier1": 0,
+        "distribution_center_1-carrier2": 0.25,
         "distribution_center_2-carrier1": 2.3000000000000003,
         "distribution_center_2-carrier2": 1.9000000000000001
       },
@@ -94,16 +112,16 @@
         "distribution_center_2-carrier2": 4.18
       },
       "dimensional_weights": {
-        "distribution_center_1-carrier1": 0.266,
-        "distribution_center_1-carrier2": 0.42900000000000005,
-        "distribution_center_2-carrier1": 6.118000000000001,
+        "distribution_center_1-carrier1": 0,
+        "distribution_center_1-carrier2": 0.715,
+        "distribution_center_2-carrier1": 6.118,
         "distribution_center_2-carrier2": 5.433999999999999
       },
       "status": "optimal",
       "value": 17.19,
       "volumes": {
-        "distribution_center_1-carrier1": 0.2,
-        "distribution_center_1-carrier2": 0.30000000000000004,
+        "distribution_center_1-carrier1": 0,
+        "distribution_center_1-carrier2": 0.5,
         "distribution_center_2-carrier1": 4.6000000000000005,
         "distribution_center_2-carrier2": 3.8000000000000003
       },
@@ -182,8 +200,8 @@
         }
       },
       "weights": {
-        "distribution_center_1-carrier1": 0.8,
-        "distribution_center_1-carrier2": 0.03,
+        "distribution_center_1-carrier1": 0,
+        "distribution_center_1-carrier2": 0.8300000000000001,
         "distribution_center_2-carrier1": 9.89,
         "distribution_center_2-carrier2": 10
       }
@@ -204,6 +222,8 @@
     "schema": "v1"
   },
   "version": {
+    "go-highs": "VERSION",
+    "go-mip": "VERSION",
     "sdk": "VERSION"
   }
 }

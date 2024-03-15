@@ -23,6 +23,8 @@ func TestGolden(t *testing.T) {
 			},
 			TransientFields: []golden.TransientField{
 				{Key: ".version.sdk", Replacement: golden.StableVersion},
+				{Key: ".version.go-mip", Replacement: golden.StableVersion},
+				{Key: ".version.go-highs", Replacement: golden.StableVersion},
 				{Key: ".statistics.result.duration", Replacement: golden.StableFloat},
 				{Key: ".statistics.run.duration", Replacement: golden.StableFloat},
 			},

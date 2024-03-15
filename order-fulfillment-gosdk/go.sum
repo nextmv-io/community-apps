@@ -303,10 +303,16 @@ github.com/modern-go/reflect2 v1.0.2/go.mod h1:yWuevngMOJpCy52FWWMvUC8ws7m/LJsjY
 github.com/mwitkow/go-conntrack v0.0.0-20161129095857-cc309e4a2223/go.mod h1:qRWi+5nqEBWmkhHvq77mSJWrCKwh8bxhgT7d/eI7P4U=
 github.com/nextmv-io/go-highs v0.0.0-20240223130259-9fd2d9190f18 h1:GgJ+ggkusmiZbHI7o/NQkX/3O13c96Hr4X3sLDDx3O4=
 github.com/nextmv-io/go-highs v0.0.0-20240223130259-9fd2d9190f18/go.mod h1:jFfWdCOe+8AAOGaJq0rXJgoPbh73MrWrWpsjJW/lGyo=
+github.com/nextmv-io/go-highs v1.5.0 h1:NaXZZNEOiMC1yX5onZQzWKQ+fOjsUqN0vtw00mazJ84=
+github.com/nextmv-io/go-highs v1.5.0/go.mod h1:sa7Dem1RDYsUcTkCgzVMFRGvHQc8nkxUNEdubbzK+j0=
 github.com/nextmv-io/go-mip v0.0.0-20240221135914-bf2265519acb h1:rbnGYL3j1PntYuuT/3qfCKjB7Fzdg2mFRx2D2Nm76nA=
 github.com/nextmv-io/go-mip v0.0.0-20240221135914-bf2265519acb/go.mod h1:UJXRxve54GxpHUe3fGsBxlmawA9gpWxwDOS5UqS6Tn4=
+github.com/nextmv-io/go-mip v1.5.0 h1:RN6hnRnDoGoSF8jIb+Ywf7bGALDaVdlKyXsLAO+XK7s=
+github.com/nextmv-io/go-mip v1.5.0/go.mod h1:fy68s6EZAQ47zYHqwZaf6JPQWaJUnOiADRRipn9F6sY=
 github.com/nextmv-io/sdk v1.3.1-0.20240220144909-88ba9907052f h1:OLDqQkL/FK8CX7//qZGa6A4rTnHqUPYBCMmlSupVvOk=
 github.com/nextmv-io/sdk v1.3.1-0.20240220144909-88ba9907052f/go.mod h1:lA3YgE1vdclPwQfPH3jFo76WXx5snk9XOWX2PCMO8cc=
+github.com/nextmv-io/sdk v1.5.0 h1:sbaO/99qq7Yf1FeGZSmbbjWCum9gXE/vnT/fbsCzuf8=
+github.com/nextmv-io/sdk v1.5.0/go.mod h1:4kKTivuXdlx2ky+ZkBeUkTPIc8BTJ0PqKFYF3B+wCy4=
 github.com/opentracing/opentracing-go v1.2.0/go.mod h1:GxEUsuufX4nBwe+T+Wl9TAgYrxe9dPLANfrWvHYVTgc=
 github.com/pascaldekloe/goe v0.0.0-20180627143212-57f6aae5913c/go.mod h1:lzWF7FIEvWOWxwDKqyGYQf6ZUaNfKdP144TG7ZOy1lc=
 github.com/pascaldekloe/goe v0.1.0/go.mod h1:lzWF7FIEvWOWxwDKqyGYQf6ZUaNfKdP144TG7ZOy1lc=
