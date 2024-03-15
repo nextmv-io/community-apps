@@ -1,0 +1,86 @@
+name: golden
+on: [push, workflow_dispatch]
+jobs:
+  create-matrix:
+    runs-on: ubuntu-latest
+    outputs:
+      apps: ${{ steps.apps.outputs.matrix }}
+    steps:
+      - name: git clone
+        uses: actions/checkout@v4
+      - id: apps
+        run: |
+          export MATRIX=$(yq -o json '.' workflow-configuration.yml | jq -c '{"apps": .apps}')
+          echo "matrix=${MATRIX}" >> $GITHUB_OUTPUT
+          echo "This is the matrix" >> $GITHUB_STEP_SUMMARY
+          echo $MATRIX | jq . >> $GITHUB_STEP_SUMMARY
+        working-directory: .nextmv/golden
+
+  golden-file-test:
+    runs-on: ubuntu-latest
+    needs: create-matrix
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJson(needs.create-matrix.outputs.apps) }}
+    steps:
+      - name: git clone
+        uses: actions/checkout@v4
+
+      - uses: dorny/paths-filter@v3
+        id: changes
+        with:
+          filters: |
+            src:
+              - '.nextmv/golden/${{ matrix.apps.name }}/**'
+              - '${{ matrix.apps.name }}/**'
+
+      - name: Confirm matrix inputs
+        run: |
+          echo "Running tests for ${{ matrix.apps.name }}"
+          echo "Language: ${{ matrix.apps.language }}"
+          echo "Language Version: ${{ matrix.apps.language-version }}"
+          echo "Distribution: ${{ matrix.apps.distribution }}"
+          echo "IsPython: ${{ matrix.apps.language == 'python' }}"
+          echo "IsGo: ${{ matrix.apps.language == 'go' }}"
+          echo "IsJava: ${{ matrix.apps.language == 'java' }}"
+          echo "Changes: ${{ steps.changes.outputs.src }}"
+
+      # We always need to set up Go as it is also used by the golden file testing framework
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: 1.22
+
+      - name: Set up Python
+        if: ${{ matrix.apps.language == 'python' && steps.changes.outputs.src == 'true' }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.apps.language-version }}
+          cache: "pip"
+
+      - name: Install Python dependencies
+        if: ${{ matrix.apps.language == 'python' && steps.changes.outputs.src == 'true' }}
+        run: |
+          pip install -r ${{ matrix.apps.name }}/requirements.txt
+
+      - name: Set up Java
+        if: ${{ matrix.apps.language == 'java' && steps.changes.outputs.src == 'true' }}
+        uses: actions/setup-java@v4
+        with:
+          java-version: ${{ matrix.apps.language-version }}
+          distribution: ${{ matrix.apps.distribution }}
+
+      - name: Install additional dependencies
+        if: steps.changes.outputs.src == 'true'
+        run: |
+          if [ -f setup.sh ]; then
+            ./setup.sh
+          fi
+        working-directory: .nextmv/golden/${{ matrix.apps.name }}
+
+      - name: Run tests
+        if: steps.changes.outputs.src == 'true'
+        run: |
+          echo "Running tests for ${{ matrix.apps.name }}"
+          go test -v ./...
+        working-directory: .nextmv/golden/${{ matrix.apps.name }}

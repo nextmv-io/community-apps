@@ -97,7 +97,7 @@ func newMIPModel(
 		}, input.RequiredWorkers)
 
 	overSupplySlack := model.NewMultiMap(
-		func(demand ...requiredWorker) mip.Float {
+		func(_ ...requiredWorker) mip.Float {
 			return m.NewFloat(0, math.MaxFloat64)
 		}, input.RequiredWorkers)
 

@@ -1,0 +1,115 @@
+{
+  "carton_volume": 2.0,
+  "items": [
+    {
+      "item_id": "book",
+      "quantity": 5,
+      "unit_volume": 0.1,
+      "unit_weight": 0.6
+    },
+    {
+      "item_id": "sneaker",
+      "quantity": 2,
+      "unit_volume": 0.2,
+      "unit_weight": 0.8
+    },
+    {
+      "item_id": "hydrating gel",
+      "quantity": 12,
+      "unit_volume": 0.1,
+      "unit_weight": 0.01
+    },
+    {
+      "item_id": "pressure cooker",
+      "quantity": 2,
+      "unit_volume": 0.4,
+      "unit_weight": 1.5
+    },
+    {
+      "item_id": "mattress",
+      "quantity": 2,
+      "unit_volume": 3,
+      "unit_weight": 6.5
+    }
+  ],
+  "distribution_centers": [
+    {
+      "distribution_center_id": "distribution_center_1",
+      "handling_cost": 1,
+      "inventory": {
+        "book": 0,
+        "sneaker": 8,
+        "hydrating gel": 4,
+        "pressure cooker": 3,
+        "mattress": 5
+      }
+    },
+    {
+      "distribution_center_id": "distribution_center_2",
+      "handling_cost": 0.3,
+      "inventory": {
+        "book": 10,
+        "sneaker": 6,
+        "hydrating gel": 9,
+        "pressure cooker": 2,
+        "mattress": 4
+      }
+    }
+  ],
+  "carrier_capacities": {
+    "distribution_center_1": {
+      "carrier1": 10.0,
+      "carrier2": 25.0
+    },
+    "distribution_center_2": {
+      "carrier1": 21.0,
+      "carrier2": 18.0
+    }
+  },
+  "carrier_delivery_costs": {
+    "distribution_center_1": {
+      "carrier1": {
+        "weight_tiers": [
+          2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30
+        ],
+        "weight_rates": [
+          3.73, 3.76, 3.77, 3.77, 3.8, 3.88, 3.96, 4.05, 4.09, 4.11, 4.34, 4.58,
+          4.62, 4.68, 4.69
+        ]
+      },
+      "carrier2": {
+        "weight_tiers": [
+          2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30
+        ],
+        "weight_rates": [
+          3.97, 3.97, 4.07, 4.11, 4.18, 4.32, 4.37, 4.4, 4.52, 4.92, 5.06, 5.11,
+          5.12, 5.33, 5.75
+        ]
+      }
+    },
+    "distribution_center_2": {
+      "carrier1": {
+        "weight_tiers": [
+          2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30
+        ],
+        "weight_rates": [
+          3.73, 3.76, 3.77, 3.77, 3.8, 3.88, 3.96, 4.05, 4.09, 4.11, 4.34, 4.58,
+          4.62, 4.68, 4.69
+        ]
+      },
+      "carrier2": {
+        "weight_tiers": [
+          2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30
+        ],
+        "weight_rates": [
+          3.97, 3.97, 4.07, 4.11, 4.18, 4.32, 4.37, 4.4, 4.52, 4.92, 5.06, 5.11,
+          5.12, 5.33, 5.75
+        ]
+      }
+    }
+  },
+  "carrier_dimensional_weight_factors": {
+    "carrier1": 1.33,
+    "carrier2": 1.43
+  }
+}

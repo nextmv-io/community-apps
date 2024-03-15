@@ -1,0 +1,46 @@
+apps:
+  - name: cost-flow-ortools
+    language: python
+    language-version: 3.11
+  - name: knapsack-ampl
+    language: python
+    language-version: 3.11
+  - name: knapsack-gosdk
+    language: go # we always use our main version
+  - name: knapsack-gurobi
+    language: python
+    language-version: 3.11
+  - name: knapsack-java-ortools
+    language: java
+    language-version: 21
+    distribution: temurin
+  - name: knapsack-ortools
+    language: python
+    language-version: 3.11
+  - name: knapsack-pyomo
+    language: python
+    language-version: 3.11
+  - name: nextroute
+    language: go # we always use our main version
+  - name: order-fulfillment-gosdk
+    language: go # we always use our main version
+  - name: routing-ortools
+    language: python
+    language-version: 3.11
+  - name: shift-assignment-ortools
+    language: python
+    language-version: 3.11
+  - name: shift-assignment-pyomo
+    language: python
+    language-version: 3.11
+  - name: shift-planning-ortools
+    language: python
+    language-version: 3.11
+  - name: shift-planning-pyomo
+    language: python
+    language-version: 3.11
+  - name: shift-scheduling-gosdk
+    language: go # we always use our main version
+  - name: xpress
+    language: python
+    language-version: 3.11

@@ -5,10 +5,10 @@ import (
 	"context"
 	"log"
 
-	"github.com/nextmv-io/sdk/nextroute"
-	"github.com/nextmv-io/sdk/nextroute/check"
-	"github.com/nextmv-io/sdk/nextroute/factory"
-	"github.com/nextmv-io/sdk/nextroute/schema"
+	"github.com/nextmv-io/nextroute"
+	"github.com/nextmv-io/nextroute/check"
+	"github.com/nextmv-io/nextroute/factory"
+	"github.com/nextmv-io/nextroute/schema"
 	"github.com/nextmv-io/sdk/run"
 	runSchema "github.com/nextmv-io/sdk/run/schema"
 )
@@ -47,7 +47,11 @@ func solver(
 	if err != nil {
 		return runSchema.Output{}, err
 	}
-	last := solutions.Last()
+
+	last, err := solutions.Last()
+	if err != nil {
+		return runSchema.Output{}, err
+	}
 
 	output, err := check.Format(
 		ctx,
