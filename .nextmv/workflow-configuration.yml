@@ -41,7 +41,6 @@ apps:
     description: Solve a knapsack problem using Pyomo.
   - name: nextroute
     type: go
-    sdk_version: latest
     app_id: nextroute
     marketplace_app_id: nextroute
     description: Solve a vehicle routing problem using Nextmv’s Nextroute.

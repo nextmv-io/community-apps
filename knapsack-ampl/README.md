@@ -24,10 +24,11 @@ The most important files created are `main.py`, `input.json`, and
   * If you have an AMPL license, remove the `.template` extension and replace
     the contents with your actual license key to be left with a file named
     `ampl_license_uuid`. Modify the `app.yaml` file to include the
-    `ampl_license_uuid` in the files list.
+    `ampl_license_uuid` in the files list. Note: when running on Nextmv Cloud,
+    you should use a premium execution class to use your own AMPL license.
   * If you are just testing and don’t have an AMPL license, you don’t need to
-    do anything, as this community app ships with a special license that allows
-    you to test AMPL with limits per AMPL's website.
+    do anything, as this community app ships with logic that allows you to test
+    AMPL with limits per AMPL’s website.
 
 Follow these steps to run locally.
 

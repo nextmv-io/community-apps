@@ -13,7 +13,6 @@ func TestMain(m *testing.M) {
 }
 
 func TestGolden(t *testing.T) {
-	t.Skip("skipping until we have a fix for ample license on x64")
 	golden.FileTests(
 		t,
 		"inputs",

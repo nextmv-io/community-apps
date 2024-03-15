@@ -57,6 +57,9 @@
       "value": 444
     },
     "run": {
+      "custom": {
+        "license_used": "demo"
+      },
       "duration": 0.123
     },
     "schema": "v1"
