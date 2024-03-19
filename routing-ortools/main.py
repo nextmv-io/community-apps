@@ -11,6 +11,7 @@ import time
 from typing import Any
 
 import numpy as np
+from ortools import __version__ as ortools_version
 from ortools.constraint_solver import pywrapcp, routing_enums_pb2
 
 
@@ -419,6 +420,7 @@ def solve(input_data: dict[str, Any], duration: int) -> dict[str, Any]:
         statistics = {
             "result": {
                 "custom": {
+                    "solution_found": True,
                     "activated_vehicles": activated_vehicles,
                     "max_route_duration": max_route_duration,
                     "max_stops_in_vehicle": max_stops_in_vehicle,
@@ -436,7 +438,9 @@ def solve(input_data: dict[str, Any], duration: int) -> dict[str, Any]:
         routes = []
         statistics = {
             "result": {
-                "custom": {},
+                "custom": {
+                    "solution_found": False,
+                },
                 "duration": end_time - start_time,
                 "value": None,
             },
@@ -446,7 +450,11 @@ def solve(input_data: dict[str, Any], duration: int) -> dict[str, Any]:
             "schema": "v1",
         }
 
-    return {"solutions": [{"vehicles": routes, "unplanned": []}], "statistics": statistics, "version": {"sdk": ""}}
+    return {
+        "solutions": [{"vehicles": routes, "unplanned": []}],
+        "statistics": statistics,
+        "version": {"ortools": ortools_version},
+    }
 
 
 def log(message: str) -> None:
