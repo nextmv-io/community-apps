@@ -3,14 +3,23 @@ on: [push]
 jobs:
   community-apps-python-lint:
     runs-on: ubuntu-latest
+    env:
+      PYTHON_VERSION: ""
     steps:
       - name: git clone
         uses: actions/checkout@v4
 
+      - name: set Python version
+        run: |
+          export PYTHON_VERSION=$(yq '.language-support.python.version' workflow-configuration.yml)
+          echo "This is the Python version => $PYTHON_VERSION"
+          echo "PYTHON_VERSION=${PYTHON_VERSION}" >> $GITHUB_ENV
+        working-directory: .nextmv/
+
       - name: set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: "3.12"
+          python-version: ${{ env.PYTHON_VERSION }}
 
       - name: install dependencies
         run: |

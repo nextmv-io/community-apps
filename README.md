@@ -31,6 +31,8 @@ Visit the [docs][docs] for more information.
       solve order fulfillment problems.
 * [`routing-ortools`][routing-ortools]: use Python and OR-Tools to solve vehicle
       routing problems.
+* [`routing-java-ortools`][routing-java-ortools]: use Java and OR-Tools to
+      solve vehicle routing problems.
 * [`shift-assignment-ortools`][shift-assignment-ortools]: use Python and
       OR-Tools to solve shift assignment problems.
 * [`shift-assignment-pyomo`][shift-assignment-pyomo]: use Python and Pyomo to
@@ -58,6 +60,7 @@ Visit the [docs][docs] for more information.
 [knapsack-pyomo]: ./knapsack-pyomo/README.md
 [nextroute]: ./nextroute/README.md
 [order-fulfillment-gosdk]: ./order-fulfillment-gosdk/README.md
+[routing-java-ortools]: ./routing-java-ortools/README.md
 [routing-ortools]: ./routing-ortools/README.md
 [shift-assignment-ortools]: ./shift-assignment-ortools/README.md
 [shift-assignment-pyomo]: ./shift-assignment-pyomo/README.md

@@ -1,0 +1,250 @@
+{
+  "solution": {
+    "assignments": [
+      {
+        "project": "project-1",
+        "time_units": 2,
+        "value": 3000,
+        "worker": "worker-1"
+      },
+      {
+        "project": "project-5",
+        "time_units": 1,
+        "value": 4000,
+        "worker": "worker-1"
+      },
+      {
+        "project": "project-2",
+        "time_units": 4,
+        "value": 4500,
+        "worker": "worker-2"
+      },
+      {
+        "project": "project-4",
+        "time_units": 1,
+        "value": 2450,
+        "worker": "worker-2"
+      },
+      {
+        "project": "project-5",
+        "time_units": 4,
+        "value": 4000,
+        "worker": "worker-2"
+      },
+      {
+        "project": "project-3",
+        "time_units": 3,
+        "value": 3500,
+        "worker": "worker-3"
+      },
+      {
+        "project": "project-4",
+        "time_units": 1,
+        "value": 2450,
+        "worker": "worker-3"
+      }
+    ],
+    "flows": [
+      {
+        "capacity": 3,
+        "flow": 3,
+        "from": 0,
+        "to": 4,
+        "value": 0
+      },
+      {
+        "capacity": 9,
+        "flow": 9,
+        "from": 0,
+        "to": 5,
+        "value": 0
+      },
+      {
+        "capacity": 4,
+        "flow": 4,
+        "from": 0,
+        "to": 6,
+        "value": 0
+      },
+      {
+        "capacity": 3,
+        "flow": 2,
+        "from": 4,
+        "to": 7,
+        "value": 3000
+      },
+      {
+        "capacity": 3,
+        "flow": 1,
+        "from": 4,
+        "to": 11,
+        "value": 800
+      },
+      {
+        "capacity": 9,
+        "flow": 0,
+        "from": 5,
+        "to": 7,
+        "value": 0
+      },
+      {
+        "capacity": 9,
+        "flow": 4,
+        "from": 5,
+        "to": 8,
+        "value": 4500
+      },
+      {
+        "capacity": 9,
+        "flow": 0,
+        "from": 5,
+        "to": 9,
+        "value": 0
+      },
+      {
+        "capacity": 9,
+        "flow": 1,
+        "from": 5,
+        "to": 10,
+        "value": 1225
+      },
+      {
+        "capacity": 9,
+        "flow": 4,
+        "from": 5,
+        "to": 11,
+        "value": 3200
+      },
+      {
+        "capacity": 4,
+        "flow": 3,
+        "from": 6,
+        "to": 9,
+        "value": 3500
+      },
+      {
+        "capacity": 4,
+        "flow": 1,
+        "from": 6,
+        "to": 10,
+        "value": 1225
+      },
+      {
+        "capacity": 2,
+        "flow": 2,
+        "from": 7,
+        "to": 1,
+        "value": 0
+      },
+      {
+        "capacity": 4,
+        "flow": 4,
+        "from": 8,
+        "to": 1,
+        "value": 0
+      },
+      {
+        "capacity": 3,
+        "flow": 3,
+        "from": 9,
+        "to": 1,
+        "value": 0
+      },
+      {
+        "capacity": 2,
+        "flow": 2,
+        "from": 10,
+        "to": 1,
+        "value": 0
+      },
+      {
+        "capacity": 5,
+        "flow": 5,
+        "from": 11,
+        "to": 1,
+        "value": 0
+      },
+      {
+        "capacity": 3,
+        "flow": 0,
+        "from": 4,
+        "to": 3,
+        "value": 0
+      },
+      {
+        "capacity": 9,
+        "flow": 0,
+        "from": 5,
+        "to": 3,
+        "value": 0
+      },
+      {
+        "capacity": 4,
+        "flow": 0,
+        "from": 6,
+        "to": 3,
+        "value": 0
+      },
+      {
+        "capacity": 0,
+        "flow": 0,
+        "from": 2,
+        "to": 7,
+        "value": 0
+      },
+      {
+        "capacity": 0,
+        "flow": 0,
+        "from": 2,
+        "to": 8,
+        "value": 0
+      },
+      {
+        "capacity": 0,
+        "flow": 0,
+        "from": 2,
+        "to": 9,
+        "value": 0
+      },
+      {
+        "capacity": 0,
+        "flow": 0,
+        "from": 2,
+        "to": 10,
+        "value": 0
+      },
+      {
+        "capacity": 0,
+        "flow": 0,
+        "from": 2,
+        "to": 11,
+        "value": 0
+      }
+    ],
+    "status": "optimal",
+    "total_value_of_fulfilled_projects": 17450
+  },
+  "statistics": {
+    "result": {
+      "custom": {
+        "available_time_units": 16,
+        "excess_time_units": 0,
+        "number_of_edges": 25,
+        "number_of_fulfilled_projects": 5,
+        "number_of_nodes": 12,
+        "number_of_projects": 5,
+        "number_of_unfilled_projects": 0,
+        "number_of_unfulfilled_projects": 0,
+        "number_of_workers": 3,
+        "required_time_units": 16,
+        "unmet_time_units": 0
+      },
+      "duration": 0.015,
+      "value": -17448
+    },
+    "run": {
+      "duration": 0.015
+    },
+    "schema": "v1"
+  }
+}

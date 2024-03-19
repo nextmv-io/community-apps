@@ -232,8 +232,8 @@ def update_app(name: str, version: str):
     with open(os.path.join(os.getcwd(), "..", name, "VERSION"), "w") as f:
         f.write(version + "\n")
 
-    if workflow_info["type"] == "go":
-        sdk_version = workflow_info["sdk_version"]
+    sdk_version = workflow_info.get("sdk_version") or None
+    if workflow_info["type"] == "go" and sdk_version is not None:
         if sdk_version != "latest" and "v" not in sdk_version:
             sdk_version = f"v{sdk_version}"
 

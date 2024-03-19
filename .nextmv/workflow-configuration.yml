@@ -41,7 +41,6 @@ apps:
     description: Solve a knapsack problem using Pyomo.
   - name: nextroute
     type: go
-    sdk_version: latest
     app_id: nextroute
     marketplace_app_id: nextroute
     description: Solve a vehicle routing problem using Nextmv’s Nextroute.
@@ -51,6 +50,11 @@ apps:
     app_id: order-fulfill-gosdk
     marketplace_app_id: order.fulfill.gosdk
     description: Solve an order fulfillment problem using the Nextmv Go SDK.
+  - name: routing-java-ortools
+    type: java
+    app_id:
+    marketplace_app_id:
+    description: Solve a vehicle routing problem using Google OR-Tools in Java.
   - name: routing-ortools
     type: python
     app_id: routing-ortools
@@ -78,7 +82,7 @@ apps:
     description: Solve a shift planning problem using Pyomo.
   - name: shift-scheduling-gosdk
     type: go
-    sdk_version: latest
+    sdk_version: v1.2.0
     app_id: shift-scheduling
     marketplace_app_id: shift.scheduling
     description: Solve a shift scheduling problem using the Nextmv Go SDK.
@@ -91,7 +95,7 @@ apps:
 # Main supported language versions.
 language-support:
   go:
-    version: 1.19.3
+    version: 1.22
   python:
     version: 3.11
   java:

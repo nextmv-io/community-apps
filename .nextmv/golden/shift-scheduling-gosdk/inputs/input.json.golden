@@ -1,0 +1,70 @@
+{
+  "options": {
+    "limits": {
+      "day": {
+        "max_duration": 36000000000000
+      },
+      "shift": {
+        "max_duration": 28800000000000,
+        "min_duration": 7200000000000,
+        "recovery_time": 28800000000000
+      },
+      "week": {
+        "max_duration": 144000000000000
+      }
+    },
+    "penalty": {
+      "over_supply": 1000,
+      "under_supply": 500
+    },
+    "solve": {
+      "control": {
+        "bool": [],
+        "float": [],
+        "int": [],
+        "string": []
+      },
+      "duration": 3000000000,
+      "mip": {
+        "gap": {
+          "absolute": 0.000001,
+          "relative": 0.0001
+        }
+      },
+      "verbosity": "off"
+    }
+  },
+  "solutions": [
+    {
+      "assigned_shifts": [
+        {
+          "end": "2023-08-29T11:00:00+02:00",
+          "start": "2023-08-29T03:00:00+02:00",
+          "worker_id": "3"
+        }
+      ],
+      "number_assigned_workers": 1
+    }
+  ],
+  "statistics": {
+    "result": {
+      "custom": {
+        "constraints": 2713,
+        "provider": "HiGHS",
+        "status": "optimal",
+        "variables": 913
+      },
+      "duration": 0.123,
+      "value": 5500
+    },
+    "run": {
+      "duration": 0.123
+    },
+    "schema": "v1"
+  },
+  "version": {
+    "go-highs": "VERSION",
+    "go-mip": "VERSION",
+    "sdk": "VERSION"
+  }
+}

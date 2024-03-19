@@ -1,0 +1,77 @@
+{
+  "options": {
+    "under_supply_cost": 1000,
+    "over_supply_cost": 100
+  },
+  "shifts": [
+    {
+      "id": "welder",
+      "qualification": "welding",
+      "min_workers": 1,
+      "max_workers": 4,
+      "cost": 100,
+      "times": [
+        {
+          "id": "monday-early",
+          "start_time": "2023-11-20T06:00:00+02:00",
+          "end_time": "2023-11-20T14:00:00+02:00"
+        },
+        {
+          "id": "monday-late",
+          "start_time": "2023-11-20T14:00:00+02:00",
+          "end_time": "2023-11-20T22:00:00+02:00"
+        },
+        {
+          "id": "monday-night",
+          "start_time": "2023-11-20T22:00:00+02:00",
+          "end_time": "2023-11-21T06:00:00+02:00",
+          "max_workers": 2,
+          "cost": 150
+        }
+      ]
+    },
+    {
+      "id": "normal",
+      "min_workers": 0,
+      "max_workers": 10,
+      "cost": 50,
+      "times": [
+        {
+          "id": "monday-early",
+          "start_time": "2023-11-20T06:00:00+02:00",
+          "end_time": "2023-11-20T14:00:00+02:00"
+        },
+        {
+          "id": "monday-late",
+          "start_time": "2023-11-20T14:00:00+02:00",
+          "end_time": "2023-11-20T22:00:00+02:00"
+        },
+        {
+          "id": "monday-night",
+          "start_time": "2023-11-20T22:00:00+02:00",
+          "end_time": "2023-11-21T06:00:00+02:00",
+          "cost": 100
+        }
+      ]
+    }
+  ],
+  "demands": [
+    {
+      "start_time": "2023-11-20T06:00:00+02:00",
+      "end_time": "2023-11-20T14:00:00+02:00",
+      "count": 3,
+      "qualification": "welding"
+    },
+    {
+      "start_time": "2023-11-20T14:00:00+02:00",
+      "end_time": "2023-11-20T22:00:00+02:00",
+      "count": 2,
+      "qualification": "welding"
+    },
+    {
+      "start_time": "2023-11-20T11:00:00+02:00",
+      "end_time": "2023-11-20T17:00:00+02:00",
+      "count": 8
+    }
+  ]
+}

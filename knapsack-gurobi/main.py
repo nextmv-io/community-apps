@@ -4,6 +4,7 @@ Template for working with Gurobi.
 
 import argparse
 import json
+import os
 import sys
 import time
 from typing import Any
@@ -61,8 +62,9 @@ def solve(input_data: dict[str, Any], duration: int) -> dict[str, Any]:
     env = gp.Env(empty=True)
     env.setParam("OutputFlag", 0)
 
-    # Sets the license file.
-    env.readParams("gurobi.lic")
+    # Read the license file, if available.
+    if os.path.isfile("gurobi.lic"):
+        env.readParams("gurobi.lic")
 
     # Creates the model.
     env.start()
