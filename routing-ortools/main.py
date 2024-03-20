@@ -52,213 +52,6 @@ def main():
     write_output(args.output, solution)
 
 
-def apply_defaults(input_data: dict[str, Any]) -> None:
-    """
-    Applies default values to the vehicles and stops
-    (if they are given and not already set on them directly).
-    """
-    if "defaults" not in input_data:
-        return input_data
-    defaults = input_data["defaults"]
-    if "vehicles" in defaults:
-        for vehicle in input_data["vehicles"]:
-            for key, value in defaults["vehicles"].items():
-                if key not in vehicle:
-                    vehicle[key] = value
-    if "stops" in defaults:
-        for stop in input_data["stops"]:
-            for key, value in defaults["stops"].items():
-                if key not in stop:
-                    stop[key] = value
-
-
-def _valid_location(element: dict[str, Any]) -> bool:
-    """Checks if the given element is a valid location."""
-    if (
-        "lon" not in element
-        or not isinstance(element["lon"], numbers.Number)
-        or element["lon"] < -180
-        or element["lon"] > 180
-    ):
-        return False
-    if (
-        "lat" not in element
-        or not isinstance(element["lat"], numbers.Number)
-        or element["lat"] < -90
-        or element["lat"] > 90
-    ):
-        return False
-    return True
-
-
-def _validate_matrix(matrix: list[list[float]], input_data: dict[str, Any], matrix_type: str) -> None:
-    n_stops, n_vehicles = len(input_data["stops"]), len(input_data["vehicles"])
-    dim_stops, dim_full = n_stops, n_stops + 2 * n_vehicles
-    # Make sure the matrix is square.
-    if not all(len(row) == len(matrix) for row in matrix):
-        raise ValueError(f"{matrix_type} is not square.")
-    # Accept the matrix if it is full (all stops and vehicle start/end locations covered).
-    if len(matrix) == dim_full:
-        return
-    # Only accept a matrix that covers only the stops if no vehicle start/end locations are given.
-    if len(matrix) == dim_stops:
-        if any("start_location" in vehicle or "end_location" in vehicle for vehicle in input_data["vehicles"]):
-            raise ValueError(f"{matrix_type} does not cover all vehicle start/end locations.")
-        return
-    # Otherwise, the matrix is invalid.
-    raise ValueError(
-        f"{matrix_type} is of invalid size. "
-        + "A full matrix has the following shape: "
-        + "[stop_1, ..., stop_n, vehicle_1_start, vehicle_1_end, ..., vehicle_n_start, vehicle_n_end]."
-    )
-
-
-def validate_input(input_data: dict[str, Any]) -> None:
-    """
-    Runs basic checks on the input data to ensure it is valid.
-    """
-    if len(input_data.get("vehicles", [])) == 0:
-        raise ValueError("No vehicles provided.")
-    if len(input_data.get("stops", [])) == 0:
-        raise ValueError("No stops provided.")
-    if "distance_matrix" in input_data:
-        _validate_matrix(input_data["distance_matrix"], input_data, "distance_matrix")
-    if "duration_matrix" in input_data:
-        _validate_matrix(input_data["duration_matrix"], input_data, "duration_matrix")
-    for vehicle in input_data["vehicles"]:
-        if "id" not in vehicle:
-            raise ValueError(f"Vehicle {vehicle} does not have an id.")
-        ident = vehicle["id"]
-        if "capacity" in vehicle and (not isinstance(vehicle["capacity"], numbers.Integral) or vehicle["capacity"] < 0):
-            raise ValueError(f"Invalid capacity {vehicle['capacity']} for vehicle {ident}.")
-        if "start_location" in vehicle and not _valid_location(vehicle["start_location"]):
-            raise ValueError(f"Invalid start_location {vehicle['start_location']} for vehicle {ident}.")
-        if "end_location" in vehicle and not _valid_location(vehicle["end_location"]):
-            raise ValueError(f"Invalid end_location {vehicle['end_location']} for vehicle {ident}.")
-        if "speed" in vehicle and (not isinstance(vehicle["speed"], numbers.Number) or vehicle["speed"] <= 0):
-            raise ValueError(f"Invalid speed {vehicle['speed'] if 'speed' in vehicle else None} for vehicle {ident}.")
-        if "max_duration" in vehicle and (
-            not isinstance(vehicle["max_duration"], numbers.Number) or vehicle["max_duration"] < 0
-        ):
-            raise ValueError(f"Invalid max_duration {vehicle['max_duration']} for vehicle {ident}.")
-    for stop in input_data["stops"]:
-        if "id" not in stop:
-            raise ValueError(f"Stop {stop} does not have an id.")
-        ident = stop["id"]
-        if "location" not in stop or not _valid_location(stop["location"]):
-            raise ValueError(f"Invalid location {stop['location'] if 'location' in stop else None} for stop {ident}.")
-        if "duration" in stop and (not isinstance(stop["duration"], numbers.Number) or stop["duration"] < 0):
-            raise ValueError(f"Invalid duration {stop['duration']} for stop {ident}.")
-        if "quantity" in stop and (not isinstance(stop["quantity"], numbers.Integral) or stop["quantity"] < 0):
-            raise ValueError(f"Invalid quantity {stop['quantity']} for stop {ident}.")
-    if "duration_matrix" not in input_data and not all("speed" in vehicle for vehicle in input_data["vehicles"]):
-        raise ValueError("Speed missing and no duration matrix provided. At least one of them is required.")
-
-
-def _expand_missing_start_end(matrix: np.ndarray, input_data: dict[str, Any]) -> np.ndarray:
-    """
-    Expands the given matrix with 0s for the start and end locations.
-    """
-    n_stops, n_vehicles = len(input_data["stops"]), len(input_data["vehicles"])
-    if len(matrix) == n_stops + 2 * n_vehicles:
-        return matrix  # No expansion needed
-    expanded_matrix = np.zeros((n_stops + 2 * n_vehicles, n_stops + 2 * n_vehicles))
-    expanded_matrix[:n_stops, :n_stops] = matrix
-    return expanded_matrix
-
-
-def _calculate_distance_matrix(input_data: dict[str, Any]) -> np.ndarray:
-    """
-    Calculates the distance matrix for the input data.
-    """
-    # Otherwise, calculate the distance matrix from the locations using the haversine formula.
-    start = time.time()
-    lats_origin = np.array([s["location"]["lat"] for s in input_data["stops"]])
-    for vehicle in input_data["vehicles"]:
-        lats_origin = np.append(lats_origin, vehicle["start_location"]["lat"])
-        lats_origin = np.append(lats_origin, vehicle["end_location"]["lat"])
-    lons_origin = np.array([s["location"]["lon"] for s in input_data["stops"]])
-    for vehicle in input_data["vehicles"]:
-        lons_origin = np.append(lons_origin, vehicle["start_location"]["lon"])
-        lons_origin = np.append(lons_origin, vehicle["end_location"]["lon"])
-    lats_destination = np.copy(lats_origin)
-    lons_destination = np.copy(lons_origin)
-
-    # Create the combination of all origins and destinations.
-    lats_origin = np.repeat(lats_origin, len(lats_destination))
-    lons_origin = np.repeat(lons_origin, len(lons_destination))
-    lats_destination = np.tile(lats_destination, len(lats_destination))
-    lons_destination = np.tile(lons_destination, len(lons_destination))
-
-    distances = haversine(
-        lats_origin=lats_origin,
-        lons_origin=lons_origin,
-        lats_destination=lats_destination,
-        lons_destination=lons_destination,
-    )
-
-    # Convert the distances to a square matrix.
-    num_locations = len(input_data["stops"]) + 2 * len(input_data["vehicles"])
-    matrix = distances.reshape(num_locations, num_locations)
-
-    end = time.time()
-    log(f"Distance matrix calculation took {round(end - start, 2)} seconds.")
-    return matrix
-
-
-def process_distance_matrix(input_data: dict[str, Any]) -> None:
-    """Calculates the distance matrix for the input data."""
-
-    # If the input data already contains a distance matrix, return it.
-    if "distance_matrix" in input_data:
-        np_matrix = np.array(input_data["distance_matrix"])
-        input_data["distance_matrix"] = _expand_missing_start_end(np_matrix, input_data)
-
-    # Only calculate the distance matrix if there is no duration matrix.
-    if "duration_matrix" not in input_data and "distance_matrix" not in input_data:
-        input_data["distance_matrix"] = _calculate_distance_matrix(input_data)
-
-    # Make sure the matrix is integer (round the values).
-    if "distance_matrix" in input_data:
-        input_data["distance_matrix"] = np.rint(input_data["distance_matrix"]).astype(int)
-
-
-def process_duration_matrix(input_data: dict[str, Any]) -> None:
-    """Prepares the duration matrix of the input data, if given."""
-
-    # If the input data already contains a duration matrix, return it.
-    if "duration_matrix" in input_data:
-        np_matrix = np.array(input_data["duration_matrix"])
-        input_data["duration_matrix"] = _expand_missing_start_end(np_matrix, input_data)
-
-    # Make sure the matrix is integer (round the values).
-    if "duration_matrix" in input_data:
-        input_data["duration_matrix"] = np.rint(input_data["duration_matrix"]).astype(int)
-
-
-def haversine(
-    lats_origin: np.ndarray | float,
-    lons_origin: np.ndarray | float,
-    lats_destination: np.ndarray | float,
-    lons_destination: np.ndarray | float,
-) -> np.ndarray | float:
-    """Calculates the haversine distance between arrays of coordinates."""
-
-    lons_destination, lats_destination, lons_origin, lats_origin = map(
-        np.radians,
-        [lons_destination, lats_destination, lons_origin, lats_origin],
-    )
-    delta_lon = lons_destination - lons_origin
-    delta_lat = lats_destination - lats_origin
-    term1 = np.sin(delta_lat / 2.0) ** 2
-    term2 = np.cos(lats_origin) * np.cos(lats_destination) * np.sin(delta_lon / 2.0) ** 2
-    a = term1 + term2
-    c = 2 * np.arcsin(np.sqrt(a))
-    earth_radius = 6371000
-
-    return earth_radius * c
-
-
 def solve(input_data: dict[str, Any], duration: int) -> dict[str, Any]:
     """Solves the given problem and returns the solution."""
 
@@ -455,6 +248,213 @@ def solve(input_data: dict[str, Any], duration: int) -> dict[str, Any]:
         "statistics": statistics,
         "version": {"ortools": ortools_version},
     }
+
+
+def apply_defaults(input_data: dict[str, Any]) -> None:
+    """
+    Applies default values to the vehicles and stops
+    (if they are given and not already set on them directly).
+    """
+    if "defaults" not in input_data:
+        return input_data
+    defaults = input_data["defaults"]
+    if "vehicles" in defaults:
+        for vehicle in input_data["vehicles"]:
+            for key, value in defaults["vehicles"].items():
+                if key not in vehicle:
+                    vehicle[key] = value
+    if "stops" in defaults:
+        for stop in input_data["stops"]:
+            for key, value in defaults["stops"].items():
+                if key not in stop:
+                    stop[key] = value
+
+
+def check_valid_location(element: dict[str, Any]) -> bool:
+    """Checks if the given element is a valid location."""
+    if (
+        "lon" not in element
+        or not isinstance(element["lon"], numbers.Number)
+        or element["lon"] < -180
+        or element["lon"] > 180
+    ):
+        return False
+    if (
+        "lat" not in element
+        or not isinstance(element["lat"], numbers.Number)
+        or element["lat"] < -90
+        or element["lat"] > 90
+    ):
+        return False
+    return True
+
+
+def validate_matrix(matrix: list[list[float]], input_data: dict[str, Any], matrix_type: str) -> None:
+    n_stops, n_vehicles = len(input_data["stops"]), len(input_data["vehicles"])
+    dim_stops, dim_full = n_stops, n_stops + 2 * n_vehicles
+    # Make sure the matrix is square.
+    if not all(len(row) == len(matrix) for row in matrix):
+        raise ValueError(f"{matrix_type} is not square.")
+    # Accept the matrix if it is full (all stops and vehicle start/end locations covered).
+    if len(matrix) == dim_full:
+        return
+    # Only accept a matrix that covers only the stops if no vehicle start/end locations are given.
+    if len(matrix) == dim_stops:
+        if any("start_location" in vehicle or "end_location" in vehicle for vehicle in input_data["vehicles"]):
+            raise ValueError(f"{matrix_type} does not cover all vehicle start/end locations.")
+        return
+    # Otherwise, the matrix is invalid.
+    raise ValueError(
+        f"{matrix_type} is of invalid size. "
+        + "A full matrix has the following shape: "
+        + "[stop_1, ..., stop_n, vehicle_1_start, vehicle_1_end, ..., vehicle_n_start, vehicle_n_end]."
+    )
+
+
+def validate_input(input_data: dict[str, Any]) -> None:
+    """
+    Runs basic checks on the input data to ensure it is valid.
+    """
+    if len(input_data.get("vehicles", [])) == 0:
+        raise ValueError("No vehicles provided.")
+    if len(input_data.get("stops", [])) == 0:
+        raise ValueError("No stops provided.")
+    if "distance_matrix" in input_data:
+        validate_matrix(input_data["distance_matrix"], input_data, "distance_matrix")
+    if "duration_matrix" in input_data:
+        validate_matrix(input_data["duration_matrix"], input_data, "duration_matrix")
+    for vehicle in input_data["vehicles"]:
+        if "id" not in vehicle:
+            raise ValueError(f"Vehicle {vehicle} does not have an id.")
+        ident = vehicle["id"]
+        if "capacity" in vehicle and (not isinstance(vehicle["capacity"], numbers.Integral) or vehicle["capacity"] < 0):
+            raise ValueError(f"Invalid capacity {vehicle['capacity']} for vehicle {ident}.")
+        if "start_location" in vehicle and not check_valid_location(vehicle["start_location"]):
+            raise ValueError(f"Invalid start_location {vehicle['start_location']} for vehicle {ident}.")
+        if "end_location" in vehicle and not check_valid_location(vehicle["end_location"]):
+            raise ValueError(f"Invalid end_location {vehicle['end_location']} for vehicle {ident}.")
+        if "speed" in vehicle and (not isinstance(vehicle["speed"], numbers.Number) or vehicle["speed"] <= 0):
+            raise ValueError(f"Invalid speed {vehicle['speed'] if 'speed' in vehicle else None} for vehicle {ident}.")
+        if "max_duration" in vehicle and (
+            not isinstance(vehicle["max_duration"], numbers.Number) or vehicle["max_duration"] < 0
+        ):
+            raise ValueError(f"Invalid max_duration {vehicle['max_duration']} for vehicle {ident}.")
+    for stop in input_data["stops"]:
+        if "id" not in stop:
+            raise ValueError(f"Stop {stop} does not have an id.")
+        ident = stop["id"]
+        if "location" not in stop or not check_valid_location(stop["location"]):
+            raise ValueError(f"Invalid location {stop['location'] if 'location' in stop else None} for stop {ident}.")
+        if "duration" in stop and (not isinstance(stop["duration"], numbers.Number) or stop["duration"] < 0):
+            raise ValueError(f"Invalid duration {stop['duration']} for stop {ident}.")
+        if "quantity" in stop and (not isinstance(stop["quantity"], numbers.Integral) or stop["quantity"] < 0):
+            raise ValueError(f"Invalid quantity {stop['quantity']} for stop {ident}.")
+    if "duration_matrix" not in input_data and not all("speed" in vehicle for vehicle in input_data["vehicles"]):
+        raise ValueError("Speed missing and no duration matrix provided. At least one of them is required.")
+
+
+def expand_missing_start_end(matrix: np.ndarray, input_data: dict[str, Any]) -> np.ndarray:
+    """
+    Expands the given matrix with 0s for the start and end locations.
+    """
+    n_stops, n_vehicles = len(input_data["stops"]), len(input_data["vehicles"])
+    if len(matrix) == n_stops + 2 * n_vehicles:
+        return matrix  # No expansion needed
+    expanded_matrix = np.zeros((n_stops + 2 * n_vehicles, n_stops + 2 * n_vehicles))
+    expanded_matrix[:n_stops, :n_stops] = matrix
+    return expanded_matrix
+
+
+def calculate_distance_matrix(input_data: dict[str, Any]) -> np.ndarray:
+    """
+    Calculates the distance matrix for the input data.
+    """
+    # Otherwise, calculate the distance matrix from the locations using the haversine formula.
+    start = time.time()
+    lats_origin = np.array([s["location"]["lat"] for s in input_data["stops"]])
+    for vehicle in input_data["vehicles"]:
+        lats_origin = np.append(lats_origin, vehicle["start_location"]["lat"])
+        lats_origin = np.append(lats_origin, vehicle["end_location"]["lat"])
+    lons_origin = np.array([s["location"]["lon"] for s in input_data["stops"]])
+    for vehicle in input_data["vehicles"]:
+        lons_origin = np.append(lons_origin, vehicle["start_location"]["lon"])
+        lons_origin = np.append(lons_origin, vehicle["end_location"]["lon"])
+    lats_destination = np.copy(lats_origin)
+    lons_destination = np.copy(lons_origin)
+
+    # Create the combination of all origins and destinations.
+    lats_origin = np.repeat(lats_origin, len(lats_destination))
+    lons_origin = np.repeat(lons_origin, len(lons_destination))
+    lats_destination = np.tile(lats_destination, len(lats_destination))
+    lons_destination = np.tile(lons_destination, len(lons_destination))
+
+    distances = haversine(
+        lats_origin=lats_origin,
+        lons_origin=lons_origin,
+        lats_destination=lats_destination,
+        lons_destination=lons_destination,
+    )
+
+    # Convert the distances to a square matrix.
+    num_locations = len(input_data["stops"]) + 2 * len(input_data["vehicles"])
+    matrix = distances.reshape(num_locations, num_locations)
+
+    end = time.time()
+    log(f"Distance matrix calculation took {round(end - start, 2)} seconds.")
+    return matrix
+
+
+def process_distance_matrix(input_data: dict[str, Any]) -> None:
+    """Calculates the distance matrix for the input data."""
+
+    # If the input data already contains a distance matrix, return it.
+    if "distance_matrix" in input_data:
+        np_matrix = np.array(input_data["distance_matrix"])
+        input_data["distance_matrix"] = expand_missing_start_end(np_matrix, input_data)
+
+    # Only calculate the distance matrix if there is no duration matrix.
+    if "duration_matrix" not in input_data and "distance_matrix" not in input_data:
+        input_data["distance_matrix"] = calculate_distance_matrix(input_data)
+
+    # Make sure the matrix is integer (round the values).
+    if "distance_matrix" in input_data:
+        input_data["distance_matrix"] = np.rint(input_data["distance_matrix"]).astype(int)
+
+
+def process_duration_matrix(input_data: dict[str, Any]) -> None:
+    """Prepares the duration matrix of the input data, if given."""
+
+    # If the input data already contains a duration matrix, return it.
+    if "duration_matrix" in input_data:
+        np_matrix = np.array(input_data["duration_matrix"])
+        input_data["duration_matrix"] = expand_missing_start_end(np_matrix, input_data)
+
+    # Make sure the matrix is integer (round the values).
+    if "duration_matrix" in input_data:
+        input_data["duration_matrix"] = np.rint(input_data["duration_matrix"]).astype(int)
+
+
+def haversine(
+    lats_origin: np.ndarray | float,
+    lons_origin: np.ndarray | float,
+    lats_destination: np.ndarray | float,
+    lons_destination: np.ndarray | float,
+) -> np.ndarray | float:
+    """Calculates the haversine distance between arrays of coordinates."""
+
+    lons_destination, lats_destination, lons_origin, lats_origin = map(
+        np.radians,
+        [lons_destination, lats_destination, lons_origin, lats_origin],
+    )
+    delta_lon = lons_destination - lons_origin
+    delta_lat = lats_destination - lats_origin
+    term1 = np.sin(delta_lat / 2.0) ** 2
+    term2 = np.cos(lats_origin) * np.cos(lats_destination) * np.sin(delta_lon / 2.0) ** 2
+    a = term1 + term2
+    c = 2 * np.arcsin(np.sqrt(a))
+    earth_radius = 6371000
+
+    return earth_radius * c
 
 
 def log(message: str) -> None:
