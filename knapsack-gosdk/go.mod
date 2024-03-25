@@ -1,8 +1,12 @@
 module example.com/your_project/knapsack-gosdk
 
-go 1.19
+go 1.21
 
-require github.com/nextmv-io/sdk v1.2.0
+require (
+	github.com/nextmv-io/go-highs v1.5.1
+	github.com/nextmv-io/go-mip v1.5.0
+	github.com/nextmv-io/sdk v1.5.0
+)
 
 require (
 	github.com/danielgtaylor/huma v1.14.1 // indirect

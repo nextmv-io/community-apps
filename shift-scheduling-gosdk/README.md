@@ -14,9 +14,15 @@ number of workers that are required to work during this time.
 You should be able to run the following command:
 
 ```bash
-nextmv sdk run . -- -runner.input.path input.json \
+go run . -runner.input.path input.json \
   -runner.output.path output.json -solve.duration 10s
 ```
+
+## Push pre-requisites
+
+To push your app to the Nextmv platform via `nextmv app push ...`, you will need
+to have [_zig_](https://ziglang.org/download/) installed and available on your
+`$PATH`.
 
 ## Next steps
 

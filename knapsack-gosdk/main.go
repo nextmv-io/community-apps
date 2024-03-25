@@ -5,7 +5,8 @@ import (
 	"context"
 	"log"
 
-	"github.com/nextmv-io/sdk/mip"
+	"github.com/nextmv-io/go-highs"
+	"github.com/nextmv-io/go-mip"
 	"github.com/nextmv-io/sdk/run"
 	"github.com/nextmv-io/sdk/run/schema"
 )
@@ -49,12 +50,8 @@ func solver(_ context.Context, input input, options options) (schema.Output, err
 	// Translate the input to a MIP model.
 	model, variables := model(input)
 
-	// Create a solver using a provider. Please see the documentation on
-	// [mip.SolverProvider] for more information on the available providers.
-	solver, err := mip.NewSolver(mip.Highs, model)
-	if err != nil {
-		return schema.Output{}, err
-	}
+	// Create a solver.
+	solver := highs.NewSolver(model)
 
 	// Solve the model and get the solution.
 	solution, err := solver.Solve(options.Solve)

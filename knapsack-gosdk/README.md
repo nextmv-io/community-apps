@@ -24,12 +24,18 @@ The most important files created are `main.go` and `input.json`.
 Run the command below to check that everything works as expected:
 
 ```bash
-nextmv sdk run . -- -runner.input.path input.json \
+go run . -runner.input.path input.json \
   -runner.output.path output.json -solve.duration 10s
 ```
 
 A file `output.json` should have been created with the optimal knapsack
 solution.
+
+## Push pre-requisites
+
+To push your app to the Nextmv platform via `nextmv app push ...`, you will need
+to have [_zig_](https://ziglang.org/download/) installed and available on your
+`$PATH`.
 
 ## Next steps
 
