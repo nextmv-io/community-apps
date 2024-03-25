@@ -18,6 +18,25 @@ go run . -runner.input.path input.json \
 
 A file `output.json` should have been created with a VRP solution.
 
+## Mirror running on Nextmv Cloud locally
+
+Pre-requisites: Docker needs to be installed.
+
+To run the application locally in the same docker image as the one used on the
+Nextmv Cloud, you can use the following command:
+
+```bash
+GOOS=linux go build -o main . && \
+cat input.json | docker run -i --rm \
+-v $(pwd):/app ghcr.io/nextmv-io/runtime/default:latest \
+/app/main
+```
+
+You can also debug the application by running it in a Dev Container. This
+workspace recommends to install the Dev Container extension for VSCode. If you
+have the extension installed, you can open the workspace in a container by using
+the command `Dev Containers: Reopen in Container`.
+
 ## Next steps
 
 * For more information about our platform, please visit: <https://docs.nextmv.io>.
