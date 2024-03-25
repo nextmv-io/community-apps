@@ -5,7 +5,7 @@ go 1.21
 toolchain go1.22.1
 
 require (
-	github.com/nextmv-io/go-highs v1.5.0
+	github.com/nextmv-io/go-highs v1.5.1
 	github.com/nextmv-io/go-mip v1.5.0
 	github.com/nextmv-io/sdk v1.5.0
 )
