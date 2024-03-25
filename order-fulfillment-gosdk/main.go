@@ -8,9 +8,9 @@ import (
 	"log"
 	"math"
 
-	"github.com/nextmv-io/sdk"
-	"github.com/nextmv-io/sdk/mip"
-	"github.com/nextmv-io/sdk/model"
+	"github.com/nextmv-io/go-highs"
+	"github.com/nextmv-io/go-mip"
+	"github.com/nextmv-io/go-mip/model"
 	"github.com/nextmv-io/sdk/run"
 	"github.com/nextmv-io/sdk/run/schema"
 	"github.com/nextmv-io/sdk/run/statistics"
@@ -418,10 +418,7 @@ func solver(_ context.Context, i input, opts options) (schema.Output, error) {
 	}
 
 	// We create a solver using the 'highs' provider.
-	solver, err := mip.NewSolver("highs", m)
-	if err != nil {
-		return schema.Output{}, err
-	}
+	solver := highs.NewSolver(m)
 
 	// We create the solve options we will use.
 	solveOptions := mip.SolveOptions{}
@@ -439,7 +436,7 @@ func solver(_ context.Context, i input, opts options) (schema.Output, error) {
 		return schema.Output{}, err
 	}
 
-	output, err := format(solution, x, assignments,
+	output, err := format(solution, opts, x, assignments,
 		distributionCenterCarrierCombinations, cartons, volumes,
 		dimensionalWeights, weights, billableWeights,
 		weightTierVariables, deliveryCosts,
@@ -471,6 +468,7 @@ type customResultStatistics struct {
 
 func format(
 	solution mip.Solution,
+	opts options,
 	x model.MultiMap[mip.Bool, assignment],
 	assignments []assignment,
 	carriers []carrier,
@@ -482,11 +480,7 @@ func format(
 	weightTierVariables map[string]map[string]map[int]mip.Bool,
 	deliveryCosts model.MultiMap[mip.Float, carrier],
 ) (output schema.Output, err error) {
-	o := schema.Output{}
-
-	o.Version = schema.Version{
-		Sdk: sdk.VERSION,
-	}
+	o := schema.NewOutput(opts, []mip.Solution{solution})
 
 	stats := statistics.NewStatistics()
 	result := statistics.Result{}
