@@ -26,9 +26,9 @@ To run the application locally in the same docker image as the one used on the
 Nextmv Cloud, you can use the following command:
 
 ```bash
-GOOS=linux go build . && \
-docker run -i --rm -v $(pwd):/app ghcr.io/nextmv-io/runtime/default:latest \
-/app/nextroute --runner.input.path input.json --runner.output.path output.json
+GOOS=linux go build -o main . && \
+cat input.json | docker run -i --rm -v $(pwd):/app ghcr.io/nextmv-io/runtime/default:latest \
+/app/main
 ```
 
 You can also debug the application by running it in a Dev Container. This
