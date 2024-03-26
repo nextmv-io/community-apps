@@ -172,3 +172,6 @@ main.jar
 
 # Outputs
 *output*
+
+# Ignore any 'main' files (typically binaries from testing)
+main

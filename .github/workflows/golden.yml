@@ -47,6 +47,7 @@ jobs:
 
       # We always need to set up Go as it is also used by the golden file testing framework
       - name: Set up Go
+        if: steps.changes.outputs.src == 'true'
         uses: actions/setup-go@v5
         with:
           go-version: 1.22

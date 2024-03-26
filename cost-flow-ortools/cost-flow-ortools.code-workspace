@@ -16,11 +16,15 @@
           "-input",
           "input.json",
           "-output",
-          "output.json",
-          "-duration",
-          "5"
+          "output.json"
         ]
       }
     ]
+  },
+  "extensions": {
+    "recommendations": [
+      "ms-vscode-remote.remote-containers",
+    ]
   }
 }
+
