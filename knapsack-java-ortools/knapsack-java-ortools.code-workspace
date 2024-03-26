@@ -1,0 +1,25 @@
+{
+  "folders": [
+    {
+      "path": "."
+    }
+  ],
+  "launch": {
+    "configurations": [
+      {
+        "type": "java",
+        "name": "Main",
+        "request": "launch",
+        "mainClass": "com.nextmv.example.Main",
+        "projectName": "ORToolsJava",
+        "args": ["--input", "input.json", "--output", "output.json"]
+    }
+    ]
+  },
+  "extensions": {
+    "recommendations": [
+      "ms-vscode-remote.remote-containers",
+    ]
+  }
+}
+
