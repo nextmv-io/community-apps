@@ -6,5 +6,12 @@
   "image": "ghcr.io/nextmv-io/runtime/java:latest",
   "features": {
     "ghcr.io/devcontainers/features/java:1": {}
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "vscjava.vscode-java-pack"
+      ]
+    }
   }
 }
