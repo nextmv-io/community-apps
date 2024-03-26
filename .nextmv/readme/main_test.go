@@ -57,6 +57,15 @@ func TestGolden(t *testing.T) {
 		t.Fatalf("error unmarshalling config file: %v", err)
 	}
 
+	// Define replacements
+	replacements := []golden.VolatileRegexReplacement{
+		// Replace "duration": 0.354 with "duration":0.123
+		{Regex: `duration":\d+\.\d+`, Replacement: `duration":0.123`},
+		// Replace xpress.init(...) with
+		// xpress.init("path/to/xpress")
+		{Regex: `xpress\.init\(.*\)`, Replacement: `xpress.init("path/to/xpress")`},
+	}
+
 	// Run all readme tests
 	dirs, err := os.ReadDir(".")
 	if err != nil {
@@ -99,10 +108,7 @@ func TestGolden(t *testing.T) {
 						DisplayStdout: !scriptConfig.Silent,
 						WorkingDir:    "../../" + app,
 						OutputProcessConfig: golden.OutputProcessConfig{
-							VolatileRegexReplacements: []golden.VolatileRegexReplacement{
-								// Replace "duration": 0.354 with "duration":0.123
-								{Regex: `duration":\d+\.\d+`, Replacement: `duration":0.123`},
-							},
+							VolatileRegexReplacements: replacements,
 						},
 					},
 				)
