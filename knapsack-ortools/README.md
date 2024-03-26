@@ -60,8 +60,6 @@ the command `Dev Containers: Reopen in Container`.
 
 ## Next steps
 
-## Next steps
-
 * Open `main.py` and read through the comments to understand the model.
 * Further documentation, guides, and API references about custom modeling and
   deployment can also be found on our [blog](https://www.nextmv.io/blog) and on
