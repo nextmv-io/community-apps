@@ -15,5 +15,11 @@
         "args": ["--input", "input.json", "--output", "output.json"]
     }
     ]
+  },
+  "extensions": {
+    "recommendations": [
+      "ms-vscode-remote.remote-containers",
+    ]
   }
 }
+

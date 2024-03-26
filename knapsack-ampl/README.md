@@ -51,6 +51,24 @@ Follow these steps to run locally.
 3. A file `output.json` should have been created with the optimal knapsack
    solution.
 
+## Mirror running on Nextmv Cloud locally
+
+Pre-requisites: Docker needs to be installed.
+
+To run the application locally in the same docker image as the one used on the
+Nextmv Cloud, you can use the following command:
+
+```bash
+cat input.json | docker run -i --rm \
+-v $(pwd):/app ghcr.io/nextmv-io/runtime/ampl:latest \
+python3 /app/main.py
+```
+
+You can also debug the application by running it in a Dev Container. This
+workspace recommends to install the Dev Container extension for VSCode. If you
+have the extension installed, you can open the workspace in a container by using
+the command `Dev Containers: Reopen in Container`.
+
 ## Next steps
 
 * Open `main.py` and read through the comments to understand the model.

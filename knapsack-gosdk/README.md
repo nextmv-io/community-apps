@@ -37,6 +37,25 @@ To push your app to the Nextmv platform via `nextmv app push ...`, you will need
 to have [_zig_](https://ziglang.org/download/) installed and available on your
 `$PATH`.
 
+## Mirror running on Nextmv Cloud locally
+
+Pre-requisites: Docker needs to be installed.
+
+To run the application locally in the same docker image as the one used on the
+Nextmv Cloud, you can use the following command:
+
+```bash
+GOOS=linux go build -o main . && \
+cat input.json | docker run -i --rm \
+-v $(pwd):/app ghcr.io/nextmv-io/runtime/default:latest \
+/app/main
+```
+
+You can also debug the application by running it in a Dev Container. This
+workspace recommends to install the Dev Container extension for VSCode. If you
+have the extension installed, you can open the workspace in a container by using
+the command `Dev Containers: Reopen in Container`.
+
 ## Next steps
 
 * Open `main.go` and read through the comments to understand the model.
