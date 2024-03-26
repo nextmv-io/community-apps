@@ -17,7 +17,7 @@ jobs:
       # Make sure the commands remain unchanged.
       - name: Check for changes in README file commands
         run: |
-          python .nextmv/readme-extract-commands.py
+          python .nextmv/readme/readme-extract-commands.py
 
       # Determine main language versions we support.
       - name: set python and go versions
