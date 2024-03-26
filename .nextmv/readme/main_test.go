@@ -98,6 +98,12 @@ func TestGolden(t *testing.T) {
 					golden.BashConfig{
 						DisplayStdout: !scriptConfig.Silent,
 						WorkingDir:    "../../" + app,
+						OutputProcessConfig: golden.OutputProcessConfig{
+							VolatileRegexReplacements: []golden.VolatileRegexReplacement{
+								// Replace "duration": 0.354 with "duration":0.123
+								{Regex: `duration":\d+\.\d+`, Replacement: `duration":0.123`},
+							},
+						},
 					},
 				)
 			})
