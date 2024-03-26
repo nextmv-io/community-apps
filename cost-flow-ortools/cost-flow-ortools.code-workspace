@@ -16,9 +16,7 @@
           "-input",
           "input.json",
           "-output",
-          "output.json",
-          "-duration",
-          "5"
+          "output.json"
         ]
       }
     ]

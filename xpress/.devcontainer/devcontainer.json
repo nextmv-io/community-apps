@@ -4,7 +4,15 @@
   "name": "Python",
   // Or use a Dockerfile or Docker Compose file. More info: https://containers.dev/guide/dockerfile
   "image": "ghcr.io/nextmv-io/runtime/xpress:latest",
-  "features": {
-    "ghcr.io/devcontainers/features/python:1": {}
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-python.debugpy",
+        "ms-python.python"
+      ],
+      "settings": {
+        "python.defaultInterpreterPath": "python"
+      }
+    }
   }
 }
