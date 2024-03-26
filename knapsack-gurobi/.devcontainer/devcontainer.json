@@ -6,10 +6,7 @@
   "image": "ghcr.io/nextmv-io/runtime/gurobi:latest",
   "customizations": {
     "vscode": {
-      "extensions": [
-        "ms-python.debugpy",
-        "ms-python.python"
-      ],
+      "extensions": ["ms-python.debugpy", "ms-python.python"],
       "settings": {
         "python.defaultInterpreterPath": "python"
       }

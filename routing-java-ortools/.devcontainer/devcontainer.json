@@ -9,9 +9,7 @@
   },
   "customizations": {
     "vscode": {
-      "extensions": [
-        "vscjava.vscode-java-pack"
-      ]
+      "extensions": ["vscjava.vscode-java-pack"]
     }
   }
 }

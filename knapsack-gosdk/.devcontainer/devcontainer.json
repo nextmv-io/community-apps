@@ -9,9 +9,7 @@
   },
   "customizations": {
     "vscode": {
-      "extensions": [
-        "golang.go"
-      ]
+      "extensions": ["golang.go"]
     }
   },
   "postCreateCommand": "bash ./.devcontainer/postCreateCommand.sh",
