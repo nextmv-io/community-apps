@@ -4,9 +4,6 @@
       "path": "."
     }
   ],
-  "settings": {
-    "go.goroot": "~/.nextmv/go"
-  },
   "launch": {
     "configurations": [
       {
@@ -18,14 +15,6 @@
         // won't work!) which contains the file which has the main
         // method
         "program": "${workspaceFolder}",
-        "substitutePath": [
-          {
-            "from": "${workspaceFolder}",
-            // this has to match the module name
-            "to": "example.com/your_project/shift-scheduling"
-          }
-        ],
-        "buildFlags": "-trimpath -tags=debug",
         "args": [
           "-runner.input.path",
           "input.json",

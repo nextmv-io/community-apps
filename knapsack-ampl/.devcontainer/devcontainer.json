@@ -6,5 +6,12 @@
   "image": "ghcr.io/nextmv-io/runtime/ampl:latest",
   "features": {
     "ghcr.io/devcontainers/features/python:1": {}
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-python.debugpy"
+      ]
+    }
   }
 }
