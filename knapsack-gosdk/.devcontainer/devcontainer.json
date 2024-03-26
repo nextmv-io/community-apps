@@ -14,5 +14,10 @@
       ]
     }
   },
-  "postCreateCommand": "apt update && apt install -y ca-certificates build-essential"
+  "postCreateCommand": "bash ./.devcontainer/postCreateCommand.sh",
+  "remoteUser": "root",
+  "containerEnv": {
+    "CC": "zig cc",
+    "CGO_ENABLED": "1"
+  }
 }
