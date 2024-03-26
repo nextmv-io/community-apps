@@ -43,7 +43,6 @@ workspace recommends to install the Dev Container extension for VSCode. If you
 have the extension installed, you can open the workspace in a container by using
 the command `Dev Containers: Reopen in Container`.
 
-
 ## References
 
 - [Google OR-Tools](https://github.com/or-tools/or-tools)
