@@ -14,6 +14,11 @@ jobs:
         with:
           lfs: true
 
+      # Make sure the commands remain unchanged.
+      - name: Check for changes in README file commands
+        run: |
+          python .nextmv/readme-extract-commands.py
+
       # Determine main language versions we support.
       - name: set python and go versions
         run: |
@@ -57,16 +62,8 @@ jobs:
           sudo apt-get install -y coinor-cbc coinor-libcbc-dev
           sudo apt-get install -y glpk-utils
 
-      # Install nextmv CLI (used to install plugins).
-      - name: install nextmv plugins
-        run: |
-          export NEXTMV_API_KEY=${{ secrets.API_KEY_PROD }}
-          export NEXTMV_BASE_URL=https://api.cloud.nextmv.io
-          curl -sS "https://cloud.nextmv.io/install-cli.txt" | bash -
-          ~/.nextmv/nextmv configure -a $NEXTMV_API_KEY
-          ~/.nextmv/nextmv activate
-          ~/.nextmv/nextmv version
-
       # Run tests.
-      - name: run tests
-        run: bash .nextmv/run_readme_tests.sh
+      - name: Run tests
+        run: |
+          go test -v ./...
+        working-directory: .nextmv/readme

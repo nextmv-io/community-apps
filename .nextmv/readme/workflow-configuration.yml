@@ -1,0 +1,71 @@
+apps:
+  - name: cost-flow-ortools
+    scripts:
+      - name: 0.sh
+        silent: true
+  - name: knapsack-ampl
+    scripts:
+      - name: 0.sh
+        silent: true
+  - name: knapsack-gosdk
+    scripts:
+      - name: 0.sh
+        silent: true
+  - name: knapsack-gurobi
+    scripts:
+      - name: 0.sh
+        silent: true
+  - name: knapsack-java-ortools
+    scripts:
+      - name: 0.sh
+        silent: true
+  - name: knapsack-ortools
+    scripts:
+      - name: 0.sh
+        silent: true
+  - name: knapsack-pyomo
+    scripts:
+      - name: 0.sh
+        silent: true
+  - name: nextroute
+    scripts:
+      - name: 0.sh
+        silent: true
+      - name: 1.sh
+        skip: true
+  - name: order-fulfillment-gosdk
+    scripts:
+      - name: 0.sh
+        silent: true
+  - name: routing-java-ortools
+    scripts:
+      - name: 0.sh
+        silent: true
+  - name: routing-ortools
+    scripts:
+      - name: 0.sh
+        silent: true
+  - name: shift-assignment-ortools
+    scripts:
+      - name: 0.sh
+        silent: true
+  - name: shift-assignment-pyomo
+    scripts:
+      - name: 0.sh
+        silent: true
+  - name: shift-planning-ortools
+    scripts:
+      - name: 0.sh
+        silent: true
+  - name: shift-planning-pyomo
+    scripts:
+      - name: 0.sh
+        silent: true
+  - name: shift-scheduling-gosdk
+    scripts:
+      - name: 0.sh
+        silent: true
+  - name: xpress
+    scripts:
+      - name: 0.sh
+        silent: true
