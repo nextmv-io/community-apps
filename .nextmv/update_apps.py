@@ -227,49 +227,8 @@ def update_app(name: str, version: str):
 
     log(f"Updating app: {name}; version: {version}.")
 
-    workflow_info = app_workflow_info(name)
-
     with open(os.path.join(os.getcwd(), "..", name, "VERSION"), "w") as f:
         f.write(version + "\n")
-
-    sdk_version = workflow_info.get("sdk_version") or None
-    if workflow_info["type"] == "go" and sdk_version is not None:
-        if sdk_version != "latest" and "v" not in sdk_version:
-            sdk_version = f"v{sdk_version}"
-
-        log(f"Updating SDK for app: {name}; version: {version}; SDK version: {sdk_version}")
-
-        try:
-            result = subprocess.run(
-                ["go", "get", f"github.com/nextmv-io/sdk@{sdk_version}"],
-                check=True,
-                capture_output=True,
-                text=True,
-                cwd=os.path.join("..", name),
-            )
-            print(result.stdout)
-
-        except subprocess.CalledProcessError as e:
-            raise Exception(
-                f"error attempting go get github.com/nextmv-io/sdk with app: {name}; version: {version}; "
-                f"sdk_version: {sdk_version}: {e.stderr}"
-            ) from e
-
-        try:
-            result = subprocess.run(
-                ["go", "mod", "tidy"],
-                check=True,
-                capture_output=True,
-                text=True,
-                cwd=os.path.join("..", name),
-            )
-            print(result.stdout)
-
-        except subprocess.CalledProcessError as e:
-            raise Exception(
-                f"error attempting go mod tidy with app: {name}; version: {version}; "
-                f"sdk_version: {sdk_version}: {e.stderr}"
-            ) from e
 
     log(f"Updated app: {name}; version: {version}.")
 
