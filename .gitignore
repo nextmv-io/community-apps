@@ -173,5 +173,9 @@ main.jar
 # Outputs
 *output*
 
-# Ignore any 'main' files (typically binaries from testing)
+# Ignore app binary files
 main
+order-fulfillment-gosdk/order-fulfillment-gosdk
+knapsack-gosdk/knapsack-gosdk
+shift-scheduling-gosdk/shift-scheduling-gosdk
+nextroute/nextroute
