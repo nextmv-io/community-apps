@@ -1,0 +1,29 @@
+{
+  "solutions": [
+    {
+      "block": "evening",
+      "count": 29,
+      "date": "2023-12-02",
+      "end_time": "2023-11-26T13:00:00+01:00",
+      "forecast": 177.12270316909792,
+      "start_time": "2023-11-13T17:00:00+01:00",
+      "when": "2023-12-04 13:00"
+    }
+  ],
+  "statistics": {
+    "result": {
+      "custom": {
+        "constraints": 21759,
+        "provider": "SCIP",
+        "status": "optimal",
+        "variables": 14538
+      },
+      "duration": 0.123,
+      "value": 71653.07905217604
+    },
+    "run": {
+      "duration": 0.123
+    },
+    "schema": "v1"
+  }
+}
