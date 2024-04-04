@@ -1,1 +1,1 @@
-pip3 install -r requirements.txt
+python3 main.py -input input.json -output output.json -duration 30
