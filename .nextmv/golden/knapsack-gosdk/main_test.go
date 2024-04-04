@@ -34,7 +34,7 @@ func TestGolden(t *testing.T) {
 				Duration: time.Duration(5) * time.Second,
 			},
 			ExecutionConfig: &golden.ExecutionConfig{
-				Command:    "nextmv",
+				Command:    "go",
 				Args:       []string{"run", "."},
 				InputFlag:  "-runner.input.path",
 				OutputFlag: "-runner.output.path",
