@@ -76,6 +76,7 @@ def main():
                 command_file = os.path.join(app_dir, f"{c}.sh")
                 with open(command_file, "w") as f:
                     f.write(command)
+                    f.write("\n")
                 print(f"  {command_file}")
         else:
             print(f"Testing commands for app {app}:")
@@ -86,6 +87,7 @@ def main():
                     sys.exit(1)
                 with open(command_file) as f:
                     existing_command = f.read()
+                    existing_command = existing_command.rstrip()
                 if command != existing_command:
                     print(f"Command differs: {command_file}", file=sys.stderr)
                     sys.exit(1)
