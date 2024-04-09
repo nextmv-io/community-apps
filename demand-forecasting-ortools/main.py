@@ -178,7 +178,7 @@ def solve(
         date += timedelta(days=1)
 
     return {
-        "solutions": [demands + forecast] if include_past else [forecast],
+        "solutions": demands + forecast if include_past else forecast,
         "statistics": {
             "result": {
                 "custom": {

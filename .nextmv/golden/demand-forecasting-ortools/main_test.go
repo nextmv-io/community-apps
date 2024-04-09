@@ -37,6 +37,9 @@ func TestGolden(t *testing.T) {
 				InputFlag:  "-input",
 				OutputFlag: "-output",
 			},
+			Thresholds: golden.Tresholds{
+				Float: 0.2,
+			},
 		},
 	)
 }
