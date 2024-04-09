@@ -33,7 +33,7 @@ apps:
   - name: shift-assignment-pyomo
     language: python
     language-version: 3.11
-  - name: shift-forecasting-ortools
+  - name: demand-forecasting-ortools
     language: python
     language-version: 3.11
   - name: shift-planning-ortools

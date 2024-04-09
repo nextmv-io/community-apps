@@ -68,11 +68,11 @@ apps:
     app_id: shift-assign-pyomo
     marketplace_app_id: shift.assign.pyomo
     description: Solve a shift assignment problem using Pyomo.
-  - name: shift-forecasting-ortools
+  - name: demand-forecasting-ortools
     type: python
-    app_id: shift-forecasting-ortools
-    marketplace_app_id: shift.forecasting.ortools
-    description: Solve a shift forecasting problem using OR-Tools.
+    app_id: demand-forecasting-ortools
+    marketplace_app_id: demand.forecasting.ortools
+    description: Solve a demand forecasting problem using OR-Tools.
   - name: shift-planning-ortools
     type: python
     app_id: shift-plan-ortools

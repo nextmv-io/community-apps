@@ -37,7 +37,7 @@ Visit the [docs][docs] for more information.
       OR-Tools to solve shift assignment problems.
 * [`shift-assignment-pyomo`][shift-assignment-pyomo]: use Python and Pyomo to
       solve shift assignment problems.
-* [`shift-forecasting-ortools`][shift-forecasting-ortools]: use Python and
+* [`demand-forecasting-ortools`][demand-forecasting-ortools]: use Python and
       OR-Tools to solve shift forecasting problems.
 * [`shift-planning-ortools`][shift-planning-ortools]: use Python and OR-Tools to
       solve shift planning problems.
@@ -66,7 +66,7 @@ Visit the [docs][docs] for more information.
 [routing-ortools]: ./routing-ortools/README.md
 [shift-assignment-ortools]: ./shift-assignment-ortools/README.md
 [shift-assignment-pyomo]: ./shift-assignment-pyomo/README.md
-[shift-forecasting-ortools]: ./shift-forecasting-ortools/README.md
+[demand-forecasting-ortools]: ./demand-forecasting-ortools/README.md
 [shift-planning-ortools]: ./shift-planning-ortools/README.md
 [shift-planning-pyomo]: ./shift-planning-pyomo/README.md
 [shift-scheduling-gosdk]: ./shift-scheduling-gosdk/README.md

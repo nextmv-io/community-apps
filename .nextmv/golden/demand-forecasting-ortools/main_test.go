@@ -33,7 +33,7 @@ func TestGolden(t *testing.T) {
 			},
 			ExecutionConfig: &golden.ExecutionConfig{
 				Command:    "python3",
-				Args:       []string{"../../../shift-forecasting-ortools/main.py"},
+				Args:       []string{"../../../demand-forecasting-ortools/main.py"},
 				InputFlag:  "-input",
 				OutputFlag: "-output",
 			},
