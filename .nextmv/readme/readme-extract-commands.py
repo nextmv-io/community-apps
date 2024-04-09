@@ -87,6 +87,7 @@ def main():
                     sys.exit(1)
                 with open(command_file) as f:
                     existing_command = f.read()
+                    existing_command = existing_command.rstrip()
                 if command != existing_command:
                     print(f"Command differs: {command_file}", file=sys.stderr)
                     sys.exit(1)
