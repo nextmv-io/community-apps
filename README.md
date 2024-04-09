@@ -13,6 +13,8 @@ Visit the [docs][docs] for more information.
 
 * [`cost-flow-ortools`][cost-flow-ortools]: use Python and OR-Tools to solve a
       cost flow problem.
+* [`demand-forecasting-ortools`][demand-forecasting-ortools]: use Python and
+      OR-Tools to solve shift forecasting problems.
 * [`knapsack-ampl`][knapsack-ampl]: use Python and AMPL to solve a knapsack
       problem.
 * [`knapsack-gosdk`][knapsack-gosdk]: use the Nextmv Go SDK to solve a knapsack
@@ -37,8 +39,6 @@ Visit the [docs][docs] for more information.
       OR-Tools to solve shift assignment problems.
 * [`shift-assignment-pyomo`][shift-assignment-pyomo]: use Python and Pyomo to
       solve shift assignment problems.
-* [`demand-forecasting-ortools`][demand-forecasting-ortools]: use Python and
-      OR-Tools to solve shift forecasting problems.
 * [`shift-planning-ortools`][shift-planning-ortools]: use Python and OR-Tools to
       solve shift planning problems.
 * [`shift-planning-pyomo`][shift-planning-pyomo]: use Python and Pyomo to solve
