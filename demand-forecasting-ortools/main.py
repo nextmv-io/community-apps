@@ -3,12 +3,12 @@ import argparse
 import json
 import math
 import sys
+import zoneinfo
 from datetime import datetime, timedelta
 from itertools import groupby
 from operator import itemgetter
-from typing import Any, Dict
+from typing import Any
 
-import zoneinfo
 from ortools.linear_solver import pywraplp
 
 BLOCKS = {
@@ -76,10 +76,10 @@ def main() -> None:
 
 
 def solve(
-    input_data: Dict[str, Any],
+    input_data: dict[str, Any],
     duration: int,
     include_past: bool,
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     provider = "SCIP"
     solver = pywraplp.Solver.CreateSolver(provider)
     solver.SetTimeLimit(duration * 1000)
@@ -137,7 +137,7 @@ def solve(
     status = solver.Solve()
 
     # Add fitted data into training set.
-    for i, f in zip(demands, fittings):
+    for i, f in zip(demands, fittings, strict=False):
         i["forecast"] = f.solution_value()
 
     # Forecast unknown demand.
@@ -204,12 +204,12 @@ def log(message: str) -> None:
     print(message, file=sys.stderr)
 
 
-def read_input(input_path) -> Dict[str, Any]:
+def read_input(input_path) -> dict[str, Any]:
     """Reads the input from stdin or a given input file."""
 
     input_file = {}
     if input_path:
-        with open(input_path, "r", encoding="utf-8") as file:
+        with open(input_path, encoding="utf-8") as file:
             input_file = json.load(file)
     else:
         input_file = json.load(sys.stdin)
