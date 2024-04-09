@@ -71,7 +71,7 @@ apps:
   - name: demand-forecasting-ortools
     type: python
     app_id: demand-forecasting-ortools
-    marketplace_app_id: demand.forecasting.ortools
+    marketplace_app_id: dem.forecast.ortools
     description: Solve a demand forecasting problem using OR-Tools.
   - name: shift-planning-ortools
     type: python
