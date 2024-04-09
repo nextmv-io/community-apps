@@ -76,6 +76,7 @@ def main():
                 command_file = os.path.join(app_dir, f"{c}.sh")
                 with open(command_file, "w") as f:
                     f.write(command)
+                    f.write("\n")
                 print(f"  {command_file}")
         else:
             print(f"Testing commands for app {app}:")
