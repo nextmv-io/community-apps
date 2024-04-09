@@ -14,7 +14,7 @@ Visit the [docs][docs] for more information.
 * [`cost-flow-ortools`][cost-flow-ortools]: use Python and OR-Tools to solve a
       cost flow problem.
 * [`demand-forecasting-ortools`][demand-forecasting-ortools]: use Python and
-      OR-Tools to solve shift forecasting problems.
+      OR-Tools to solve demand forecasting problems.
 * [`knapsack-ampl`][knapsack-ampl]: use Python and AMPL to solve a knapsack
       problem.
 * [`knapsack-gosdk`][knapsack-gosdk]: use the Nextmv Go SDK to solve a knapsack
