@@ -1,0 +1,16 @@
+{
+  "result": {
+    "custom": {
+      "constraints": 1,
+      "provider": "SCIP",
+      "status": "optimal",
+      "variables": 11
+    },
+    "duration": 0.123,
+    "value": 444.0
+  },
+  "run": {
+    "duration": 0.123
+  },
+  "schema": "v1"
+}
