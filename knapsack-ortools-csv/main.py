@@ -117,7 +117,7 @@ def log(message: str) -> None:
 def read_input() -> dict[str, Any]:
     """Reads the inputs from the .input dir and transforms into a single object."""
 
-    input_dir = ".input"
+    input_dir = "input"
 
     with open(f"{input_dir}/items.csv") as f:
         reader = csv.DictReader(f, quoting=csv.QUOTE_NONNUMERIC)
@@ -138,7 +138,7 @@ def read_input() -> dict[str, Any]:
 def write_output(output: dict[str, Any]) -> None:
     """Writes the output the .output folder and prints the statistics to stdout."""
 
-    output_dir = ".output"
+    output_dir = "output"
     os.makedirs(output_dir, exist_ok=True)
 
     solution = output["solutions"][0]["items"]
