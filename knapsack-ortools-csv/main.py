@@ -151,7 +151,7 @@ def write_output(output: dict[str, Any]) -> None:
         writer.writeheader()
         writer.writerows(solution)
 
-    statistics = output["statistics"]
+    statistics = {"statistics": output["statistics"]}
     print(json.dumps(statistics, indent=2))
 
 

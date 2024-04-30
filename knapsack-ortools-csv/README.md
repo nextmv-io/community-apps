@@ -13,14 +13,17 @@ Knapsack is a classic combinatorial optimization problem. Given a collection of
 items with a value and weight, our objective is to maximize the total value
 without exceeding the weight capacity of the knapsack.
 
-The `.input` folder defines the inputs of the problem:
+The `input` folder defines the inputs of the problem:
 
 - `items.csv` contains the items to be considered in the knapsack problem.
 - `weight_capacity.csv` contains the weight capacity of the knapsack.
 
-The  `main.py` file implements a MIP knapsack solver. It reads from the
-`.input` folder, solves the problem, and writes the solution to an `.output`
-folder. The statistics of the solution are printed to `stdout`.
+The  `main.py` file implements a MIP knapsack solver. The code is configured to
+work with Nextmv Cloud and fulfills these requirements:
+
+- It reads the necessary input files from the `input` folder.
+- Writes the solution file(s) to an `output` folder.
+- Streams the statistics of the solution to `stdout`.
 
 Follow these steps to run locally.
 
@@ -39,7 +42,7 @@ Follow these steps to run locally.
     python3 main.py -duration 30
     ```
 
-3. An `.output` directory should have been created with the optimal knapsack
+3. An `output` directory should have been created with the optimal knapsack
    solution in the `solution.csv` file.
 
 ## Mirror running on Nextmv Cloud locally
