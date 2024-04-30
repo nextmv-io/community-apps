@@ -130,7 +130,7 @@ def solve(input_data: dict[str, Any], duration: int, provider: str) -> dict[str,
         param data_peak; # Peak of the data.
 
       # Define the demand function
-        param demand_expr {r in R} :=
+        var demand_expr {r in R} :=
             coefficients_intercept +
             coefficients_region[r] +
             coefficients_price * price[r] +
@@ -138,12 +138,12 @@ def solve(input_data: dict[str, Any], duration: int, provider: str) -> dict[str,
             coefficients_peak * data_peak;
 
       # Variables
-        var price {R} >= price_min, <= price_max;
+        var price {r in R} >= price_min, <= price_max;
         var quantity {r in R} >= quantity_min[r], <= quantity_max[r];
-        var sales {R} >= 0;
-        var waste {r in R} := quantity[r] - sales[r];
-        var revenue {r in R} := sales[r] * price[r];
+        var waste {r in R} := quantity[r] - demand_expr[r];
+        var revenue {r in R} := sales_expr[r] * price[r];
         var costs {r in R} := cost_waste * waste[r] + cost_transport[r] * quantity[r];
+
 
        # Objective
       # TODO: Gurobi one uses quadratic objective.
@@ -154,8 +154,7 @@ def solve(input_data: dict[str, Any], duration: int, provider: str) -> dict[str,
 
       # Sales quantity constraints check that the sales are less than or equal
       # to the quantity and demand of the product.
-        subject to sales_expr {r in R}: sales[r] <= quantity[r];
-        subject to sales_demand_expr {r in R}: sales[r] <= demand_expr[r];        """
+        subject to sales_expr {r in R}: demand_expr[r] <= quantity[r];      """
     )
 
     # Sets the solver and options.
