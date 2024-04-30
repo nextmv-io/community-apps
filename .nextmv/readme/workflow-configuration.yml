@@ -35,6 +35,12 @@ apps:
         silent: true
       - name: 2.sh
         skip: true
+  - name: knapsack-ortools-csv
+    scripts:
+      - name: 0.sh
+        silent: true
+      - name: 2.sh
+        skip: true
   - name: knapsack-pyomo
     scripts:
       - name: 0.sh

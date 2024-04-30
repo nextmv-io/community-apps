@@ -204,7 +204,7 @@ def log(message: str) -> None:
     print(message, file=sys.stderr)
 
 
-def read_input(input_path) -> dict[str, Any]:
+def read_input(input_path: str) -> dict[str, Any]:
     """Reads the input from stdin or a given input file."""
 
     input_file = {}
@@ -217,7 +217,7 @@ def read_input(input_path) -> dict[str, Any]:
     return input_file
 
 
-def write_output(output_path, output) -> None:
+def write_output(output_path: str, output: dict[str, Any]) -> None:
     """Writes the output to stdout or a given output file."""
 
     content = json.dumps(output, indent=2)
