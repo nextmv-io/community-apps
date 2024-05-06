@@ -121,35 +121,10 @@ func solver(_ context.Context, i input, opts options) (schema.Output, error) {
 	assignments := computeAssignments(i)
 
 	// create some helping data structures
-	distributionCenterCarrierCombinations := []carrier{}
-	for _, dc := range i.DistributionCenters {
-		for c := range i.CarrierCapacities[dc.DistributionCenterID] {
-			newCarrier := carrier{
-				DistributionCenter: dc,
-				Carrier:            c,
-			}
-			distributionCenterCarrierCombinations = append(distributionCenterCarrierCombinations, newCarrier)
-		}
-	}
+	distributionCenterCarrierCombinations := createDistributionCenterCarrierCombinations(i)
 
-	itemToAssignments := make(map[string][]assignment, len(i.Items))
-	distributionCenterToCarrierToAssignments := make(map[string]map[string][]assignment, len(i.DistributionCenters))
-	for _, as := range assignments {
-		itemID := as.Item.ItemID
-		_, ok := itemToAssignments[itemID]
-		if !ok {
-			itemToAssignments[itemID] = []assignment{}
-		}
-		itemToAssignments[itemID] = append(itemToAssignments[itemID], as)
-		if _, ok = distributionCenterToCarrierToAssignments[as.DistributionCenter.DistributionCenterID]; !ok {
-			distributionCenterToCarrierToAssignments[as.DistributionCenter.DistributionCenterID] = make(map[string][]assignment)
-		}
-		if _, ok = distributionCenterToCarrierToAssignments[as.DistributionCenter.DistributionCenterID][as.Carrier]; !ok {
-			distributionCenterToCarrierToAssignments[as.DistributionCenter.DistributionCenterID][as.Carrier] = []assignment{}
-		}
-		distributionCenterToCarrierToAssignments[as.DistributionCenter.DistributionCenterID][as.Carrier] =
-			append(distributionCenterToCarrierToAssignments[as.DistributionCenter.DistributionCenterID][as.Carrier], as)
-	}
+	itemToAssignments := createItemToAssignmentsMap(assignments, i)
+	distributionCenterToCarrierToAssignments := createDistributionCenterToCarrierAssignmentsMap(assignments, i)
 
 	// x is a multimap representing a set of variables. It is initialized with a
 	// create function and, in this case one set of elements. The elements can
@@ -223,189 +198,61 @@ func solver(_ context.Context, i input, opts options) (schema.Output, error) {
 	// We want to minimize the costs for fulfilling the order.
 	m.Objective().SetMinimize()
 
-	// Fulfilment constraint -> ensure all items are assigned.
-	for _, item := range i.Items {
-		fulfillment := m.NewConstraint(
-			mip.Equal,
-			item.Quantity,
-		)
-		for _, a := range itemToAssignments[item.ItemID] {
-			fulfillment.NewTerm(float64(a.Quantity), x.Get(a))
-		}
-	}
+	// Fulfillment constraint -> ensure all items are assigned.
+	createFulfillmentConstraints(i, m, x, itemToAssignments)
 
 	// Carrier capacity constraint -> consider the carrier capacities in the
 	// solution; carrier capacity is considered in volume.
-	for dcID, dc := range distributionCenterToCarrierToAssignments {
-		for cID, list := range dc {
-			carrier := m.NewConstraint(
-				mip.LessThanOrEqual,
-				i.CarrierCapacities[dcID][cID],
-			)
-			for _, as := range list {
-				carrier.NewTerm(as.Item.UnitVolume*as.Item.Quantity, x.Get(as))
-			}
-		}
-	}
+	createCarrierCapacityConstraints(i, m, x, distributionCenterToCarrierToAssignments)
 
-	/* Inventory constraint -> Consider the inventory of each item at the
-	distribution centers. */
-	for _, item := range i.Items {
-		for _, dc := range i.DistributionCenters {
-			inventory := m.NewConstraint(
-				mip.LessThanOrEqual,
-				float64(dc.Inventory[item.ItemID]),
-			)
-			for _, a := range itemToAssignments[item.ItemID] {
-				if a.DistributionCenter.DistributionCenterID == dc.DistributionCenterID {
-					inventory.NewTerm(float64(a.Quantity), x.Get(a))
-				}
-			}
-		}
-	}
+	// Inventory constraint -> Consider the inventory of each item at the
+	// distribution centers.
+	createInventoryConstraints(i, m, x, itemToAssignments)
 
-	/* carton computation -> look at every distribution center and accumulate
-	the volume of all the assigned items, use the carton volume from the input to
-	compute the number of cartons that are necessary.
-	volume computation -> compute the volume for each distribution center -
-	carrier combination.
-	weight computation -> compute the weight for each
-	distribution center - carrier combination. */
-	for _, dc := range distributionCenterCarrierCombinations {
-		cartonConstr := m.NewConstraint(
-			mip.Equal,
-			0.0,
-		)
-		cartonConstr.NewTerm(-1, cartons.Get(dc))
+	// carton computation -> look at every distribution center and accumulate
+	// the volume of all the assigned items, use the carton volume from the input to
+	// compute the number of cartons that are necessary.
+	createCartonComputationConstraints(i, m, x, cartons, assignments, distributionCenterCarrierCombinations)
 
-		volumeConstr := m.NewConstraint(
-			mip.Equal,
-			0.0,
-		)
-		volumeConstr.NewTerm(-1, volumes.Get(dc))
+	// volume computation -> compute the volume for each distribution center -
+	// carrier combination.
+	createVolumeComputationConstraints(m, x, volumes, assignments, distributionCenterCarrierCombinations)
 
-		weightConstr := m.NewConstraint(
-			mip.Equal,
-			0.0,
-		)
-		weightConstr.NewTerm(-1, weights.Get(dc))
+	// weight computation -> compute the weight for each distribution center -
+	// carrier combination.
+	createWeightComputationConstraints(m, x, weights, assignments, distributionCenterCarrierCombinations)
 
-		for _, a := range assignments {
-			if a.DistributionCenter.DistributionCenterID == dc.DistributionCenter.DistributionCenterID &&
-				a.Carrier == dc.Carrier {
-				cartonConstr.NewTerm(a.Item.UnitVolume*float64(a.Quantity)*1/i.CartonVolume, x.Get(a))
-				volumeConstr.NewTerm(a.Item.UnitVolume*float64(a.Quantity), x.Get(a))
-				weightConstr.NewTerm(a.Item.UnitWeight*float64(a.Quantity), x.Get(a))
-			}
-		}
-	}
+	/*
+	 */
 
-	/* dimensional weight computation -> by using the carrier specific
-	dimensional weight factor, the dimensional weight of each shipnode carrier
-	combination is determined.
-	billable weight computation -> computes the billable weight for each
-	distribution center carrier combination, which is the max between the actual
-	weight and the dimensional weight of that combination. */
-	for _, combi := range distributionCenterCarrierCombinations {
-		dimWeightConstr := m.NewConstraint(
-			mip.Equal,
-			0.0,
-		)
-		dimWeightConstr.NewTerm(1.0, dimensionalWeights.Get(combi))
-		dimWeightConstr.NewTerm(-i.CarrierDimensionalWeightFactors[combi.Carrier], volumes.Get(combi))
+	// dimensional weight computation -> by using the carrier specific
+	// dimensional weight factor, the dimensional weight of each shipnode carrier
+	// combination is determined.
+	createDimensionalWeightComputationConstraints(i, m, dimensionalWeights, volumes, distributionCenterCarrierCombinations)
 
-		/* Due to the fact that the billable weight will be used in the
-		objective function and we're trying to minimize cost, the billable weight will
-		be either set to the actual weight or to the dimensional weight. */
-		billableWeightConstr1 := m.NewConstraint(
-			mip.GreaterThanOrEqual,
-			0.0,
-		)
-		billableWeightConstr1.NewTerm(1.0, billableWeights.Get(combi))
-		billableWeightConstr1.NewTerm(-1.0, weights.Get(combi))
+	// billable weight computation -> computes the billable weight for each
+	// distribution center carrier combination, which is the max between the actual
+	// weight and the dimensional weight of that combination.
+	createBillableWeightsComputationConstraints(m, billableWeights, weights,
+		dimensionalWeights, distributionCenterCarrierCombinations)
 
-		billableWeightConstr2 := m.NewConstraint(
-			mip.GreaterThanOrEqual,
-			0.0,
-		)
-		billableWeightConstr2.NewTerm(1.0, billableWeights.Get(combi))
-		billableWeightConstr2.NewTerm(-1.0, dimensionalWeights.Get(combi))
-	}
+	// Only one weight tier -> for each carrier, only a single weight tier can
+	// be selected.
+	createSingleWeightTierConstraints(i, m, weightTierVariables)
 
-	/* Only one weight tier -> for each carrier, only a single weight tier can
-	be selected. */
-	for _, dc := range i.DistributionCenters {
-		for c := range i.CarrierDimensionalWeightFactors {
-			tiersConstraint := m.NewConstraint(mip.Equal, 1.0)
-			weightTiersLength := len(i.CarrierDeliveryCosts[dc.DistributionCenterID][c]["weight_tiers"])
-			for k := 0; k < weightTiersLength+1; k++ {
-				tiersConstraint.NewTerm(1.0, weightTierVariables[dc.DistributionCenterID][c][k])
-			}
-		}
-	}
+	// Weight tier upper limit -> used to determine actual weight tier of a
+	// distribution center carrier combination
+	createWeightTierUpperLimitConstraints(i, m, billableWeights, weightTierVariables,
+		distributionCenterCarrierCombinations, totalWeight)
 
-	/* Weight tier upper limit -> used to determine actual weight tier of a
-	distribution center carrier combination*/
-	for _, combi := range distributionCenterCarrierCombinations {
-		upperConstraint := m.NewConstraint(mip.LessThanOrEqual, 0.0)
-		upperConstraint.NewTerm(1, billableWeights.Get(combi))
-		weightTiersLength :=
-			len(i.CarrierDeliveryCosts[combi.DistributionCenter.DistributionCenterID][combi.Carrier]["weight_tiers"])
-		for k := 0; k < weightTiersLength+1; k++ {
-			if k == weightTiersLength {
-				upperConstraint.NewTerm(
-					-totalWeight,
-					weightTierVariables[combi.DistributionCenter.DistributionCenterID][combi.Carrier][k],
-				)
-			} else {
-				upperConstraint.NewTerm(
-					-i.CarrierDeliveryCosts[combi.DistributionCenter.DistributionCenterID][combi.Carrier]["weight_tiers"][k],
-					weightTierVariables[combi.DistributionCenter.DistributionCenterID][combi.Carrier][k],
-				)
-			}
-		}
-	}
+	// weight tier lower limit -> used to determine actual weight tier of a
+	// distribution center carrier combination
+	createWeightTierLowerLimitConstraints(i, m, billableWeights, weightTierVariables,
+		distributionCenterCarrierCombinations)
 
-	/* weight tier lower limit -> used to determine actual weight tier of a
-	distribution center carrier combination */
-	for _, combi := range distributionCenterCarrierCombinations {
-		lowerConstraint := m.NewConstraint(mip.LessThanOrEqual, 0.0)
-		weightTiersLength :=
-			len(i.CarrierDeliveryCosts[combi.DistributionCenter.DistributionCenterID][combi.Carrier]["weight_tiers"])
-		for k := 0; k < weightTiersLength+1; k++ {
-			if k == 0 {
-				lowerConstraint.NewTerm(0, weightTierVariables[combi.DistributionCenter.DistributionCenterID][combi.Carrier][k])
-			} else {
-				lowerConstraint.NewTerm(
-					i.CarrierDeliveryCosts[combi.DistributionCenter.DistributionCenterID][combi.Carrier]["weight_tiers"][k-1],
-					weightTierVariables[combi.DistributionCenter.DistributionCenterID][combi.Carrier][k],
-				)
-			}
-		}
-		lowerConstraint.NewTerm(-1, billableWeights.Get(combi))
-	}
-
-	/* delivery costs constraint -> compute the delivery costs based on the
-	selected weight tier for each distribution center and carrier combination */
-	for _, combi := range distributionCenterCarrierCombinations {
-		costsConstraint := m.NewConstraint(mip.Equal, 0.0)
-		costsConstraint.NewTerm(1, deliveryCosts.Get(combi))
-		weightTiersLength :=
-			len(i.CarrierDeliveryCosts[combi.DistributionCenter.DistributionCenterID][combi.Carrier]["weight_tiers"])
-		for k := 0; k < weightTiersLength+1; k++ {
-			if k == weightTiersLength {
-				costsConstraint.NewTerm(
-					-i.CarrierDeliveryCosts[combi.DistributionCenter.DistributionCenterID][combi.Carrier]["weight_rates"][k-1],
-					weightTierVariables[combi.DistributionCenter.DistributionCenterID][combi.Carrier][k],
-				)
-			} else {
-				costsConstraint.NewTerm(
-					-i.CarrierDeliveryCosts[combi.DistributionCenter.DistributionCenterID][combi.Carrier]["weight_rates"][k],
-					weightTierVariables[combi.DistributionCenter.DistributionCenterID][combi.Carrier][k],
-				)
-			}
-		}
-	}
+	// delivery costs constraint -> compute the delivery costs based on the
+	// selected weight tier for each distribution center and carrier combination
+	createDeliveryCostsConstraints(i, m, deliveryCosts, weightTierVariables, distributionCenterCarrierCombinations)
 
 	/* objective function = handling costs + delivery costs */
 	/* handling costs: cost is based on number of cartons that need to be
@@ -446,6 +293,329 @@ func solver(_ context.Context, i input, opts options) (schema.Output, error) {
 	}
 
 	return output, nil
+}
+
+// delivery costs constraint -> compute the delivery costs based on the
+// selected weight tier for each distribution center and carrier combination.
+func createDeliveryCostsConstraints(
+	i input,
+	m mip.Model,
+	deliveryCosts model.MultiMap[mip.Float, carrier],
+	weightTierVariables map[string]map[string]map[int]mip.Bool,
+	distributionCenterCarrierCombinations []carrier) {
+	for _, combi := range distributionCenterCarrierCombinations {
+		costsConstraint := m.NewConstraint(mip.Equal, 0.0)
+		costsConstraint.NewTerm(1, deliveryCosts.Get(combi))
+		weightTiersLength :=
+			len(i.CarrierDeliveryCosts[combi.DistributionCenter.DistributionCenterID][combi.Carrier]["weight_tiers"])
+		for k := 0; k < weightTiersLength+1; k++ {
+			if k == weightTiersLength {
+				costsConstraint.NewTerm(
+					-i.CarrierDeliveryCosts[combi.DistributionCenter.DistributionCenterID][combi.Carrier]["weight_rates"][k-1],
+					weightTierVariables[combi.DistributionCenter.DistributionCenterID][combi.Carrier][k],
+				)
+			} else {
+				costsConstraint.NewTerm(
+					-i.CarrierDeliveryCosts[combi.DistributionCenter.DistributionCenterID][combi.Carrier]["weight_rates"][k],
+					weightTierVariables[combi.DistributionCenter.DistributionCenterID][combi.Carrier][k],
+				)
+			}
+		}
+	}
+}
+
+// weight tier lower limit -> used to determine actual weight tier of a
+// distribution center carrier combination.
+func createWeightTierLowerLimitConstraints(
+	i input,
+	m mip.Model,
+	billableWeights model.MultiMap[mip.Float, carrier],
+	weightTierVariables map[string]map[string]map[int]mip.Bool,
+	distributionCenterCarrierCombinations []carrier) {
+	for _, combi := range distributionCenterCarrierCombinations {
+		lowerConstraint := m.NewConstraint(mip.LessThanOrEqual, 0.0)
+		weightTiersLength :=
+			len(i.CarrierDeliveryCosts[combi.DistributionCenter.DistributionCenterID][combi.Carrier]["weight_tiers"])
+		for k := 0; k < weightTiersLength+1; k++ {
+			if k == 0 {
+				lowerConstraint.NewTerm(0, weightTierVariables[combi.DistributionCenter.DistributionCenterID][combi.Carrier][k])
+			} else {
+				lowerConstraint.NewTerm(
+					i.CarrierDeliveryCosts[combi.DistributionCenter.DistributionCenterID][combi.Carrier]["weight_tiers"][k-1],
+					weightTierVariables[combi.DistributionCenter.DistributionCenterID][combi.Carrier][k],
+				)
+			}
+		}
+		lowerConstraint.NewTerm(-1, billableWeights.Get(combi))
+	}
+}
+
+// Weight tier upper limit -> used to determine actual weight tier of a
+// distribution center carrier combination.
+func createWeightTierUpperLimitConstraints(
+	i input,
+	m mip.Model,
+	billableWeights model.MultiMap[mip.Float, carrier],
+	weightTierVariables map[string]map[string]map[int]mip.Bool,
+	distributionCenterCarrierCombinations []carrier,
+	totalWeight float64) {
+	for _, combi := range distributionCenterCarrierCombinations {
+		upperConstraint := m.NewConstraint(mip.LessThanOrEqual, 0.0)
+		upperConstraint.NewTerm(1, billableWeights.Get(combi))
+		weightTiersLength :=
+			len(i.CarrierDeliveryCosts[combi.DistributionCenter.DistributionCenterID][combi.Carrier]["weight_tiers"])
+		for k := 0; k < weightTiersLength+1; k++ {
+			if k == weightTiersLength {
+				upperConstraint.NewTerm(
+					-totalWeight,
+					weightTierVariables[combi.DistributionCenter.DistributionCenterID][combi.Carrier][k],
+				)
+			} else {
+				upperConstraint.NewTerm(
+					-i.CarrierDeliveryCosts[combi.DistributionCenter.DistributionCenterID][combi.Carrier]["weight_tiers"][k],
+					weightTierVariables[combi.DistributionCenter.DistributionCenterID][combi.Carrier][k],
+				)
+			}
+		}
+	}
+}
+
+// Only one weight tier -> for each carrier, only a single weight tier can
+// be selected.
+func createSingleWeightTierConstraints(
+	i input,
+	m mip.Model,
+	weightTierVariables map[string]map[string]map[int]mip.Bool) {
+	for _, dc := range i.DistributionCenters {
+		for c := range i.CarrierDimensionalWeightFactors {
+			tiersConstraint := m.NewConstraint(mip.Equal, 1.0)
+			weightTiersLength := len(i.CarrierDeliveryCosts[dc.DistributionCenterID][c]["weight_tiers"])
+			for k := 0; k < weightTiersLength+1; k++ {
+				tiersConstraint.NewTerm(1.0, weightTierVariables[dc.DistributionCenterID][c][k])
+			}
+		}
+	}
+}
+
+// billable weight computation -> computes the billable weight for each
+// distribution center carrier combination, which is the max between the actual
+// weight and the dimensional weight of that combination.
+func createBillableWeightsComputationConstraints(
+	m mip.Model,
+	billableWeights model.MultiMap[mip.Float, carrier],
+	weights model.MultiMap[mip.Float, carrier],
+	dimensionalWeights model.MultiMap[mip.Float, carrier],
+	distributionCenterCarrierCombinations []carrier) {
+	for _, combi := range distributionCenterCarrierCombinations {
+		/* Due to the fact that the billable weight will be used in the
+		objective function and we're trying to minimize cost, the billable weight will
+		be either set to the actual weight or to the dimensional weight. */
+		billableWeightConstr1 := m.NewConstraint(
+			mip.GreaterThanOrEqual,
+			0.0,
+		)
+		billableWeightConstr1.NewTerm(1.0, billableWeights.Get(combi))
+		billableWeightConstr1.NewTerm(-1.0, weights.Get(combi))
+
+		billableWeightConstr2 := m.NewConstraint(
+			mip.GreaterThanOrEqual,
+			0.0,
+		)
+		billableWeightConstr2.NewTerm(1.0, billableWeights.Get(combi))
+		billableWeightConstr2.NewTerm(-1.0, dimensionalWeights.Get(combi))
+	}
+}
+
+// dimensional weight computation -> by using the carrier specific
+// dimensional weight factor, the dimensional weight of each shipnode carrier
+// combination is determined.
+func createDimensionalWeightComputationConstraints(
+	i input,
+	m mip.Model,
+	dimensionalWeights model.MultiMap[mip.Float, carrier],
+	volumes model.MultiMap[mip.Float, carrier],
+	distributionCenterCarrierCombinations []carrier) {
+	for _, combi := range distributionCenterCarrierCombinations {
+		dimWeightConstr := m.NewConstraint(
+			mip.Equal,
+			0.0,
+		)
+		dimWeightConstr.NewTerm(1.0, dimensionalWeights.Get(combi))
+		dimWeightConstr.NewTerm(-i.CarrierDimensionalWeightFactors[combi.Carrier], volumes.Get(combi))
+	}
+}
+
+func createWeightComputationConstraints(
+	m mip.Model,
+	x model.MultiMap[mip.Bool, assignment],
+	weights model.MultiMap[mip.Float, carrier],
+	assignments []assignment,
+	distributionCenterCarrierCombinations []carrier) {
+	for _, dc := range distributionCenterCarrierCombinations {
+		weightConstr := m.NewConstraint(
+			mip.Equal,
+			0.0,
+		)
+		weightConstr.NewTerm(-1, weights.Get(dc))
+
+		for _, a := range assignments {
+			if a.DistributionCenter.DistributionCenterID == dc.DistributionCenter.DistributionCenterID &&
+				a.Carrier == dc.Carrier {
+				weightConstr.NewTerm(a.Item.UnitWeight*float64(a.Quantity), x.Get(a))
+			}
+		}
+	}
+}
+
+// volume computation -> compute the volume for each distribution center -
+// carrier combination.
+func createVolumeComputationConstraints(
+	m mip.Model,
+	x model.MultiMap[mip.Bool, assignment],
+	volumes model.MultiMap[mip.Float, carrier],
+	assignments []assignment,
+	distributionCenterCarrierCombinations []carrier) {
+	for _, dc := range distributionCenterCarrierCombinations {
+		volumeConstr := m.NewConstraint(
+			mip.Equal,
+			0.0,
+		)
+		volumeConstr.NewTerm(-1, volumes.Get(dc))
+
+		for _, a := range assignments {
+			if a.DistributionCenter.DistributionCenterID == dc.DistributionCenter.DistributionCenterID &&
+				a.Carrier == dc.Carrier {
+				volumeConstr.NewTerm(a.Item.UnitVolume*float64(a.Quantity), x.Get(a))
+			}
+		}
+	}
+}
+
+// carton computation -> look at every distribution center and accumulate
+// the volume of all the assigned items, use the carton volume from the input to
+// compute the number of cartons that are necessary.
+func createCartonComputationConstraints(
+	i input,
+	m mip.Model,
+	x model.MultiMap[mip.Bool, assignment],
+	cartons model.MultiMap[mip.Float, carrier],
+	assignments []assignment,
+	distributionCenterCarrierCombinations []carrier) {
+	for _, dc := range distributionCenterCarrierCombinations {
+		cartonConstr := m.NewConstraint(
+			mip.Equal,
+			0.0,
+		)
+		cartonConstr.NewTerm(-1, cartons.Get(dc))
+		for _, a := range assignments {
+			if a.DistributionCenter.DistributionCenterID == dc.DistributionCenter.DistributionCenterID &&
+				a.Carrier == dc.Carrier {
+				cartonConstr.NewTerm(a.Item.UnitVolume*float64(a.Quantity)*1/i.CartonVolume, x.Get(a))
+			}
+		}
+	}
+}
+
+// Inventory constraint -> Consider the inventory of each item at the
+// distribution centers.
+func createInventoryConstraints(
+	i input,
+	m mip.Model,
+	x model.MultiMap[mip.Bool, assignment],
+	itemToAssignments map[string][]assignment) {
+	for _, item := range i.Items {
+		for _, dc := range i.DistributionCenters {
+			inventory := m.NewConstraint(
+				mip.LessThanOrEqual,
+				float64(dc.Inventory[item.ItemID]),
+			)
+			for _, a := range itemToAssignments[item.ItemID] {
+				if a.DistributionCenter.DistributionCenterID == dc.DistributionCenterID {
+					inventory.NewTerm(float64(a.Quantity), x.Get(a))
+				}
+			}
+		}
+	}
+}
+
+// Carrier capacity constraint -> consider the carrier capacities in the
+// solution; carrier capacity is considered in volume.
+func createCarrierCapacityConstraints(
+	i input,
+	m mip.Model,
+	x model.MultiMap[mip.Bool, assignment],
+	distributionCenterToCarrierToAssignments map[string]map[string][]assignment) {
+	for dcID, dc := range distributionCenterToCarrierToAssignments {
+		for cID, list := range dc {
+			carrier := m.NewConstraint(
+				mip.LessThanOrEqual,
+				i.CarrierCapacities[dcID][cID],
+			)
+			for _, as := range list {
+				carrier.NewTerm(as.Item.UnitVolume*as.Item.Quantity, x.Get(as))
+			}
+		}
+	}
+}
+
+// Fulfillment constraint -> ensure all items are assigned.
+func createFulfillmentConstraints(
+	i input, m mip.Model,
+	x model.MultiMap[mip.Bool, assignment],
+	itemToAssignments map[string][]assignment) {
+	for _, item := range i.Items {
+		fulfillment := m.NewConstraint(
+			mip.Equal,
+			item.Quantity,
+		)
+		for _, a := range itemToAssignments[item.ItemID] {
+			fulfillment.NewTerm(float64(a.Quantity), x.Get(a))
+		}
+	}
+}
+
+func createDistributionCenterToCarrierAssignmentsMap(
+	assignments []assignment,
+	i input) map[string]map[string][]assignment {
+	distributionCenterToCarrierToAssignments := make(map[string]map[string][]assignment, len(i.DistributionCenters))
+	for _, as := range assignments {
+		if _, ok := distributionCenterToCarrierToAssignments[as.DistributionCenter.DistributionCenterID]; !ok {
+			distributionCenterToCarrierToAssignments[as.DistributionCenter.DistributionCenterID] = make(map[string][]assignment)
+		}
+		if _, ok := distributionCenterToCarrierToAssignments[as.DistributionCenter.DistributionCenterID][as.Carrier]; !ok {
+			distributionCenterToCarrierToAssignments[as.DistributionCenter.DistributionCenterID][as.Carrier] = []assignment{}
+		}
+		distributionCenterToCarrierToAssignments[as.DistributionCenter.DistributionCenterID][as.Carrier] =
+			append(distributionCenterToCarrierToAssignments[as.DistributionCenter.DistributionCenterID][as.Carrier], as)
+	}
+	return distributionCenterToCarrierToAssignments
+}
+
+func createItemToAssignmentsMap(assignments []assignment, i input) map[string][]assignment {
+	itemToAssignments := make(map[string][]assignment, len(i.Items))
+	for _, as := range assignments {
+		itemID := as.Item.ItemID
+		_, ok := itemToAssignments[itemID]
+		if !ok {
+			itemToAssignments[itemID] = []assignment{}
+		}
+		itemToAssignments[itemID] = append(itemToAssignments[itemID], as)
+	}
+	return itemToAssignments
+}
+
+func createDistributionCenterCarrierCombinations(i input) []carrier {
+	distributionCenterCarrierCombinations := []carrier{}
+	for _, dc := range i.DistributionCenters {
+		for c := range i.CarrierCapacities[dc.DistributionCenterID] {
+			newCarrier := carrier{
+				DistributionCenter: dc,
+				Carrier:            c,
+			}
+			distributionCenterCarrierCombinations = append(distributionCenterCarrierCombinations, newCarrier)
+		}
+	}
+	return distributionCenterCarrierCombinations
 }
 
 type oflSolution struct {
