@@ -34,7 +34,7 @@ Follow these steps to run locally.
 1. Run the command below to check that everything works as expected:
 
     ```bash
-    python3 main.py -input input.json -output output.json -duration 30
+    python3 main.py -input inputs/input.json -output output.json -duration 30
     ```
 
 1. A file `output.json` should have been created with the optimal knapsack
