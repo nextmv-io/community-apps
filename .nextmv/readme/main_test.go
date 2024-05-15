@@ -60,6 +60,7 @@ func TestGolden(t *testing.T) {
 	// Define replacements
 	replacements := []golden.VolatileRegexReplacement{
 		// Replace "duration": 0.354 with "duration":0.123
+		{Regex: `duration": \d+\.\d+`, Replacement: `duration": 0.123`},
 		{Regex: `duration":\d+\.\d+`, Replacement: `duration":0.123`},
 		// Replace xpress.init(...) with
 		// xpress.init("path/to/xpress")

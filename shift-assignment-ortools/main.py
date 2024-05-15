@@ -22,9 +22,7 @@ STATUS = {
 def main() -> None:
     """Entry point for the app."""
 
-    parser = argparse.ArgumentParser(
-        description="Solve shift-assignment with OR-Tools MIP."
-    )
+    parser = argparse.ArgumentParser(description="Solve shift-assignment with OR-Tools MIP.")
     parser.add_argument(
         "-input",
         default="",
@@ -50,11 +48,13 @@ def main() -> None:
 
     # Read input data, solve the problem and write the solution.
     input_data = read_input(args.input)
+
     log("Solving shift-assignment:")
     log(f"  - shifts: {len(input_data.get('shifts', []))}")
     log(f"  - workers: {len(input_data.get('workers', []))}")
     log(f"  - rules: {len(input_data.get('rules', []))}")
     log(f"  - max duration: {args.duration} seconds")
+
     solution = solve(input_data, args.duration, args.provider)
     write_output(args.output, solution)
 
@@ -73,9 +73,7 @@ def solve(input_data: dict[str, Any], duration: int, provider: str) -> dict[str,
     x_assign = {}
     for e in workers:
         for s in shifts:
-            x_assign[(e["id"], s["id"])] = solver.BoolVar(
-                f'Assignment_{e["id"]}_{s["id"]}'
-            )
+            x_assign[(e["id"], s["id"])] = solver.BoolVar(f'Assignment_{e["id"]}_{s["id"]}')
 
     # >>> Constraints
 
@@ -90,8 +88,7 @@ def solve(input_data: dict[str, Any], duration: int, provider: str) -> dict[str,
     for e in workers:
         rules = rules_per_worker[e["id"]]
         solver.Add(
-            solver.Sum([x_assign[(e["id"], s["id"])] for s in shifts])
-            >= rules["min_shifts"],
+            solver.Sum([x_assign[(e["id"], s["id"])] for s in shifts]) >= rules["min_shifts"],
             f"worker_{e['id']}",
         )
 
@@ -99,16 +96,13 @@ def solve(input_data: dict[str, Any], duration: int, provider: str) -> dict[str,
     for e in workers:
         rules = rules_per_worker[e["id"]]
         solver.Add(
-            solver.Sum([x_assign[(e["id"], s["id"])] for s in shifts])
-            <= rules["max_shifts"],
+            solver.Sum([x_assign[(e["id"], s["id"])] for s in shifts]) <= rules["max_shifts"],
             f"worker_{e['id']}",
         )
 
     # Ensure that the minimum rest time between shifts is respected
     for e in workers:
-        rest_time = datetime.timedelta(
-            hours=rules_per_worker[e["id"]]["min_rest_hours_between_shifts"]
-        )
+        rest_time = datetime.timedelta(hours=rules_per_worker[e["id"]]["min_rest_hours_between_shifts"])
         for s1, shift1 in enumerate(shifts):
             for s2, shift2 in enumerate(shifts):
                 if s1 >= s2:
@@ -121,9 +115,7 @@ def solve(input_data: dict[str, Any], duration: int, provider: str) -> dict[str,
                 # The two shifts are closer to each other than the minimum rest time, so we need to ensure that
                 # the worker is not assigned to both.
                 solver.Add(
-                    x_assign[(e["id"], shift1["id"])]
-                    + x_assign[(e["id"], shift2["id"])]
-                    <= 1,
+                    x_assign[(e["id"], shift1["id"])] + x_assign[(e["id"], shift2["id"])] <= 1,
                     f"Rest_{e['id']}_{shift1['id']}_{shift2['id']}",
                 )
 
@@ -131,8 +123,7 @@ def solve(input_data: dict[str, Any], duration: int, provider: str) -> dict[str,
     for e in workers:
         for s in shifts:
             if not any(
-                a["start_time"] <= s["start_time"] and a["end_time"] >= s["end_time"]
-                for a in e["availability"]
+                a["start_time"] <= s["start_time"] and a["end_time"] >= s["end_time"] for a in e["availability"]
             ):
                 x_assign[(e["id"], s["id"])].SetBounds(0, 0)
 
@@ -243,10 +234,7 @@ def convert_input(input_data: dict[str, Any]) -> tuple[list, list, dict]:
         e["availability"] = sorted(e["availability"], key=lambda x: x["start_time"])
         i = 0
         while i < len(e["availability"]) - 1:
-            if (
-                e["availability"][i]["end_time"]
-                == e["availability"][i + 1]["start_time"]
-            ):
+            if e["availability"][i]["end_time"] == e["availability"][i + 1]["start_time"]:
                 e["availability"][i]["end_time"] = e["availability"][i + 1]["end_time"]
                 del e["availability"][i + 1]
             else:
@@ -277,7 +265,7 @@ def log(message: str) -> None:
     print(message, file=sys.stderr)
 
 
-def read_input(input_path) -> dict[str, Any]:
+def read_input(input_path: str) -> dict[str, Any]:
     """Reads the input from stdin or a given input file."""
 
     input_file = {}
@@ -290,7 +278,7 @@ def read_input(input_path) -> dict[str, Any]:
     return input_file
 
 
-def write_output(output_path, output) -> None:
+def write_output(output_path: str, output: dict[str, Any]) -> None:
     """Writes the output to stdout or a given output file."""
 
     content = json.dumps(output, indent=2, default=custom_serial)
