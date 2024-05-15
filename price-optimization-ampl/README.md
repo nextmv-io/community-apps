@@ -1,23 +1,32 @@
-# Nextmv AMPL Python template
+# Nextmv AMPL Price Optimization App
 
-This template demonstrates how to solve a Mixed Integer Programming problem
-using the AMPL Python package [amplpy][amplpy].
+This app demonstrates how to solve a Price Optimization Mixed Integer Problem
+(MIP) using the AMPL Python package [amplpy][amplpy]. We were inspired by the
+[Avocado Price Optimization][gurobi-blog]] blog post published by Gurobi.
 
-To solve a Mixed Integer Problem (MIP) is to optimize a linear objective
-function of many variables, subject to linear constraints. We demonstrate this
-by solving the knapsack problem.
+In this problem, we aim to optimize both the price and quantity of a product
+shipped to a set of regions. The revenue in each region is determined by the
+sales volume and the price of the product. The sales volume is influenced by the
+price and it cannot exceed the quantity of the product supplied to the region.
 
-Knapsack is a classic combinatorial optimization problem. Given a collection of
-items with a value and weight, our objective is to maximize the total value
-without exceeding the weight capacity of the knapsack.
+The cost of supplying a product to each region includes the cost of waste
+(unsold products) and the cost of transport.
 
-The input defines a number of items which have an id to identify the item, a
-weight and a value. Additionally there is a weight capacity.
+Given a set of regions, a total supply of product, minimum / maxium product
+allocations and prices per region, costs to transport products and costs for
+wasted products, and regression coefficients for a model correlating price to
+expected demand, we determine the following:
 
-The most important files created are `main.py`, `input.json`, and
-`ampl_license_uuid.template`.
+* `price` (price of the product in each region)
+* `quantity` (quantity of the product supplied to each region)
 
-* `main.py` implements a MIP knapsack solver.
+While maximizing expected profit (`revenue - cost`).
+
+The most important files created are `main.py`, `ampl_model.mod`, `input.json`,
+and `ampl_license_uuid.template`.
+
+* `main.py` invokes AMPL to solve the price optimization problem
+* `ampl_model.mod` defines the model to solve the price optimization problem
 * `input.json` is a sample input file.
 * `ampl_license_uuid.template` is a file demonstrating how to use the AMPL UUID
   license key.
@@ -78,3 +87,4 @@ the command `Dev Containers: Reopen in Container`.
 * Need more assistance? Send us an [email](mailto:support@nextmv.io)!
 
 [amplpy]: https://amplpy.ampl.com/en/latest/?_gl=1*16ca5pw*_ga*Nzk4OTUwMDgwLjE3MDgzNTIzMzg.*_ga_FY84K2YRRE*MTcwODQ0NTgwMy42LjEuMTcwODQ0NTgzOC4wLjAuMA..
+[gurobi-blog]: https://www.google.com/search?q=gurobi+price+optimization+avocado&rlz=1C5CHFA_enUS904US904&oq=gurobi+price+optimization+avocado&gs_lcrp=EgZjaHJvbWUyBggAEEUYOTIGCAEQRRg80gEINDU2MGowajSoAgCwAgE&sourceid=chrome&ie=UTF-8

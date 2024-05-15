@@ -107,55 +107,7 @@ def solve(input_data: dict[str, Any], duration: int, provider: str) -> dict[str,
     ampl.set_output_handler(output_handler)
     ampl.set_error_handler(error_handler)
     ampl.reset()
-    ampl.eval(
-        r"""
-
-        # Sets
-        set R; # Set of regions.
-
-        # Parameters
-        param cost_waste; # Cost per wasted product.
-        param cost_transport {R}; # Cost of transport to each region.
-        param price_min; # Minimum price for the product.
-        param price_max; # Maximum price for the product.
-        param quantity_min {R}; # Minimum quantity for each region.
-        param quantity_max {R}; # Maximum quantity for each region.
-        param total_amount_of_supply; # Total amount of supply.
-        param coefficients_intercept; # Intercept of the product demand model.
-        param coefficients_region {R}; # Region coefficients of the product demand model.
-        param coefficients_price; # Price coefficient of the product demand model.
-        param coefficients_year_index; # Year index coefficient of the product demand model.
-        param coefficients_peak; # Peak coefficient of the product demand model.
-        param data_year; # Year of the data.
-        param data_peak; # Peak of the data.
-
-      # Define the demand function
-        var demand_expr {r in R} :=
-            coefficients_intercept +
-            coefficients_region[r] +
-            coefficients_price * price[r] +
-            coefficients_year_index * (data_year - 2015) +
-            coefficients_peak * data_peak;
-
-      # Variables
-        var price {r in R} >= price_min, <= price_max;
-        var quantity {r in R} >= quantity_min[r], <= quantity_max[r];
-        var waste {r in R} := quantity[r] - demand_expr[r];
-        var revenue {r in R} := sales_expr[r] * price[r];
-        var costs {r in R} := cost_waste * waste[r] + cost_transport[r] * quantity[r];
-
-
-       # Objective
-      # TODO: Gurobi one uses quadratic objective.
-        maximize obj: sum {r in regions} revenue[r] - cost[r];
-
-      # Supply constraint checks that the sum of the quantities is equal to the total supply
-        subject to supply: sum {r in regions} quantity[r] = total_amount_of_supply;
-
-      # Sales quantity constraints check that the sales are less than or equal
-      # to the quantity and demand of the product.
-        subject to sales_expr {r in R}: demand_expr[r] <= quantity[r];      """
-    )
+    ampl.read("ampl_model.mod")
 
     # Sets the solver and options.
     ampl.option["solver"] = provider
@@ -192,17 +144,16 @@ def solve(input_data: dict[str, Any], duration: int, provider: str) -> dict[str,
     log(f"AMPL errors after solving: {error_handler.buffer}")
 
     # Convert to solution format.
-    # objective_val = ampl.get_objective("obj")
+    objective_val = ampl.get_objective("obj")
     solutions = []
-    # if objective_val:
-    # append to solutions the regions, price and quantity.
-    solutions.append(
-        {
-            "regions": input_data["regions"],
-            "price": {r: ampl.get_variable("price")[r].value() for r in ampl.get_set("R")},
-            "quantity": {r: ampl.get_variable("quantity")[r].value() for r in ampl.get_set("R")},
-        }
-    )
+    if objective_val:
+        solutions.append(
+            {
+                "regions": input_data["regions"],
+                "price": {r: ampl.get_variable("price")[r].value() for r in ampl.get_set("R")},
+                "quantity": {r: ampl.get_variable("quantity")[r].value() for r in ampl.get_set("R")},
+            }
+        )
 
     solve_result = ampl.solve_result_num
     status = "unknown"
@@ -213,7 +164,21 @@ def solve(input_data: dict[str, Any], duration: int, provider: str) -> dict[str,
             status = s.get("status")
             break
 
-    # TODO: Calculate expected demand, sales, and waste per region.
+    # calculate expected demand for each region
+    price_solution = ampl.getVariable("price").getValues().toList()
+    coefficients = input_data["coefficients"]
+    expected_demand = {}
+
+    for r in range(len(input_data["regions"])):
+        expected_demand[input_data["regions"][r]] = (
+            coefficients["intercept"]
+            + coefficients["price"] * price_solution[r][1]
+            + coefficients["region"][r]
+            + coefficients["year_index"] * (input_data["year"] - 2015)
+            + coefficients["peak"] * input_data["peak"]
+        )
+    expected_sales = {r: ampl.get_variable("sales")[r].value() for r in ampl.get_set("R")}
+    expected_waste = {r: ampl.get_variable("waste")[r].value() for r in ampl.get_set("R")}
 
     # Creates the statistics.
     statistics = {
@@ -223,9 +188,12 @@ def solve(input_data: dict[str, Any], duration: int, provider: str) -> dict[str,
                 "provider": provider,
                 "status": status,
                 "variables": ampl.get_value("_nvars"),
+                "expected_demand": expected_demand,
+                "expected_sales": expected_sales,
+                "expected_waste": expected_waste,
             },
             "duration": ampl.get_value("_total_solve_time"),
-            # "value": objective_val.value(),
+            "value": objective_val.value(),
         },
         "run": {
             "duration": time.time() - start_time,

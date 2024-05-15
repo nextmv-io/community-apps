@@ -5,6 +5,7 @@ runtime: ghcr.io/nextmv-io/runtime/ampl:latest
 # (e.g.: configs/*.json) is supported.
 files:
   - main.py
+  - ampl_model.mod
   # If you have an AMPL license, uncomment the following line and make sure to
   # store your license information in that file.
   # - ampl_license_uuid
