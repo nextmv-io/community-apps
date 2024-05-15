@@ -1,60 +1,78 @@
 {
   "solutions": [
     {
-      "items": [
-        {
-          "id": "cat",
-          "value": 100,
-          "weight": 20
-        },
-        {
-          "id": "water",
-          "value": 40,
-          "weight": 2
-        },
-        {
-          "id": "phone",
-          "value": 6,
-          "weight": 1
-        },
-        {
-          "id": "book",
-          "value": 63,
-          "weight": 10
-        },
-        {
-          "id": "rx",
-          "value": 81,
-          "weight": 1
-        },
-        {
-          "id": "coat",
-          "value": 44,
-          "weight": 9
-        },
-        {
-          "id": "keys",
-          "value": 92,
-          "weight": 1
-        },
-        {
-          "id": "nuts",
-          "value": 18,
-          "weight": 4
-        }
+      "price": {
+        "great_lakes": 1.781740568230948,
+        "midsouth": 1.50991599242647,
+        "northeast": 2,
+        "northern_new_england": 1.587060501666157,
+        "plains": 1.207087679498974,
+        "southcentral": 2,
+        "southeast": 1.895845017061375,
+        "west": 2
+      },
+      "quantity": {
+        "great_lakes": 3.508197679924355,
+        "midsouth": 3.943279215745175,
+        "northeast": 4.460223905724629,
+        "northern_new_england": 0.917984,
+        "plains": 2.959567664410292,
+        "southcentral": 4.741016143054851,
+        "southeast": 3.840727873418048,
+        "west": 5.629003517722652
+      },
+      "regions": [
+        "great_lakes",
+        "midsouth",
+        "northeast",
+        "northern_new_england",
+        "southcentral",
+        "southeast",
+        "west",
+        "plains"
       ]
     }
   ],
   "statistics": {
     "result": {
       "custom": {
-        "constraints": 1,
+        "constraints": 41,
+        "expected_demand": {
+          "great_lakes": 3.508197679924355,
+          "midsouth": 3.8645434001788557,
+          "northeast": 4.460223905724628,
+          "northern_new_england": 0.9179840000000044,
+          "plains": 1.2121711966909763,
+          "southcentral": 6.488412610774166,
+          "southeast": 3.6111942357425555,
+          "west": 5.858537155398147
+        },
+        "expected_sales": {
+          "great_lakes": 3.508197679924355,
+          "midsouth": 3.864543400178855,
+          "northeast": 4.460223905724628,
+          "northern_new_england": 0.917984,
+          "plains": 2.959567664410291,
+          "southcentral": 4.741016143054851,
+          "southeast": 3.840727873418048,
+          "west": 5.629003517722652
+        },
+        "expected_waste": {
+          "great_lakes": 0,
+          "midsouth": 0.07873581556632026,
+          "northeast": 0,
+          "northern_new_england": -4.440892098500626e-15,
+          "plains": 8.881784197001252e-16,
+          "southcentral": 0,
+          "southeast": -1.7763568394002505e-15,
+          "west": 0
+        },
         "provider": "highs",
         "status": "optimal",
-        "variables": 11
+        "variables": 56
       },
       "duration": 0.123,
-      "value": 444
+      "value": 46.4511927332535
     },
     "run": {
       "custom": {
