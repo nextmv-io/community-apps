@@ -17,8 +17,9 @@ STATUS = {
     min_cost_flow.SimpleMinCostFlow.FEASIBLE: "feasible",
     min_cost_flow.SimpleMinCostFlow.INFEASIBLE: "infeasible",
     min_cost_flow.SimpleMinCostFlow.NOT_SOLVED: "not solved",
-    min_cost_flow.SimpleMinCostFlow.UNBALANCED: "unbalanced"
+    min_cost_flow.SimpleMinCostFlow.UNBALANCED: "unbalanced",
 }
+
 
 def main() -> None:
     """Entry point for the template."""
@@ -43,10 +44,12 @@ def main() -> None:
 
     # Read input data, solve the problem and write the solution.
     input_data = read_input(args.input)
+
     log("Best value flow for project to worker assignment:")
     log(f"  - projects: {len(input_data.get('projects', []))}")
     log(f"  - workers: {len(input_data.get('workers', []))}")
     log(f"  - penalty: {args.penalty}")
+
     solution = solve(input_data, float(args.penalty))
     write_output(args.output, solution)
 
@@ -147,9 +150,7 @@ def solve(input_data: dict[str, Any], penalty: float) -> dict[str, Any]:
 
     solver = min_cost_flow.SimpleMinCostFlow()
 
-    all_arcs = solver.add_arcs_with_capacity_and_unit_cost(
-        start_nodes, end_nodes, capacities, unit_costs
-    )
+    all_arcs = solver.add_arcs_with_capacity_and_unit_cost(start_nodes, end_nodes, capacities, unit_costs)
     solver.set_nodes_supplies(range(0, len(supply)), supply)
 
     start = time.process_time()
@@ -182,7 +183,7 @@ def solve(input_data: dict[str, Any], penalty: float) -> dict[str, Any]:
                 "excess_time_units": dummy_sink_units,
                 "unmet_time_units": dummy_source_units,
                 "number_of_fulfilled_projects": 0,
-                "number_of_unfulfilled_projects": 0
+                "number_of_unfulfilled_projects": 0,
             },
             "duration": wall_time,
             "value": solver.optimal_cost(),
@@ -209,13 +210,18 @@ def solve(input_data: dict[str, Any], penalty: float) -> dict[str, Any]:
                     "to": end_nodes[i],
                     "flow": int(solution_flows[i]),
                     "capacity": int(capacities[i]),
-                    "value": int(costs[i])
+                    "value": int(costs[i]),
                 }
             )
 
             # look at the flows between workers and projects to get the assignments
-            if solution_flows[i] > 0 and start_nodes[i] != 0 \
-                    and end_nodes[i] != 1 and start_nodes[i] != 2 and end_nodes[i] != 3:
+            if (
+                solution_flows[i] > 0
+                and start_nodes[i] != 0
+                and end_nodes[i] != 1
+                and start_nodes[i] != 2
+                and end_nodes[i] != 3
+            ):
                 project_id = input_data["projects"][end_nodes[i] - 4 - len(input_data["workers"])]["id"]
                 solution["assignments"].append(
                     {
@@ -249,6 +255,7 @@ def solve(input_data: dict[str, Any], penalty: float) -> dict[str, Any]:
         "statistics": statistics,
     }
 
+
 def validateSkills(input_data: dict[str, Any]) -> Any:
     """Check that each project skill and each worker skill have a skill pair."""
     for project in input_data["projects"]:
@@ -261,38 +268,39 @@ def validateSkills(input_data: dict[str, Any]) -> Any:
                 return errorStatusOutput("input_skill_error")
     return None
 
+
 def errorStatusOutput(status: str) -> dict[str, Any]:
     """Returns an error output with a given status."""
 
     return {
-            "solution": {
-                "flows": [],
-                "assignments": [],
-                "status": f"{status}",
+        "solution": {
+            "flows": [],
+            "assignments": [],
+            "status": f"{status}",
+        },
+        "statistics": {
+            "result": {
+                "custom": {
+                    "number_of_edges": 0,
+                    "number_of_nodes": 0,
+                    "number_of_workers": 0,
+                    "number_of_projects": 0,
+                    "available_time_units": 0,
+                    "required_time_units": 0,
+                    "excess_time_units": 0,
+                    "unmet_time_units": 0,
+                    "number_of_fulfilled_projects": 0,
+                    "number_of_unfulfilled_projects": 0,
+                },
+                "duration": 0,
+                "value": 0,
             },
-            "statistics": {
-                "result": {
-                    "custom": {
-                        "number_of_edges": 0,
-                        "number_of_nodes": 0,
-                        "number_of_workers": 0,
-                        "number_of_projects": 0,
-                        "available_time_units": 0,
-                        "required_time_units": 0,
-                        "excess_time_units": 0,
-                        "unmet_time_units": 0,
-                        "number_of_fulfilled_projects": 0,
-                        "number_of_unfulfilled_projects": 0
-                    },
-                    "duration": 0,
-                    "value": 0,
-                },
-                "run": {
-                    "duration": 0,
-                },
-                "schema": "v1",
-            }
-        }
+            "run": {
+                "duration": 0,
+            },
+            "schema": "v1",
+        },
+    }
 
 
 def log(message: str) -> None:
@@ -302,7 +310,7 @@ def log(message: str) -> None:
     print(message, file=sys.stderr)
 
 
-def read_input(input_path) -> dict[str, Any]:
+def read_input(input_path: str) -> dict[str, Any]:
     """Reads the input from stdin or a given input file."""
 
     input_file = {}
@@ -315,7 +323,7 @@ def read_input(input_path) -> dict[str, Any]:
     return input_file
 
 
-def write_output(output_path, output) -> None:
+def write_output(output_path: str, output: dict[str, Any]) -> None:
     """Writes the output to stdout or a given output file."""
 
     content = json.dumps(output, indent=2)
