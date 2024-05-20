@@ -160,8 +160,8 @@ def solve(
         solutions.append(
             {
                 "regions": input_data["regions"],
-                "price": {r: ampl.get_variable("price")[r].value() for r in ampl.get_set("R")},
-                "quantity": {r: ampl.get_variable("quantity")[r].value() for r in ampl.get_set("R")},
+                "price": {r: round(ampl.get_variable("price")[r].value(), 2) for r in ampl.get_set("R")},
+                "quantity": {r: round(ampl.get_variable("quantity")[r].value(), 8) for r in ampl.get_set("R")},
             }
         )
 
@@ -180,15 +180,22 @@ def solve(
     expected_demand = {}
 
     for r in range(len(input_data["regions"])):
-        expected_demand[input_data["regions"][r]] = (
-            coefficients["intercept"]
-            + coefficients["price"] * price_solution[r][1]
-            + coefficients["region"][r]
-            + coefficients["year_index"] * (input_data["year"] - 2015)
-            + coefficients["peak"] * input_data["peak"]
+        expected_demand[input_data["regions"][r]] = round(
+            (
+                coefficients["intercept"]
+                + coefficients["price"] * price_solution[r][1]
+                + coefficients["region"][r]
+                + coefficients["year_index"] * (input_data["year"] - 2015)
+                + coefficients["peak"] * input_data["peak"]
+            ),
+            8,
         )
-    expected_sales = {r: ampl.get_variable("sales")[r].value() for r in ampl.get_set("R")}
-    expected_waste = {r: ampl.get_variable("waste")[r].value() for r in ampl.get_set("R")}
+    expected_sales = {r: round(ampl.get_variable("sales")[r].value(), 8) for r in ampl.get_set("R")}
+    expected_waste = {r: round(ampl.get_variable("waste")[r].value(), 8) for r in ampl.get_set("R")}
+
+    # Convert -0.0 to 0.0
+    expected_sales = {r: 0.0 if v == -0.0 else v for r, v in expected_sales.items()}
+    expected_waste = {r: 0.0 if v == -0.0 else v for r, v in expected_waste.items()}
 
     # Creates the statistics.
     statistics = {

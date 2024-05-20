@@ -4,10 +4,11 @@ This app demonstrates how to solve a Price Optimization Mixed Integer Problem
 (MIP) using the AMPL Python package [amplpy][amplpy]. We were inspired by the
 [Avocado Price Optimization][gurobi-blog]] blog post published by Gurobi.
 
-In this problem, we aim to optimize both the price and quantity of a product
-shipped to a set of regions. The revenue in each region is determined by the
-sales volume and the price of the product. The sales volume is influenced by the
-price and it cannot exceed the quantity of the product supplied to the region.
+In this problem, we aim to optimize both the price and quantity (in millions) of
+a product shipped to a set of regions. The revenue in each region is determined
+by the sales volume and the price of the product. The sales volume is influenced
+by the price and it cannot exceed the quantity of the product supplied to the
+region.
 
 The cost of supplying a product to each region includes the cost of waste
 (unsold products) and the cost of transport.
@@ -85,6 +86,11 @@ the command `Dev Containers: Reopen in Container`.
   deployment can also be found on our [blog](https://www.nextmv.io/blog) and on
   our [documentation site](https://docs.nextmv.io).
 * Need more assistance? Send us an [email](mailto:support@nextmv.io)!
+
+## Notes
+
+* This model rounds off some variables for simplicity. We recommend users
+  handle data types explicitly when working with this model.
 
 [amplpy]: https://amplpy.ampl.com/en/latest/?_gl=1*16ca5pw*_ga*Nzk4OTUwMDgwLjE3MDgzNTIzMzg.*_ga_FY84K2YRRE*MTcwODQ0NTgwMy42LjEuMTcwODQ0NTgzOC4wLjAuMA..
 [gurobi-blog]: https://www.google.com/search?q=gurobi+price+optimization+avocado&rlz=1C5CHFA_enUS904US904&oq=gurobi+price+optimization+avocado&gs_lcrp=EgZjaHJvbWUyBggAEEUYOTIGCAEQRRg80gEINDU2MGowajSoAgCwAgE&sourceid=chrome&ie=UTF-8
