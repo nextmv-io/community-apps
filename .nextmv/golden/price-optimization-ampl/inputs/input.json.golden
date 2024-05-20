@@ -1,0 +1,85 @@
+{
+  "solutions": [
+    {
+      "price": {
+        "great_lakes": 1.78,
+        "midsouth": 1.51,
+        "northeast": 2,
+        "northern_new_england": 1.59,
+        "plains": 1.21,
+        "southcentral": 2,
+        "southeast": 1.9,
+        "west": 2
+      },
+      "quantity": {
+        "great_lakes": 3.50819768,
+        "midsouth": 3.94327922,
+        "northeast": 4.46022391,
+        "northern_new_england": 0.917984,
+        "plains": 2.95956766,
+        "southcentral": 4.74101614,
+        "southeast": 3.84072787,
+        "west": 5.62900352
+      },
+      "regions": [
+        "great_lakes",
+        "midsouth",
+        "northeast",
+        "northern_new_england",
+        "southcentral",
+        "southeast",
+        "west",
+        "plains"
+      ]
+    }
+  ],
+  "statistics": {
+    "result": {
+      "custom": {
+        "constraints": 41,
+        "expected_demand": {
+          "great_lakes": 3.50819768,
+          "midsouth": 3.8645434,
+          "northeast": 4.46022391,
+          "northern_new_england": 0.917984,
+          "plains": 1.2121712,
+          "southcentral": 6.48841261,
+          "southeast": 3.61119424,
+          "west": 5.85853716
+        },
+        "expected_sales": {
+          "great_lakes": 3.50819768,
+          "midsouth": 3.8645434,
+          "northeast": 4.46022391,
+          "northern_new_england": 0.917984,
+          "plains": 2.95956766,
+          "southcentral": 4.74101614,
+          "southeast": 3.84072787,
+          "west": 5.62900352
+        },
+        "expected_waste": {
+          "great_lakes": 0,
+          "midsouth": 0.07873582,
+          "northeast": 0,
+          "northern_new_england": 0,
+          "plains": 0,
+          "southcentral": 0,
+          "southeast": 0,
+          "west": 0
+        },
+        "provider": "highs",
+        "status": "optimal",
+        "variables": 56
+      },
+      "duration": 0.123,
+      "value": 46.4511927332535
+    },
+    "run": {
+      "custom": {
+        "license_used": "demo"
+      },
+      "duration": 0.123
+    },
+    "schema": "v1"
+  }
+}

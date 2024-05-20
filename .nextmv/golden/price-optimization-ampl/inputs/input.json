@@ -1,0 +1,37 @@
+{
+  "regions": [
+    "great_lakes",
+    "midsouth",
+    "northeast",
+    "northern_new_england",
+    "southcentral",
+    "southeast",
+    "west",
+    "plains"
+  ],
+  "total_amount_of_supply": 30,
+  "cost_per_wasted_product": 0.1,
+  "peak": 1,
+  "transport_costs": [0.3, 0.1, 0.4, 0.5, 0.3, 0.2, 0.2, 0.2],
+  "year": 2024,
+  "minimum_product_price": 0,
+  "maximum_product_price": 2,
+  "minimum_product_allocations": [
+    2.063574, 1.845443, 2.364424, 0.21969, 3.68713, 2.197764, 3.260102, 1.058938
+  ],
+  "maximum_product_allocations": [
+    7.094765, 6.168572, 8.836406, 0.917984, 10.323175, 7.810475, 11.274749,
+    3.575499
+  ],
+  "coefficients": {
+    "region": [
+      0, -0.242693153677881, 1.433019836643242, -3.019243790637881,
+      1.7138120739734646, 0.5839901666611692, 2.6017994486412657,
+      -1.8150328723904097
+    ],
+    "price": -2.2037701048902467,
+    "intercept": 5.43931005216503,
+    "year_index": 0.16076930231844555,
+    "peak": 0.548510505830839
+  }
+}
