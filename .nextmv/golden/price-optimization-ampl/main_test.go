@@ -20,6 +20,8 @@ func TestGolden(t *testing.T) {
 			Args: []string{
 				"-duration",
 				"30",
+				"-model",
+				"../../../price-optimization-ampl",
 			},
 			TransientFields: []golden.TransientField{
 				{

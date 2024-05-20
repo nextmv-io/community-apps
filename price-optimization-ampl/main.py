@@ -68,6 +68,11 @@ def main() -> None:
         help="Path to input file. Default is stdin.",
     )
     parser.add_argument(
+        "-model",
+        default=".",
+        help="Path to folder containing the .mod file. Default is current working directory.",
+    )
+    parser.add_argument(
         "-output",
         default="",
         help="Path to output file. Default is stdout.",
@@ -90,11 +95,16 @@ def main() -> None:
     log("Solving price optimization problem:")
     log(f"  - regions: {len(input_data.get('regions', []))}")
     log(f"  - max duration: {args.duration} seconds")
-    solution = solve(input_data, args.duration, args.provider)
+    solution = solve(input_data, args.duration, args.provider, args.model)
     write_output(args.output, solution)
 
 
-def solve(input_data: dict[str, Any], duration: int, provider: str) -> dict[str, Any]:
+def solve(
+    input_data: dict[str, Any],
+    duration: int,
+    provider: str,
+    model: str,
+) -> dict[str, Any]:
     """Solves the given problem and returns the solution."""
 
     start_time = time.time()
@@ -107,7 +117,7 @@ def solve(input_data: dict[str, Any], duration: int, provider: str) -> dict[str,
     ampl.set_output_handler(output_handler)
     ampl.set_error_handler(error_handler)
     ampl.reset()
-    ampl.read("ampl_model.mod")
+    ampl.read(f"{model}/ampl_model.mod")
 
     # Sets the solver and options.
     ampl.option["solver"] = provider
