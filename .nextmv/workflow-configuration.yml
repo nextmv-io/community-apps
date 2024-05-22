@@ -103,6 +103,11 @@ apps:
     app_id: price-opt-ampl
     marketplace_app_id: price.opt.ampl
     description: Solve a price optimization problem using AMPL with Python.
+  - name: facility-location-ampl
+    type: python
+    app_id: fac-loc-ampl
+    marketplace_app_id: fac.loc.ampl
+    description: Solve a facility location problem using AMPL with Python.
 
 # Main supported language versions.
 language-support:
