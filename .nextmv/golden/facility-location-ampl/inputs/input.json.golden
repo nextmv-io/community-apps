@@ -1,0 +1,28 @@
+{
+  "solutions": [
+    {
+      "facility_open": "{\"schema\":{\"fields\":[{\"name\":\"index\",\"type\":\"string\"},{\"name\":\"facility_open\",\"type\":\"integer\"}],\"primaryKey\":[\"index\"],\"pandas_version\":\"1.4.0\"},\"data\":[{\"index\":\"Elm Creek\",\"facility_open\":1},{\"index\":\"Emory\",\"facility_open\":1},{\"index\":\"Sunset\",\"facility_open\":0}]}",
+      "solve_output": "\nITERATION 1\n\nHiGHS 1.7.0:   pre:solve = off\n  alg:simplex = 1\nHiGHS 1.7.0: infeasible problem\n9 simplex iterations\n0 barrier iterations\n1: Feasibility cut added for scenario S1\nHiGHS 1.7.0:   pre:solve = off\n  alg:simplex = 1\nHiGHS 1.7.0: infeasible problem\n9 simplex iterations\n0 barrier iterations\n1: Feasibility cut added for scenario S2\nHiGHS 1.7.0:   pre:solve = off\n  alg:simplex = 1\nHiGHS 1.7.0: infeasible problem\n7 simplex iterations\n0 barrier iterations\n1: Feasibility cut added for scenario S3\nHiGHS 1.7.0:   pre:solve = off\n  alg:simplex = 1\nHiGHS 1.7.0: infeasible problem\n7 simplex iterations\n0 barrier iterations\n1: Feasibility cut added for scenario S4\nHiGHS 1.7.0:   pre:solve = off\n  alg:simplex = 1\nHiGHS 1.7.0: infeasible problem\n8 simplex iterations\n0 barrier iterations\n1: Feasibility cut added for scenario S5\n\nSOLVING MASTER PROBLEM\n\nHiGHS 1.7.0:   pre:solve = off\n  alg:simplex = 1\nHiGHS 1.7.0: optimal solution; objective 1400000\n0 simplex iterations\n1 branching nodes\n\nITERATION 2\n\nHiGHS 1.7.0:   pre:solve = off\n  alg:simplex = 1\nHiGHS 1.7.0: optimal solution; objective 667518.5521\n7 simplex iterations\n0 barrier iterations\n2: Optimality cut added for scenario S1\nHiGHS 1.7.0:   pre:solve = off\n  alg:simplex = 1\nHiGHS 1.7.0: optimal solution; objective 626053.6626\n7 simplex iterations\n0 barrier iterations\n2: Optimality cut added for scenario S2\nHiGHS 1.7.0:   pre:solve = off\n  alg:simplex = 1\nHiGHS 1.7.0: optimal solution; objective 690308.3416\n8 simplex iterations\n0 barrier iterations\n2: Optimality cut added for scenario S3\nHiGHS 1.7.0:   pre:solve = off\n  alg:simplex = 1\nHiGHS 1.7.0: optimal solution; objective 799265.5418\n8 simplex iterations\n0 barrier iterations\n2: Optimality cut added for scenario S4\nHiGHS 1.7.0:   pre:solve = off\n  alg:simplex = 1\nHiGHS 1.7.0: optimal solution; objective 599009.2221\n7 simplex iterations\n0 barrier iterations\n2: Optimality cut added for scenario S5\n\nSOLVING MASTER PROBLEM\n\nHiGHS 1.7.0:   pre:solve = off\n  alg:simplex = 1\nHiGHS 1.7.0: optimal solution; objective 1600000\n13 simplex iterations\n1 branching nodes\n\nITERATION 3\n\nHiGHS 1.7.0:   pre:solve = off\n  alg:simplex = 1\nHiGHS 1.7.0: optimal solution; objective 462653.4952\n8 simplex iterations\n0 barrier iterations\n3: Optimality cut added for scenario S1\nHiGHS 1.7.0:   pre:solve = off\n  alg:simplex = 1\nHiGHS 1.7.0: optimal solution; objective 440885.9263\n7 simplex iterations\n0 barrier iterations\n3: Optimality cut added for scenario S2\nHiGHS 1.7.0:   pre:solve = off\n  alg:simplex = 1\nHiGHS 1.7.0: optimal solution; objective 495912.8691\n8 simplex iterations\n0 barrier iterations\n3: Optimality cut added for scenario S3\nHiGHS 1.7.0:   pre:solve = off\n  alg:simplex = 1\nHiGHS 1.7.0: optimal solution; objective 542872.3486\n8 simplex iterations\n0 barrier iterations\n3: Optimality cut added for scenario S4\nHiGHS 1.7.0:   pre:solve = off\n  alg:simplex = 1\nHiGHS 1.7.0: optimal solution; objective 437939.9401\n7 simplex iterations\n0 barrier iterations\n3: Optimality cut added for scenario S5\n\nSOLVING MASTER PROBLEM\n\nHiGHS 1.7.0:   pre:solve = off\n  alg:simplex = 1\nHiGHS 1.7.0: optimal solution; objective 2076052.916\n14 simplex iterations\n1 branching nodes\n\nITERATION 4\n\nHiGHS 1.7.0:   pre:solve = off\n  alg:simplex = 1\nHiGHS 1.7.0: optimal solution; objective 462653.4952\n8 simplex iterations\n0 barrier iterations\n4: No cut needed for scenario S1\nHiGHS 1.7.0:   pre:solve = off\n  alg:simplex = 1\nHiGHS 1.7.0: optimal solution; objective 440885.9263\n7 simplex iterations\n0 barrier iterations\n4: No cut needed for scenario S2\nHiGHS 1.7.0:   pre:solve = off\n  alg:simplex = 1\nHiGHS 1.7.0: optimal solution; objective 495912.8691\n8 simplex iterations\n0 barrier iterations\n4: No cut needed for scenario S3\nHiGHS 1.7.0:   pre:solve = off\n  alg:simplex = 1\nHiGHS 1.7.0: optimal solution; objective 542872.3486\n8 simplex iterations\n0 barrier iterations\n4: No cut needed for scenario S4\nHiGHS 1.7.0:   pre:solve = off\n  alg:simplex = 1\nHiGHS 1.7.0: optimal solution; objective 437939.9401\n7 simplex iterations\n0 barrier iterations\n4: No cut needed for scenario S5\n\nOPTIMAL SOLUTION FOUND\nExpected cost = 2076052.915846\n\nfacility_open [*] :=\n'Elm Creek'  1\n      Emory  1\n;\n\n",
+      "total_cost": 2076052.915846315
+    }
+  ],
+  "statistics": {
+    "result": {
+      "custom": {
+        "constraints": 9,
+        "provider": "highs",
+        "status": "solved",
+        "variables": 26
+      },
+      "duration": 0.123,
+      "value": 437939.94009
+    },
+    "run": {
+      "custom": {
+        "license_used": "demo"
+      },
+      "duration": 0.123
+    },
+    "schema": "v1"
+  }
+}
