@@ -100,13 +100,13 @@ apps:
     description: Solve a knapsack problem using Xpress in Python.
   - name: price-optimization-ampl
     type: python
-    app_id: price-opt-ampl
-    marketplace_app_id: price.opt.ampl
+    app_id:
+    marketplace_app_id:
     description: Solve a price optimization problem using AMPL with Python.
   - name: facility-location-ampl
     type: python
-    app_id: fac-loc-ampl
-    marketplace_app_id: fac.loc.ampl
+    app_id:
+    marketplace_app_id:
     description: Solve a facility location problem using AMPL with Python.
 
 # Main supported language versions.
