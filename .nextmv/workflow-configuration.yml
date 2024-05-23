@@ -3,7 +3,7 @@ apps:
     type: python
     app_id: cost-flow-ortools
     marketplace_app_id: cost.flow.ortools
-    description: Solve a cost-flow problem using Google OR-Tools in Python.
+    description: Solve a cost-flow problem using OR-Tools in Python.
   # AMPL is not pushed to Marketplace yet until we decide what is the best
   # way to handle licensing.
   - name: knapsack-ampl
@@ -27,12 +27,17 @@ apps:
     type: java
     app_id: knapsack-jortools
     marketplace_app_id: knapsack.jortools
-    description: Solve a knapsack problem using Google OR-Tools in Java.
+    description: Solve a knapsack problem using OR-Tools in Java.
   - name: knapsack-ortools
     type: python
     app_id: knapsack-ortools
     marketplace_app_id: knapsack.ortools
-    description: Solve a knapsack problem using Google OR-Tools in Python.
+    description: Solve a knapsack problem using OR-Tools in Python.
+  - name: knapsack-ortools-csv
+    type: python
+    app_id:
+    marketplace_app_id:
+    description: Use CSV in/out for a knapsack OR-Tools problem in Python.
   - name: knapsack-pyomo
     type: python
     app_id: knapsack-pyomo
@@ -52,27 +57,32 @@ apps:
     type: java
     app_id:
     marketplace_app_id:
-    description: Solve a vehicle routing problem using Google OR-Tools in Java.
+    description: Solve a vehicle routing problem using OR-Tools in Java.
   - name: routing-ortools
     type: python
     app_id: routing-ortools
     marketplace_app_id: routing.ortools
-    description: Solve a vehicle routing problem using Google OR-Tools in Python.
+    description: Solve a vehicle routing problem using OR-Tools in Python.
   - name: shift-assignment-ortools
     type: python
     app_id: shift-assign-ortools
     marketplace_app_id: shift.assign.ortools
-    description: Solve a shift assignment problem using Google OR-Tools in Python.
+    description: Solve a shift assignment problem using OR-Tools in Python.
   - name: shift-assignment-pyomo
     type: python
     app_id: shift-assign-pyomo
     marketplace_app_id: shift.assign.pyomo
     description: Solve a shift assignment problem using Pyomo.
+  - name: demand-forecasting-ortools
+    type: python
+    app_id: demand-forecasting-ortools
+    marketplace_app_id: dem.forecast.ortools
+    description: Solve a demand forecasting problem using OR-Tools.
   - name: shift-planning-ortools
     type: python
     app_id: shift-plan-ortools
     marketplace_app_id: shift.plan.ortools
-    description: Solve a shift planning problem using Google OR-Tools in Python.
+    description: Solve a shift planning problem using OR-Tools in Python.
   - name: shift-planning-pyomo
     type: python
     app_id: shift-plan-pyomo
@@ -88,6 +98,11 @@ apps:
     app_id:
     marketplace_app_id:
     description: Solve a knapsack problem using Xpress in Python.
+  - name: price-optimization-ampl
+    type: python
+    app_id: price-opt-ampl
+    marketplace_app_id: price.opt.ampl
+    description: Solve a price optimization problem using AMPL with Python.
 
 # Main supported language versions.
 language-support:

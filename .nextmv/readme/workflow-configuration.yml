@@ -35,6 +35,12 @@ apps:
         silent: true
       - name: 2.sh
         skip: true
+  - name: knapsack-ortools-csv
+    scripts:
+      - name: 0.sh
+        silent: true
+      - name: 2.sh
+        skip: true
   - name: knapsack-pyomo
     scripts:
       - name: 0.sh
@@ -48,6 +54,12 @@ apps:
       - name: 1.sh
         skip: true
   - name: order-fulfillment-gosdk
+    scripts:
+      - name: 0.sh
+        silent: true
+      - name: 1.sh
+        skip: true
+  - name: price-optimization-ampl
     scripts:
       - name: 0.sh
         silent: true
@@ -72,6 +84,12 @@ apps:
       - name: 2.sh
         skip: true
   - name: shift-assignment-pyomo
+    scripts:
+      - name: 0.sh
+        silent: true
+      - name: 2.sh
+        skip: true
+  - name: demand-forecasting-ortools
     scripts:
       - name: 0.sh
         silent: true

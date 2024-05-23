@@ -13,6 +13,8 @@ Visit the [docs][docs] for more information.
 
 * [`cost-flow-ortools`][cost-flow-ortools]: use Python and OR-Tools to solve a
       cost flow problem.
+* [`demand-forecasting-ortools`][demand-forecasting-ortools]: use Python and
+      OR-Tools to solve demand forecasting problems.
 * [`knapsack-ampl`][knapsack-ampl]: use Python and AMPL to solve a knapsack
       problem.
 * [`knapsack-gosdk`][knapsack-gosdk]: use the Nextmv Go SDK to solve a knapsack
@@ -23,6 +25,8 @@ Visit the [docs][docs] for more information.
       solve a knapsack problem.
 * [`knapsack-ortools`][knapsack-ortools]: use Python and OR-Tools to solve a
       knapsack problem.
+* [`knapsack-ortools-csv`][knapsack-ortools-csv]: use Python and OR-Tools to
+      solve a knapsack problem with CSV input/output.
 * [`knapsack-pyomo`][knapsack-pyomo]: use Python and Pyomo to solve a knapsack
       problem.
 * [`nextroute`][nextroute]: use the Nextmv Go SDK to solve vehicle routing
@@ -57,6 +61,7 @@ Visit the [docs][docs] for more information.
 [knapsack-gurobi]: ./knapsack-gurobi/README.md
 [knapsack-java-ortools]: ./knapsack-java-ortools/README.md
 [knapsack-ortools]: ./knapsack-ortools/README.md
+[knapsack-ortools-csv]: ./knapsack-ortools-csv/README.md
 [knapsack-pyomo]: ./knapsack-pyomo/README.md
 [nextroute]: ./nextroute/README.md
 [order-fulfillment-gosdk]: ./order-fulfillment-gosdk/README.md
@@ -64,6 +69,7 @@ Visit the [docs][docs] for more information.
 [routing-ortools]: ./routing-ortools/README.md
 [shift-assignment-ortools]: ./shift-assignment-ortools/README.md
 [shift-assignment-pyomo]: ./shift-assignment-pyomo/README.md
+[demand-forecasting-ortools]: ./demand-forecasting-ortools/README.md
 [shift-planning-ortools]: ./shift-planning-ortools/README.md
 [shift-planning-pyomo]: ./shift-planning-pyomo/README.md
 [shift-scheduling-gosdk]: ./shift-scheduling-gosdk/README.md
