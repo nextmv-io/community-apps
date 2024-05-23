@@ -100,4 +100,12 @@ the command `Dev Containers: Reopen in Container`.
   our [documentation site](https://docs.nextmv.io).
 * Need more assistance? Send us an [email](mailto:support@nextmv.io)!
 
+## Notes
+
+We acknowledge there are outdated terms used in the comments of this
+application. We will be looking to update those with more appropriate language
+going forward. We prefer talking about an “outer” problem vs a “master” problem,
+but this is not a widely used alternative in the context of this space at the
+time of writing this.
+
 [amplpy]: https://amplpy.ampl.com/en/latest/?_gl=1*16ca5pw*_ga*Nzk4OTUwMDgwLjE3MDgzNTIzMzg.*_ga_FY84K2YRRE*MTcwODQ0NTgwMy42LjEuMTcwODQ0NTgzOC4wLjAuMA..
