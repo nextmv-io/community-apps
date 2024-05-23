@@ -1,0 +1,17 @@
+{
+  "FACILITIES": ["Elm Creek", "Emory", "Sunset"],
+  "CUSTOMERS": [
+    "Temple",
+    "Joshua",
+    "Moody",
+    "Kirvin",
+    "Miller's Cove",
+    "Guadalupe Guerra"
+  ],
+  "SCENARIOS": ["S1", "S2", "S3", "S4", "S5"],
+  "prob": { "S1": 0.2, "S2": 0.2, "S3": 0.2, "S4": 0.2, "S5": 0.2 },
+  "fixed_cost": "{\"schema\":{\"fields\":[{\"name\":\"City\",\"type\":\"string\"},{\"name\":\"FixedCost\",\"type\":\"integer\"}],\"primaryKey\":[\"City\"],\"pandas_version\":\"1.4.0\"},\"data\":[{\"City\":\"Elm Creek\",\"FixedCost\":1000000},{\"City\":\"Emory\",\"FixedCost\":600000},{\"City\":\"Sunset\",\"FixedCost\":800000}]}",
+  "facility_capacity": "{\"schema\":{\"fields\":[{\"name\":\"City\",\"type\":\"string\"},{\"name\":\"Capacity\",\"type\":\"integer\"}],\"primaryKey\":[\"City\"],\"pandas_version\":\"1.4.0\"},\"data\":[{\"City\":\"Elm Creek\",\"Capacity\":2000},{\"City\":\"Emory\",\"Capacity\":1900},{\"City\":\"Sunset\",\"Capacity\":1600}]}",
+  "variable_cost": "{\"schema\":{\"fields\":[{\"name\":\"Facility\",\"type\":\"string\"},{\"name\":\"Customer\",\"type\":\"string\"},{\"name\":\"Distance\",\"type\":\"number\"}],\"primaryKey\":[\"Facility\",\"Customer\"],\"pandas_version\":\"1.4.0\"},\"data\":[{\"Facility\":\"Elm Creek\",\"Customer\":\"Guadalupe Guerra\",\"Distance\":297.623890758},{\"Facility\":\"Elm Creek\",\"Customer\":\"Joshua\",\"Distance\":505.6606318977},{\"Facility\":\"Elm Creek\",\"Customer\":\"Kirvin\",\"Distance\":519.6437634702},{\"Facility\":\"Elm Creek\",\"Customer\":\"Miller's Cove\",\"Distance\":706.6827570413},{\"Facility\":\"Elm Creek\",\"Customer\":\"Moody\",\"Distance\":412.2824400838},{\"Facility\":\"Elm Creek\",\"Customer\":\"Temple\",\"Distance\":395.3941518648},{\"Facility\":\"Emory\",\"Customer\":\"Guadalupe Guerra\",\"Distance\":786.9389368793},{\"Facility\":\"Emory\",\"Customer\":\"Joshua\",\"Distance\":158.3719269502},{\"Facility\":\"Emory\",\"Customer\":\"Kirvin\",\"Distance\":134.2084779985},{\"Facility\":\"Emory\",\"Customer\":\"Miller's Cove\",\"Distance\":68.3531229709},{\"Facility\":\"Emory\",\"Customer\":\"Moody\",\"Distance\":229.9660680318},{\"Facility\":\"Emory\",\"Customer\":\"Temple\",\"Distance\":249.2073236813},{\"Facility\":\"Sunset\",\"Customer\":\"Guadalupe Guerra\",\"Distance\":792.6791149946},{\"Facility\":\"Sunset\",\"Customer\":\"Joshua\",\"Distance\":115.6918553125},{\"Facility\":\"Sunset\",\"Customer\":\"Kirvin\",\"Distance\":230.2851131675},{\"Facility\":\"Sunset\",\"Customer\":\"Miller's Cove\",\"Distance\":248.5501694133},{\"Facility\":\"Sunset\",\"Customer\":\"Moody\",\"Distance\":240.935931368},{\"Facility\":\"Sunset\",\"Customer\":\"Temple\",\"Distance\":262.7329591493}]}",
+  "customer_demand": "{\"schema\":{\"fields\":[{\"name\":\"City\",\"type\":\"string\"},{\"name\":\"S1\",\"type\":\"integer\"},{\"name\":\"S2\",\"type\":\"integer\"},{\"name\":\"S3\",\"type\":\"integer\"},{\"name\":\"S4\",\"type\":\"integer\"},{\"name\":\"S5\",\"type\":\"integer\"}],\"primaryKey\":[\"City\"],\"pandas_version\":\"1.4.0\"},\"data\":[{\"City\":\"Guadalupe Guerra\",\"S1\":470,\"S2\":425,\"S3\":495,\"S4\":620,\"S5\":372},{\"City\":\"Joshua\",\"S1\":561,\"S2\":534,\"S3\":585,\"S4\":542,\"S5\":491},{\"City\":\"Kirvin\",\"S1\":135,\"S2\":132,\"S3\":234,\"S4\":242,\"S5\":177},{\"City\":\"Miller's Cove\",\"S1\":432,\"S2\":342,\"S3\":565,\"S4\":547,\"S5\":394},{\"City\":\"Moody\",\"S1\":482,\"S2\":449,\"S3\":288,\"S4\":393,\"S5\":458},{\"City\":\"Temple\",\"S1\":298,\"S2\":343,\"S3\":387,\"S4\":349,\"S5\":375}]}"
+}

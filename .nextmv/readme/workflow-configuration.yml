@@ -65,6 +65,12 @@ apps:
         silent: true
       - name: 1.sh
         skip: true
+  - name: facility-location-ampl
+    scripts:
+      - name: 0.sh
+        silent: true
+      - name: 1.sh
+        skip: true
   - name: routing-java-ortools
     scripts:
       - name: 0.sh

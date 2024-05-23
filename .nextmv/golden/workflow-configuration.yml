@@ -2,6 +2,9 @@ apps:
   - name: cost-flow-ortools
     language: python
     language-version: 3.11
+  - name: facility-location-ampl
+    language: python
+    language-version: 3.11
   - name: knapsack-ampl
     language: python
     language-version: 3.11
@@ -24,6 +27,9 @@ apps:
     language: go # we always use our main version
   - name: order-fulfillment-gosdk
     language: go # we always use our main version
+  - name: price-optimization-ampl
+    language: python
+    language-version: 3.11
   - name: routing-ortools
     language: python
     language-version: 3.11
