@@ -157,7 +157,7 @@ def solve(input_data: dict[str, Any], duration: int, provider: str, runpath: str
                 "solve_output": solve_output,
             },
             "duration": ampl.get_value("_total_solve_time"),
-            "value": ampl.get_value("operating_cost"),
+            "value": round(ampl.get_value("operating_cost"), 6),
         },
         "run": {
             "duration": time.time() - start_time,
