@@ -153,8 +153,7 @@ def solve(input_data: dict[str, Any], duration: int, provider: str, runpath: str
                 "provider": provider,
                 "status": ampl.solve_result,
                 "variables": ampl.get_value("_nvars"),
-                "constrains": ampl.get_value("_ncons"),
-                "solve_output": solve_output,
+                "constraints": ampl.get_value("_ncons"),
             },
             "duration": ampl.get_value("_total_solve_time"),
             "value": round(ampl.get_value("operating_cost"), 6),
@@ -173,6 +172,7 @@ def solve(input_data: dict[str, Any], duration: int, provider: str, runpath: str
             {
                 "facility_open": ampl.get_data("facility_open").to_pandas().to_json(orient="table"),
                 "total_cost": ampl.get_value("total_cost"),
+                "solve_output": solve_output,
             }
         ],
         "statistics": statistics,
