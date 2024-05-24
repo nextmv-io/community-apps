@@ -53,7 +53,7 @@ Nextmv Cloud, you can use the following command:
 ```bash
 cat input.json | docker run -i --rm \
 -v $(pwd):/app ghcr.io/nextmv-io/runtime/python:3.11 \
-sh -c 'pip install -r requirements.txt && python3 /app/main.py'
+sh -c 'pip install -r requirements.txt > /dev/null && python3 /app/main.py'
 ```
 
 You can also debug the application by running it in a Dev Container. This
