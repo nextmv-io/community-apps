@@ -3,8 +3,8 @@ module example.com/your_project/nextroute
 go 1.22
 
 require (
-	github.com/nextmv-io/nextroute v1.5.0
-	github.com/nextmv-io/sdk v1.5.0
+	github.com/nextmv-io/nextroute v1.6.2
+	github.com/nextmv-io/sdk v1.6.0
 )
 
 require (
