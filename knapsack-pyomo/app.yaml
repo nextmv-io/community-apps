@@ -5,3 +5,7 @@ runtime: ghcr.io/nextmv-io/runtime/pyomo:latest
 # (e.g.: configs/*.json) is supported.
 files:
   - main.py
+python:
+  # Packages the app depends on need to be listed in a requirements_extra.txt file
+  # that is referenced here. All listed packages will get bundled with the app.
+  pip-requirements: requirements_extra.txt

@@ -22,6 +22,9 @@ Follow these steps to run locally.
     pip3 install -r requirements.txt
     ```
 
+1. Further dependencies can be specified in the `requirements_extra.txt` file.
+   These dependencies will get bundled with the app on push.
+
 1. Run the command below to check that everything works as expected:
 
     ```bash
