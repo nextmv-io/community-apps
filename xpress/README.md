@@ -21,10 +21,9 @@ The most important files created are `main.py` and `input.json`.
 
 Follow these steps to run locally.
 
-1. The packages listed in the `requirements.txt` file are available when using
-   the runtime specified in the `app.yaml` manifest. This runtime is used when
-   making remote runs. When working locally, make sure that all the required
-   packages are installed:
+1. The packages listed in the `requirements.txt` will get bundled with the app
+   as defined in the `app.yaml` manifest. When working locally, make sure that
+   these are installed as well:
 
     ```bash
     pip3 install -r requirements.txt
