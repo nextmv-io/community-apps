@@ -30,6 +30,9 @@ Follow these steps to run locally.
     pip3 install -r requirements.txt
     ```
 
+1. Further dependencies can be specified in the `requirements_extra.txt` file.
+   These dependencies will get bundled with the app on push.
+
 1. Pyomo [does not include any solvers][pyomo-solvers]. This template assumes
    that supported providers are [`glpk`][glpk] and [`cbc`][cbc]. Make sure you
    have installed them locally, as they are already installed on the image when
@@ -56,7 +59,7 @@ Nextmv Cloud, you can use the following command:
 ```bash
 cat input.json | docker run -i --rm \
 -v $(pwd):/app ghcr.io/nextmv-io/runtime/pyomo:latest \
-python3 /app/main.py
+sh -c 'python3 /app/main.py'
 ```
 
 You can also debug the application by running it in a Dev Container. This

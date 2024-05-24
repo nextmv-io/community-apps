@@ -25,10 +25,9 @@ The most important files created are `main.py`, `input.json`, and
 
 Follow these steps to run locally.
 
-1. The packages listed in the `requirements.txt` file are available when using
-   the runtime specified in the `app.yaml` manifest. This runtime is used when
-   making remote runs. When working locally, make sure that all the required
-   packages are installed:
+1. The packages listed in the `requirements.txt` will get bundled with the app
+   as defined in the `app.yaml` manifest. When working locally, make sure that
+   these are installed as well:
 
     ```bash
     pip3 install -r requirements.txt
@@ -52,8 +51,8 @@ Nextmv Cloud, you can use the following command:
 
 ```bash
 cat input.json | docker run -i --rm \
--v $(pwd):/app ghcr.io/nextmv-io/runtime/gurobi:latest \
-python3 /app/main.py
+-v $(pwd):/app ghcr.io/nextmv-io/runtime/python:3.11 \
+sh -c 'pip install -r requirements.txt > /dev/null && python3 /app/main.py'
 ```
 
 You can also debug the application by running it in a Dev Container. This
