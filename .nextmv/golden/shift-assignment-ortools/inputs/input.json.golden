@@ -3,36 +3,37 @@
     {
       "assigned_shifts": [
         {
-          "end_time": "2023-11-20T22:00:00+02:00",
+          "end": "2023-11-20T22:00:00+02:00",
           "shift_id": "welder_monday-late",
-          "start_time": "2023-11-20T14:00:00+02:00",
+          "start": "2023-11-20T14:00:00+02:00",
           "worker_id": "Louis Hardy"
         },
         {
-          "end_time": "2023-11-20T14:00:00+02:00",
+          "end": "2023-11-20T14:00:00+02:00",
           "shift_id": "welder_monday-early",
-          "start_time": "2023-11-20T06:00:00+02:00",
+          "start": "2023-11-20T06:00:00+02:00",
           "worker_id": "Jacob Cunningham"
         },
         {
-          "end_time": "2023-11-20T14:00:00+02:00",
+          "end": "2023-11-20T14:00:00+02:00",
           "shift_id": "normal_monday-early",
-          "start_time": "2023-11-20T06:00:00+02:00",
+          "start": "2023-11-20T06:00:00+02:00",
           "worker_id": "Ray Heard"
         },
         {
-          "end_time": "2023-11-20T22:00:00+02:00",
+          "end": "2023-11-20T22:00:00+02:00",
           "shift_id": "normal_monday-late",
-          "start_time": "2023-11-20T14:00:00+02:00",
+          "start": "2023-11-20T14:00:00+02:00",
           "worker_id": "Mark Leath"
         },
         {
-          "end_time": "2023-11-20T14:00:00+02:00",
+          "end": "2023-11-20T14:00:00+02:00",
           "shift_id": "normal_monday-early",
-          "start_time": "2023-11-20T06:00:00+02:00",
+          "start": "2023-11-20T06:00:00+02:00",
           "worker_id": "Dylan Mccormack"
         }
-      ]
+      ],
+      "number_assigned_workers": 5
     }
   ],
   "statistics": {
