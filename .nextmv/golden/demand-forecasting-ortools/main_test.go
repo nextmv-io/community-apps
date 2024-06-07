@@ -31,6 +31,14 @@ func TestGolden(t *testing.T) {
 					Replacement: golden.StableFloat,
 				},
 			},
+			OutputProcessConfig: golden.OutputProcessConfig{
+				RoundingConfig: []golden.RoundingConfig{
+					{
+						Key:       ".solutions[].forecast",
+						Precision: 7,
+					},
+				},
+			},
 			ExecutionConfig: &golden.ExecutionConfig{
 				Command:    "python3",
 				Args:       []string{"../../../demand-forecasting-ortools/main.py"},
