@@ -176,8 +176,8 @@ def solve(input_data: dict[str, Any], duration: int, provider: str) -> dict[str,
         schedule = {
             "assigned_shifts": [
                 {
-                    "start_time": s["start_time"],
-                    "end_time": s["end_time"],
+                    "start": s["start_time"],
+                    "end": s["end_time"],
                     "worker_id": e["id"],
                     "shift_id": s["id"],
                 }
@@ -186,7 +186,8 @@ def solve(input_data: dict[str, Any], duration: int, provider: str) -> dict[str,
                 if model.x_assign[(e["id"], s["id"])].value > 0.5
             ],
         }
-        active_workers = len({s["worker_id"] for s in schedule["assigned_shifts"]})
+        schedule["number_assigned_workers"] = len(schedule["assigned_shifts"])
+        active_workers = schedule["number_assigned_workers"]
         total_workers = len(workers)
 
     # Creates the statistics.
