@@ -1,0 +1,3 @@
+# We use pyvroomwheels drop-in replacement for pyvroom
+# for the additionally supported arm64 architecture.
+pyvroomwheels==1.13.5
