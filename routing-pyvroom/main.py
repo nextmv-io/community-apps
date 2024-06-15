@@ -32,6 +32,18 @@ def main():
         help="Max runtime duration (in seconds). Default is 30.",
         type=int,
     )
+    parser.add_argument(
+        "-exploration-level",
+        default=4,
+        help="Exploration level for the solver. Default is 4.",
+        type=int,
+    )
+    parser.add_argument(
+        "-threads",
+        default=6,
+        help="Number of threads to use. Default is 6.",
+        type=int,
+    )
     args = parser.parse_args()
 
     # Read and prepare the input data.
@@ -45,19 +57,26 @@ def main():
     log(f"  - vehicles: {len(input_data.get('vehicles', []))}")
     log(f"  - stops: {len(input_data.get('stops', []))}")
     log(f"  - max duration: {args.duration} seconds")
+    log(f"  - exploration level: {args.exploration_level}")
+    log(f"  - threads: {args.threads}")
 
-    solution = solve(input_data, args.duration)
+    solution = solve(input_data, args.exploration_level, args.threads, args.duration)
     write_output(args.output, solution)
 
 
-def solve(input_data: dict[str, Any], duration: int) -> dict[str, Any]:
+def solve(
+    input_data: dict[str, Any],
+    exploration_level: int,
+    threads: int,
+    duration: int,
+) -> dict[str, Any]:
     """Solves the given problem and returns the solution."""
 
     # TODO: use duration to limit the runtime of the solver
     _ = duration
 
     # Prepare data.
-    speeds = [v["speed"] if "speed" in v else 1 for v in input_data["vehicles"]]
+    speed_factors = [v["speed_factor"] if "speed_factor" in v else 1 for v in input_data["vehicles"]]
     capacities = [int(round(v["capacity"])) if "capacity" in v else 0 for v in input_data["vehicles"]]
     quantities = [int(round(s["quantity"])) if "quantity" in s else 0 for s in input_data["stops"]]
     quantities += [0] * (len(input_data["vehicles"]) * 2)
@@ -84,7 +103,7 @@ def solve(input_data: dict[str, Any], duration: int) -> dict[str, Any]:
                 profile="car",
                 capacity=[capacities[i]],
                 max_travel_time=max_durations[i],
-                speed_factor=speeds[i],
+                speed_factor=speed_factors[i],
             )
         )
 
@@ -95,14 +114,14 @@ def solve(input_data: dict[str, Any], duration: int) -> dict[str, Any]:
                 id=i,
                 location=i,
                 service=durations[i],
-                delivery=[-quantities[i]] if quantities[i] < 0 else [],
-                pickup=[quantities[i]] if quantities[i] > 0 else [],
+                delivery=[-quantities[i]],
+                pickup=[quantities[i]],
             )
         )
 
     # Solve the problem.
     start_time = time.time()
-    solution = problem_instance.solve(exploration_level=5, nb_threads=6)
+    solution = problem_instance.solve(exploration_level=exploration_level, nb_threads=threads)
     end_time = time.time()
 
     # Translate the solution into the output format.
@@ -229,7 +248,7 @@ def solve(input_data: dict[str, Any], duration: int) -> dict[str, Any]:
         }
 
     return {
-        "solutions": [{"vehicles": routes, "unplanned": []}],
+        "solutions": [{"vehicles": routes, "unplanned": unplanned_stops}],
         "statistics": statistics,
     }
 
@@ -317,8 +336,15 @@ def validate_input(input_data: dict[str, Any]) -> None:
             raise ValueError(f"Invalid start_location {vehicle['start_location']} for vehicle {ident}.")
         if "end_location" in vehicle and not check_valid_location(vehicle["end_location"]):
             raise ValueError(f"Invalid end_location {vehicle['end_location']} for vehicle {ident}.")
-        if "speed" in vehicle and (not isinstance(vehicle["speed"], numbers.Number) or vehicle["speed"] <= 0):
-            raise ValueError(f"Invalid speed {vehicle['speed'] if 'speed' in vehicle else None} for vehicle {ident}.")
+        if "speed_factor" in vehicle and (
+            not isinstance(vehicle["speed_factor"], numbers.Number)
+            or vehicle["speed_factor"] <= 0
+            or vehicle["speed_factor"] > 5
+        ):
+            raise ValueError(
+                f"Invalid speed_factor {vehicle['speed_factor'] if 'speed_factor' in vehicle else None} "
+                + f"for vehicle {ident}."
+            )
         if "max_duration" in vehicle and (
             not isinstance(vehicle["max_duration"], numbers.Number) or vehicle["max_duration"] < 0
         ):
@@ -333,8 +359,6 @@ def validate_input(input_data: dict[str, Any]) -> None:
             raise ValueError(f"Invalid duration {stop['duration']} for stop {ident}.")
         if "quantity" in stop and (not isinstance(stop["quantity"], numbers.Integral) or stop["quantity"] < 0):
             raise ValueError(f"Invalid quantity {stop['quantity']} for stop {ident}.")
-    if "duration_matrix" not in input_data and not all("speed" in vehicle for vehicle in input_data["vehicles"]):
-        raise ValueError("Speed missing and no duration matrix provided. At least one of them is required.")
 
 
 def expand_missing_start_end(matrix: np.ndarray, input_data: dict[str, Any]) -> np.ndarray:

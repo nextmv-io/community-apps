@@ -83,6 +83,12 @@ apps:
         silent: true
       - name: 2.sh
         skip: true
+  - name: routing-pyvroom
+    scripts:
+      - name: 0.sh
+        silent: true
+      - name: 2.sh
+        skip: true
   - name: shift-assignment-ortools
     scripts:
       - name: 0.sh

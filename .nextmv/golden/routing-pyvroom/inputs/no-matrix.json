@@ -1,0 +1,99 @@
+{
+  "defaults": {
+    "vehicles": {
+      "start_location": {
+        "lon": 7.625,
+        "lat": 51.9622
+      },
+      "end_location": {
+        "lon": 7.625,
+        "lat": 51.9622
+      },
+      "start_time": "2024-03-19T11:00:00+00:00",
+      "capacity": 5
+    },
+    "stops": {
+      "quantity": 1
+    }
+  },
+  "vehicles": [
+    {
+      "id": "vehicle-1"
+    },
+    {
+      "id": "vehicle-2"
+    }
+  ],
+  "stops": [
+    {
+      "id": "location-1",
+      "location": {
+        "lon": 7.6228,
+        "lat": 51.9624
+      }
+    },
+    {
+      "id": "location-2",
+      "location": {
+        "lon": 7.6353,
+        "lat": 51.9584
+      }
+    },
+    {
+      "id": "location-3",
+      "location": {
+        "lon": 7.6233,
+        "lat": 51.9638
+      }
+    },
+    {
+      "id": "location-4",
+      "location": {
+        "lon": 7.6163,
+        "lat": 51.9635
+      }
+    },
+    {
+      "id": "location-5",
+      "location": {
+        "lon": 7.6045,
+        "lat": 51.9509
+      }
+    },
+    {
+      "id": "location-6",
+      "location": {
+        "lon": 7.6292,
+        "lat": 51.9577
+      }
+    },
+    {
+      "id": "location-7",
+      "location": {
+        "lon": 7.6385,
+        "lat": 51.9694
+      }
+    },
+    {
+      "id": "location-8",
+      "location": {
+        "lon": 7.6628,
+        "lat": 51.9616
+      }
+    },
+    {
+      "id": "location-9",
+      "location": {
+        "lon": 7.6217,
+        "lat": 51.9667
+      }
+    },
+    {
+      "id": "location-10",
+      "location": {
+        "lon": 7.6299,
+        "lat": 51.9582
+      }
+    }
+  ]
+}
