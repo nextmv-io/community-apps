@@ -226,6 +226,10 @@ def solve(
             },
             "run": {
                 "duration": end_time - start_time,
+                "custom": {
+                    "exploration_level": exploration_level,
+                    "threads": threads,
+                },
             },
             "schema": "v1",
         }

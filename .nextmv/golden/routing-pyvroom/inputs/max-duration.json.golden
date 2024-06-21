@@ -210,6 +210,10 @@
       "value": 1085
     },
     "run": {
+      "custom": {
+        "exploration_level": 4,
+        "threads": 6
+      },
       "duration": 0.123
     },
     "schema": "v1"
