@@ -3,6 +3,7 @@ Adapted example of the vehicle routing problem with Google OR-Tools.
 """
 
 import argparse
+import importlib.metadata
 import json
 import numbers
 import sys
@@ -229,6 +230,8 @@ def solve(
                 "custom": {
                     "exploration_level": exploration_level,
                     "threads": threads,
+                    "solver": "vroom",
+                    "version": get_version(),
                 },
             },
             "schema": "v1",
@@ -246,6 +249,7 @@ def solve(
                 "duration": end_time - start_time,
                 "custom": {
                     "solver": "vroom",
+                    "version": get_version(),
                 },
             },
             "schema": "v1",
@@ -470,6 +474,14 @@ def haversine(
     earth_radius = 6371000
 
     return earth_radius * c
+
+
+def get_version() -> str:
+    """Returns the version of the package."""
+    try:
+        return importlib.metadata.version("pyvroom")
+    except importlib.metadata.PackageNotFoundError:
+        return "0.0.0"
 
 
 def log(message: str) -> None:
