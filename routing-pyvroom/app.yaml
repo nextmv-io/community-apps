@@ -1,0 +1,11 @@
+# This manifest holds the information the app needs to run on the Nextmv Cloud.
+type: python
+runtime: ghcr.io/nextmv-io/runtime/python:3.11
+# List all files/directories that should be included in the app. Globbing
+# (e.g.: configs/*.json) is supported.
+files:
+  - main.py
+python:
+  # Packages the app depends on need to be listed in a requirements file that
+  # is referenced here. All listed packages will get bundled with the app.
+  pip-requirements: requirements.txt

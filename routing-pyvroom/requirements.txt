@@ -1,0 +1,3 @@
+# We use a pre-release of pyvroom that introduces support for arm64 architecture.
+# We will move to the stable version once it is released.
+pyvroom==1.13.6

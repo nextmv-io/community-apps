@@ -1,6 +1,6 @@
-# Routing with OR-Tools
+# Routing with Pyvroom
 
-This app solves a capacitated routing problem using [OR-Tools][or-tools].
+This app solves a capacitated routing problem using [Pyvroom][Pyvroom].
 Given a the stops & vehicles and a number of features of them.
 
 The most important files created are `main.py` and `input.json`.
@@ -47,4 +47,4 @@ workspace recommends to install the Dev Container extension for VSCode. If you
 have the extension installed, you can open the workspace in a container by using
 the command `Dev Containers: Reopen in Container`.
 
-[or-tools]: https://developers.google.com/optimization
+[Pyvroom]: https://github.com/VROOM-Project/pyvroom
