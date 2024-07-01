@@ -3,7 +3,7 @@ module apps-readme-tests
 go 1.22
 
 require (
-	github.com/nextmv-io/sdk v1.5.1-0.20240326161511-a412dadbe5a6
+	github.com/nextmv-io/sdk v1.6.3
 	gopkg.in/yaml.v2 v2.4.0
 )
 
