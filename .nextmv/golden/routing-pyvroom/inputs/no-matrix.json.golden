@@ -253,7 +253,9 @@
     "run": {
       "custom": {
         "exploration_level": 4,
-        "threads": 6
+        "solver": "vroom",
+        "threads": 6,
+        "version": "1.13.6"
       },
       "duration": 0.123
     },
