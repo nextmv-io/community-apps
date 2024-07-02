@@ -32,7 +32,7 @@ Follow these steps to run locally.
 1. Run the command below to check that everything works as expected:
 
     ```bash
-    python3 main.py -input inputs/input.json -output output.json -duration 30
+    python3 main.py -input input.json -output output.json -duration 30
     ```
 
 1. A file `output.json` should have been created with the optimal knapsack
@@ -46,7 +46,7 @@ To run the application locally in the same docker image as the one used on the
 Nextmv Cloud, you can use the following command:
 
 ```bash
-cat inputs/input.json | docker run -i --rm \
+cat input.json | docker run -i --rm \
 -v $(pwd):/app ghcr.io/nextmv-io/runtime/python:3.11 \
 sh -c 'pip install -r requirements.txt > /dev/null && python3 /app/main.py'
 ```

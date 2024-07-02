@@ -23,6 +23,12 @@ apps:
         silent: true
       - name: 2.sh
         skip: true
+  - name: knapsack-highspy
+    scripts:
+      - name: 0.sh
+        silent: true
+      - name: 2.sh
+        skip: true
   - name: knapsack-java-ortools
     scripts:
       - name: 0.sh
