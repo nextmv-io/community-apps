@@ -52,9 +52,9 @@ def solve(input_data: dict[str, Any], duration: int) -> dict[str, Any]:
     start = time.time()
 
     # Creates the solver.
-    h = highspy.Highs()
-    h.silent()
-    h.setOptionValue("time_limit", duration)
+    solver = highspy.Highs()
+    solver.silent()
+    solver.setOptionValue("time_limit", duration)
 
     # Initializes the linear sums.
     weights = 0.0
@@ -63,28 +63,28 @@ def solve(input_data: dict[str, Any], duration: int) -> dict[str, Any]:
     # Creates the decision variables and adds them to the linear sums.
     items = []
     for item in input_data["items"]:
-        item_variable = h.addVariable(0.0, 1.0, item["value"])
+        item_variable = solver.addVariable(0.0, 1.0, item["value"])
         items.append({"item": item, "variable": item_variable})
         weights += item_variable * item["weight"]
         values += item_variable * item["value"]
 
     # This constraint ensures the weight capacity of the knapsack will not be
     # exceeded.
-    h.addConstr(weights <= input_data["weight_capacity"])
+    solver.addConstr(weights <= input_data["weight_capacity"])
 
     # Sets the objective function: maximize the value of the chosen items.
-    s = h.maximize(values)
+    status = solver.maximize(values)
 
     # Determines which items were chosen.
-    chosen_items = [item["item"] for item in items if h.val(item["variable"]) > 0.9]
+    chosen_items = [item["item"] for item in items if solver.val(item["variable"]) > 0.9]
 
     # Creates the statistics.
     statistics = {
         "result": {
             "custom": {
-                "constraints": h.numConstrs,
-                "variables": h.numVariables,
-                "status": str(s),
+                "constraints": solver.numConstrs,
+                "variables": solver.numVariables,
+                "status": str(status),
             },
             "value": sum(item["value"] for item in chosen_items),
         },
