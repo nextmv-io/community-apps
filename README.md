@@ -21,6 +21,8 @@ Visit the [docs][docs] for more information.
       problem.
 * [`knapsack-gurobi`][knapsack-gurobi]: use Python and Gurobi to solve a
       knapsack problem.
+* [`knapsack-highspy`][knapsack-highspy]: use Python and HiGHS to solve a
+      knapsack problem.
 * [`knapsack-java-ortools`][knapsack-java-ortools]: use Java and OR-Tools to
       solve a knapsack problem.
 * [`knapsack-ortools`][knapsack-ortools]: use Python and OR-Tools to solve a
@@ -34,6 +36,8 @@ Visit the [docs][docs] for more information.
 * [`order-fulfillment-gosdk`][order-fulfillment-gosdk]: use the Nextmv Go SDK to
       solve order fulfillment problems.
 * [`routing-ortools`][routing-ortools]: use Python and OR-Tools to solve vehicle
+      routing problems.
+* [`routing-pyvroom`][routing-pyvroom]: use Python and Pyvroom to solve vehicle
       routing problems.
 * [`routing-java-ortools`][routing-java-ortools]: use Java and OR-Tools to
       solve vehicle routing problems.
@@ -59,6 +63,7 @@ Visit the [docs][docs] for more information.
 [knapsack-ampl]: ./knapsack-ampl/README.md
 [knapsack-gosdk]: ./knapsack-gosdk/README.md
 [knapsack-gurobi]: ./knapsack-gurobi/README.md
+[knapsack-highspy]: ./knapsack-highspy/README.md
 [knapsack-java-ortools]: ./knapsack-java-ortools/README.md
 [knapsack-ortools]: ./knapsack-ortools/README.md
 [knapsack-ortools-csv]: ./knapsack-ortools-csv/README.md
@@ -67,6 +72,7 @@ Visit the [docs][docs] for more information.
 [order-fulfillment-gosdk]: ./order-fulfillment-gosdk/README.md
 [routing-java-ortools]: ./routing-java-ortools/README.md
 [routing-ortools]: ./routing-ortools/README.md
+[routing-pyvroom]: ./routing-pyvroom/README.md
 [shift-assignment-ortools]: ./shift-assignment-ortools/README.md
 [shift-assignment-pyomo]: ./shift-assignment-pyomo/README.md
 [demand-forecasting-ortools]: ./demand-forecasting-ortools/README.md
