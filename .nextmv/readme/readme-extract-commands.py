@@ -62,7 +62,7 @@ def main():
     for app, readme_file in apps:
         commands = extract_commands_from_readme(readme_file)
         if not commands:
-            print(f"No commands found in {readme_file}", file=sys.stderr)
+            print(f"No commands found in {readme_file}")
             continue
 
         # Make sure app directory exists
@@ -83,13 +83,13 @@ def main():
             for c, command in enumerate(commands):
                 command_file = os.path.join(app_dir, f"{c}.sh")
                 if c >= len(existing_commands.get(app, [])):
-                    print(f"New command: {command_file}", file=sys.stderr)
+                    print(f"New command: {command_file} - FAIL")
                     sys.exit(1)
                 with open(command_file) as f:
                     existing_command = f.read()
                     existing_command = existing_command.rstrip()
                 if command != existing_command:
-                    print(f"Command differs: {command_file}", file=sys.stderr)
+                    print(f"Command differs: {command_file} - FAIL")
                     sys.exit(1)
                 print(f"  {command_file}: OK")
 
