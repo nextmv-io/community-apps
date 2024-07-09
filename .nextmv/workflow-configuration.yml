@@ -23,6 +23,11 @@ apps:
     app_id:
     marketplace_app_id:
     description: Solve a knapsack problem using Gurobi in Python.
+  - name: knapsack-highs
+    type: python
+    app_id: knapsack-highs
+    marketplace_app_id: knapsack.highs
+    description: Solve a knapsack problem using HiGHS in Python.
   - name: knapsack-java-ortools
     type: java
     app_id: knapsack-jortools
@@ -63,6 +68,11 @@ apps:
     app_id: routing-ortools
     marketplace_app_id: routing.ortools
     description: Solve a vehicle routing problem using OR-Tools in Python.
+  - name: routing-pyvroom
+    type: python
+    app_id: routing-pyvroom
+    marketplace_app_id: routing.pyvroom
+    description: Solve a vehicle routing problem using Pyvroom.
   - name: shift-assignment-ortools
     type: python
     app_id: shift-assign-ortools
