@@ -35,3 +35,12 @@ jobs:
         with:
           version: v1.56.2
           working-directory: ${{ matrix.MOD_PATH }}
+
+  go-lint-success:
+    runs-on: ubuntu-latest
+    needs: community-apps-go-lint
+    if: ${{ needs.community-apps-go-lint.result == 'success' }}
+    steps:
+      - name: Notify success
+        run: |
+          echo "All linting passed" >> $GITHUB_STEP_SUMMARY
