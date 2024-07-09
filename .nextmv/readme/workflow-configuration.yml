@@ -23,7 +23,7 @@ apps:
         silent: true
       - name: 2.sh
         skip: true
-  - name: knapsack-highspy
+  - name: knapsack-highs
     scripts:
       - name: 0.sh
         silent: true
