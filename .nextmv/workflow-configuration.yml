@@ -72,7 +72,7 @@ apps:
     type: python
     app_id: routing-pyvroom
     marketplace_app_id: routing.pyvroom
-    description: Solve a vehicle routing problem using PyVroom.
+    description: Solve a vehicle routing problem using Pyvroom.
   - name: shift-assignment-ortools
     type: python
     app_id: shift-assign-ortools
