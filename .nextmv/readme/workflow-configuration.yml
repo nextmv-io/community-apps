@@ -53,6 +53,12 @@ apps:
         silent: true
       - name: 2.sh
         skip: true
+  - name: knapsack-pyoptinterface
+    scripts:
+      - name: 0.sh
+        silent: true
+      - name: 2.sh
+        skip: true
   - name: nextroute
     scripts:
       - name: 0.sh

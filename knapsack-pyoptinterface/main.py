@@ -54,6 +54,8 @@ def solve(input_data: dict[str, Any], duration: int) -> dict[str, Any]:
 
     # Creates the solver.
     model = highs.Model()
+    model.set_model_attribute(poi.ModelAttribute.TimeLimitSec, duration)
+    model.set_model_attribute(poi.ModelAttribute.Silent, True)
 
     # Initializes the linear sums.
     weights = 0.0
