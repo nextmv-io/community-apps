@@ -13,7 +13,7 @@ apps:
   - name: knapsack-gurobi
     language: python
     language-version: 3.11
-  - name: knapsack-highspy
+  - name: knapsack-highs
     language: python
     language-version: 3.11
   - name: knapsack-java-ortools

@@ -21,7 +21,7 @@ Visit the [docs][docs] for more information.
       problem.
 * [`knapsack-gurobi`][knapsack-gurobi]: use Python and Gurobi to solve a
       knapsack problem.
-* [`knapsack-highspy`][knapsack-highspy]: use Python and HiGHS to solve a
+* [`knapsack-highs`][knapsack-highs]: use Python and HiGHS to solve a
       knapsack problem.
 * [`knapsack-java-ortools`][knapsack-java-ortools]: use Java and OR-Tools to
       solve a knapsack problem.
@@ -63,7 +63,7 @@ Visit the [docs][docs] for more information.
 [knapsack-ampl]: ./knapsack-ampl/README.md
 [knapsack-gosdk]: ./knapsack-gosdk/README.md
 [knapsack-gurobi]: ./knapsack-gurobi/README.md
-[knapsack-highspy]: ./knapsack-highspy/README.md
+[knapsack-highs]: ./knapsack-highs/README.md
 [knapsack-java-ortools]: ./knapsack-java-ortools/README.md
 [knapsack-ortools]: ./knapsack-ortools/README.md
 [knapsack-ortools-csv]: ./knapsack-ortools-csv/README.md
