@@ -23,6 +23,11 @@ apps:
     app_id:
     marketplace_app_id:
     description: Solve a knapsack problem using Gurobi in Python.
+  - name: knapsack-hexaly
+    type: python
+    app_id:
+    marketplace_app_id:
+    description: Solve a knapsack problem using Hexaly in Python.
   - name: knapsack-highs
     type: python
     app_id: knapsack-highs
