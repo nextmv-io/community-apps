@@ -23,6 +23,14 @@ apps:
         silent: true
       - name: 2.sh
         skip: true
+  - name: knapsack-hexaly
+    scripts:
+      - name: 0.sh
+        silent: true
+      - name: 1.sh
+        skip: true
+      - name: 2.sh
+        skip: true
   - name: knapsack-highs
     scripts:
       - name: 0.sh
