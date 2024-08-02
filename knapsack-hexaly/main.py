@@ -63,7 +63,8 @@ def solve(input_data: dict[str, Any], duration: int) -> dict[str, Any]:
     solver = optimizer.HexalyOptimizer()
     model = solver.model
     solver.param.time_limit = duration
-    solver.param.verbosity = 0
+    solver.param.verbosity = 1
+    solver.param.log_writer = sys.stderr
 
     # Initializes the linear sums.
     weights = 0.0
