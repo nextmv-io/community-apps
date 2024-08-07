@@ -60,7 +60,7 @@ def solve(input_data: dict[str, Any], duration: int) -> dict[str, Any]:
     """Solves the given problem and returns the solution."""
 
     # Creates the problem.
-    xp.controls.outputlog = 0  # Turns off verbosity.
+    xp.setOutputEnabled(False)  # Turns off verbosity.
     problem = xp.problem()
     problem.setControl("timelimit", duration)
 
