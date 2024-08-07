@@ -1,2 +1,0 @@
-Using the Community license in this session. If you have a full Xpress license, pass the full path to your license file to xpress.init("path/to/xpress"). If you want to use the FICO Community license and no longer want to see this message, use the following code before using the xpress module:
-  xpress.init("path/to/xpress")
