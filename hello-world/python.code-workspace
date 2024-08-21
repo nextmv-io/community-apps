@@ -12,14 +12,7 @@
         "request": "launch",
         "module": "main",
         "justMyCode": true,
-        "args": [
-          "-input",
-          "input.json",
-          "-output",
-          "output.json",
-          "-recipient",
-          "world"
-        ]
+        "args": ["<", "input.json"]
       }
     ]
   },
@@ -27,6 +20,7 @@
     "recommendations": [
       "ms-vscode-remote.remote-containers",
     ]
-  }
+  },
+  "settings": {}
 }
 
