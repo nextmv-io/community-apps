@@ -1,5 +1,4 @@
 import json
-import nextmv
 import sys
 
 def main():
