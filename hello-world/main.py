@@ -1,6 +1,7 @@
 import json
 import sys
 
+
 def main():
     # Read input data
     input_data = json.load(sys.stdin)
@@ -16,6 +17,7 @@ def main():
 
     # Give output result
     json.dump(output, fp=sys.stdout)
+
 
 if __name__ == "__main__":
     main()

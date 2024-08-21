@@ -21,7 +21,7 @@ Follow these steps to run locally.
 1. Run the command below to check that everything works as expected:
 
     ```bash
-    python3 main.py -input input.json -output output.json -recipient nextmv
+    echo '{"name":"world"}' | python3 main.py
     ```
 
 1. A file `output.json` should have been created a greeting message.
