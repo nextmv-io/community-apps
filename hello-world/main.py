@@ -1,4 +1,5 @@
 import json
+import nextmv
 import sys
 
 def main():
@@ -13,7 +14,7 @@ def main():
 
     # Print statistics to the details run view in Nextmv Console
     output = {"statistics": {"message": f"Hello, {name}"}}
-    
+
     # Give output result
     json.dump(output, fp=sys.stdout)
 
