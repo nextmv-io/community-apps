@@ -59,6 +59,12 @@ apps:
         silent: true
       - name: 2.sh
         skip: true
+  - name: hello-world
+    scripts:
+      - name: 0.sh
+        silent: true
+      - name: 2.sh
+        skip: true
   - name: nextroute
     scripts:
       - name: 0.sh

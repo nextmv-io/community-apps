@@ -1,0 +1,26 @@
+{
+  "folders": [
+    {
+      "path": "."
+    }
+  ],
+  "launch": {
+    "configurations": [
+      {
+        "name": "Python: Module",
+        "type": "debugpy",
+        "request": "launch",
+        "module": "main",
+        "justMyCode": true,
+        "args": ["<", "input.json"]
+      }
+    ]
+  },
+  "extensions": {
+    "recommendations": [
+      "ms-vscode-remote.remote-containers",
+    ]
+  },
+  "settings": {}
+}
+
