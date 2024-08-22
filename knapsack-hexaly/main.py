@@ -63,6 +63,8 @@ def solve(input_data: dict[str, Any], duration: int) -> dict[str, Any]:
     solver = optimizer.HexalyOptimizer()
     model = solver.model
     solver.param.time_limit = duration
+
+    # Makes the solver write to stderr so that logs show up in Nextmv Console.
     solver.param.verbosity = 1
     solver.param.log_writer = sys.stderr
 
