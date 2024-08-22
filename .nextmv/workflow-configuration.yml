@@ -48,6 +48,11 @@ apps:
     app_id: knapsack-pyomo
     marketplace_app_id: knapsack.pyomo
     description: Solve a knapsack problem using Pyomo.
+  - name: hello-world
+    type: python
+    app_id:
+    marketplace_app_id:
+    description: A simple Hello World example.
   - name: nextroute
     type: go
     app_id: nextroute
