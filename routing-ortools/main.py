@@ -138,9 +138,28 @@ def solve(input_data: dict[str, Any], duration: int) -> dict[str, Any]:
     solution = routing.SolveWithParameters(search_parameters)
     end_time = time.time()
 
+    # Prepare the output.
+    routes = []
+    statistics = {
+        "result": {
+            "custom": {
+                "solution_found": False,
+            },
+            "duration": end_time - start_time,
+            "value": None,
+        },
+        "run": {
+            "duration": end_time - start_time,
+            "custom": {
+                "solver": "ortools",
+                "version": ortools_version,
+            },
+        },
+        "schema": "v1",
+    }
+
     if solution is not None:
         # Determine the routes.
-        routes = []
         max_route_duration = 0
         max_stops_in_vehicle = 0
         min_stops_in_vehicle = len(input_data["stops"])
@@ -210,44 +229,19 @@ def solve(input_data: dict[str, Any], duration: int) -> dict[str, Any]:
             max_stops_in_vehicle = max(max_stops_in_vehicle, stop_count)
             min_stops_in_vehicle = min(min_stops_in_vehicle, stop_count)
 
-        # Creates the statistics.
-        statistics = {
-            "result": {
-                "custom": {
-                    "solution_found": True,
-                    "activated_vehicles": activated_vehicles,
-                    "max_route_duration": max_route_duration,
-                    "max_stops_in_vehicle": max_stops_in_vehicle,
-                    "min_stops_in_vehicle": min_stops_in_vehicle,
-                },
-                "duration": end_time - start_time,
-                "value": solution.ObjectiveValue(),
-            },
-            "run": {
-                "duration": end_time - start_time,
-            },
-            "schema": "v1",
+        # Save the statistics
+        statistics["result"]["custom"] = {
+            "solution_found": True,
+            "activated_vehicles": activated_vehicles,
+            "max_route_duration": max_route_duration,
+            "max_stops_in_vehicle": max_stops_in_vehicle,
+            "min_stops_in_vehicle": min_stops_in_vehicle,
         }
-    else:
-        routes = []
-        statistics = {
-            "result": {
-                "custom": {
-                    "solution_found": False,
-                },
-                "duration": end_time - start_time,
-                "value": None,
-            },
-            "run": {
-                "duration": end_time - start_time,
-            },
-            "schema": "v1",
-        }
+        statistics["result"]["value"] = solution.ObjectiveValue()
 
     return {
         "solutions": [{"vehicles": routes, "unplanned": []}],
         "statistics": statistics,
-        "version": {"ortools": ortools_version},
     }
 
 
