@@ -27,10 +27,10 @@ func TestGolden(t *testing.T) {
 				"-solve.startsolutions", "1",
 			},
 			TransientFields: []golden.TransientField{
-				{Key: ".version.sdk", Replacement: golden.StableVersion},
-				{Key: ".version.nextroute", Replacement: golden.StableVersion},
-				{Key: ".statistics.result.duration", Replacement: golden.StableFloat},
-				{Key: ".statistics.run.duration", Replacement: golden.StableFloat},
+				{Key: "$.version.sdk", Replacement: golden.StableVersion},
+				{Key: "$.version.nextroute", Replacement: golden.StableVersion},
+				{Key: "$.statistics.result.duration", Replacement: golden.StableFloat},
+				{Key: "$.statistics.run.duration", Replacement: golden.StableFloat},
 			},
 			Thresholds: golden.Tresholds{
 				Float: 0.01,
