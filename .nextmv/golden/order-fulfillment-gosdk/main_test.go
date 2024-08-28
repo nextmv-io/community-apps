@@ -23,14 +23,14 @@ func TestGolden(t *testing.T) {
 				"3s",
 			},
 			TransientFields: []golden.TransientField{
-				{Key: ".version.sdk", Replacement: golden.StableVersion},
-				{Key: ".version.go-mip", Replacement: golden.StableVersion},
-				{Key: ".version.go-highs", Replacement: golden.StableVersion},
-				{Key: ".statistics.result.duration", Replacement: golden.StableFloat},
-				{Key: ".statistics.run.duration", Replacement: golden.StableFloat},
+				{Key: "$.version.sdk", Replacement: golden.StableVersion},
+				{Key: "$.version.go-mip", Replacement: golden.StableVersion},
+				{Key: "$.version.go-highs", Replacement: golden.StableVersion},
+				{Key: "$.statistics.result.duration", Replacement: golden.StableFloat},
+				{Key: "$.statistics.run.duration", Replacement: golden.StableFloat},
 			},
 			DedicatedComparison: []string{
-				".statistics.result.value",
+				"$.statistics.result.value",
 			},
 			Thresholds: golden.Tresholds{
 				Float: 0.01,
