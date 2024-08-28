@@ -3,6 +3,7 @@ Template for working with Google OR-Tools.
 """
 
 import argparse
+import importlib.metadata
 import json
 import sys
 import time
@@ -105,6 +106,10 @@ def solve(input_data: dict[str, Any], duration: int) -> dict[str, Any]:
         },
         "run": {
             "duration": time.time() - start,
+            "custom": {
+                "solver": "ortools",
+                "version": get_version(),
+            },
         },
         "schema": "v1",
     }
@@ -113,6 +118,14 @@ def solve(input_data: dict[str, Any], duration: int) -> dict[str, Any]:
         "solutions": [{"items": chosen_items}],
         "statistics": statistics,
     }
+
+
+def get_version() -> str:
+    """Returns the version of the package."""
+    try:
+        return importlib.metadata.version("ortools")
+    except importlib.metadata.PackageNotFoundError:
+        return "0.0.0"
 
 
 def log(message: str) -> None:
