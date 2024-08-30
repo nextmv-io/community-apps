@@ -27,6 +27,10 @@ func TestGolden(t *testing.T) {
 					Key:         "$.statistics.run.duration",
 					Replacement: float64(0.015),
 				},
+				{
+					Key:         "$.options.output",
+					Replacement: "output",
+				},
 			},
 			DedicatedComparison: []string{
 				"$.statistics.result.value",

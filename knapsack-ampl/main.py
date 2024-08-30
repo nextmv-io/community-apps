@@ -2,15 +2,12 @@
 Template for working with AMPL.
 """
 
-import argparse
-import json
 import os
-import sys
 import time
 from platform import uname
-from typing import Any
 
-from amplpy import AMPL, ErrorHandler, OutputHandler, modules
+import nextmv
+from amplpy import AMPL, modules
 
 # Duration parameter for the solver.
 SUPPORTED_PROVIDER_DURATIONS = {
@@ -36,79 +33,38 @@ STATUS = [
 ]
 
 
-class CollectOutput(OutputHandler):
-    def __init__(self):
-        self.buffer = ""
-
-    def output(self, kind, msg):
-        self.buffer += msg
-
-
-output_handler = CollectOutput()
-
-
-class CollectWarnings(ErrorHandler):
-    def __init__(self):
-        self.buffer = ""
-
-    def warning(self, exception):
-        self.buffer += str(exception)
-
-
-error_handler = CollectWarnings()
-
-
 def main() -> None:
-    """Entry point for the template."""
+    """Entry point for the program."""
 
-    parser = argparse.ArgumentParser(description="Solve problems with AMPL.")
-    parser.add_argument(
-        "-input",
-        default="",
-        help="Path to input file. Default is stdin.",
+    options = nextmv.Options(
+        nextmv.Parameter("input", str, "", "Path to input file. Default is stdin.", False),
+        nextmv.Parameter("output", str, "", "Path to output file. Default is stdout.", False),
+        nextmv.Parameter("duration", int, 30, "Max runtime duration (in seconds).", False),
+        nextmv.Parameter("provider", str, "highs", "Solver provider.", False),
     )
-    parser.add_argument(
-        "-output",
-        default="",
-        help="Path to output file. Default is stdout.",
-    )
-    parser.add_argument(
-        "-duration",
-        default=30,
-        help="Max runtime duration (in seconds). Default is 30.",
-        type=int,
-    )
-    parser.add_argument(
-        "-provider",
-        default="highs",
-        help="Solver provider. Default is highs.",
-    )
-    args = parser.parse_args()
 
-    # Read input "data", solve the problem and write the solution.
-    input_data = read_input(args.input)
+    input = nextmv.load_local(options=options, path=options.input)
 
-    log("Solving knapsack problem:")
-    log(f"  - items: {len(input_data.get('items', []))}")
-    log(f"  - capacity: {input_data.get('weight_capacity', 0)}")
-    log(f"  - max duration: {args.duration} seconds")
+    nextmv.log("Solving knapsack problem:")
+    nextmv.log(f"  - items: {len(input.data.get('items', []))}")
+    nextmv.log(f"  - capacity: {input.data.get('weight_capacity', 0)}")
 
-    solution = solve(input_data, args.duration, args.provider)
-    write_output(args.output, solution)
+    output = solve(input, options)
+    nextmv.write_local(output, path=options.output)
 
 
-def solve(input_data: dict[str, Any], duration: int, provider: str) -> dict[str, Any]:
+def solve(input: nextmv.Input, options: nextmv.Options) -> nextmv.Output:
     """Solves the given problem and returns the solution."""
 
     start_time = time.time()
+    nextmv.redirect_stdout()  # Solver chatter is logged to stderr.
 
     # Activate license.
     license_used = activate_license()
+    options.license_used = license_used
 
     # Defines the model.
     ampl = AMPL()
-    ampl.set_output_handler(output_handler)
-    ampl.set_error_handler(error_handler)
     ampl.eval(
         r"""
         # Sets
@@ -131,27 +87,26 @@ def solve(input_data: dict[str, Any], duration: int, provider: str) -> dict[str,
     )
 
     # Sets the solver and options.
+    provider = options.provider
     ampl.option["solver"] = provider
     if provider in SUPPORTED_PROVIDER_DURATIONS.keys():
-        ampl.option[f"{provider}_options"] = f"{SUPPORTED_PROVIDER_DURATIONS[provider]}={duration}"
+        ampl.option[f"{provider}_options"] = f"{SUPPORTED_PROVIDER_DURATIONS[provider]}={options.duration}"
 
     # Set the data on the model.
-    ampl.set["I"] = [item["id"] for item in input_data["items"]]
-    ampl.param["W"] = input_data["weight_capacity"]
-    ampl.param["v"] = {item["id"]: item["value"] for item in input_data["items"]}
-    ampl.param["w"] = {item["id"]: item["weight"] for item in input_data["items"]}
+    ampl.set["I"] = [item["id"] for item in input.data["items"]]
+    ampl.param["W"] = input.data["weight_capacity"]
+    ampl.param["v"] = {item["id"]: item["value"] for item in input.data["items"]}
+    ampl.param["w"] = {item["id"]: item["weight"] for item in input.data["items"]}
 
     # Solves the problem. Verbose mode is turned off to avoid printing to
     # stdout. Only the output should be printed to stdout.
-    ampl.solve(verbose=False)
-    log(f"AMPL output after solving: {output_handler.buffer}")
-    log(f"AMPL errors after solving: {error_handler.buffer}")
+    ampl.solve()
 
     # Convert to solution format.
     value = ampl.get_objective("z")
     chosen_items = []
     if value:
-        chosen_items = [item for item in input_data["items"] if ampl.get_variable("x")[item["id"]].value() > 0.9]
+        chosen_items = [item for item in input.data["items"] if ampl.get_variable("x")[item["id"]].value() > 0.9]
 
     solve_result = ampl.solve_result_num
     status = "unknown"
@@ -162,31 +117,24 @@ def solve(input_data: dict[str, Any], duration: int, provider: str) -> dict[str,
             status = s.get("status")
             break
 
-    # Creates the statistics.
-    statistics = {
-        "result": {
-            "custom": {
-                "constraints": ampl.get_value("_ncons"),
-                "provider": provider,
+    statistics = nextmv.Statistics(
+        run=nextmv.RunStatistics(duration=time.time() - start_time),
+        result=nextmv.ResultStatistics(
+            duration=ampl.get_value("_total_solve_time"),
+            value=value.value(),
+            custom={
                 "status": status,
                 "variables": ampl.get_value("_nvars"),
+                "constraints": ampl.get_value("_ncons"),
             },
-            "duration": ampl.get_value("_total_solve_time"),
-            "value": value.value(),
-        },
-        "run": {
-            "duration": time.time() - start_time,
-            "custom": {
-                "license_used": license_used,
-            },
-        },
-        "schema": "v1",
-    }
+        ),
+    )
 
-    return {
-        "solutions": [{"items": chosen_items}],
-        "statistics": statistics,
-    }
+    return nextmv.Output(
+        options=options,
+        solution={"items": chosen_items},
+        statistics=statistics,
+    )
 
 
 def activate_license() -> str:
@@ -198,7 +146,7 @@ def activate_license() -> str:
 
     Returns:
         str: The license that was activated: "license", "nextmv" or
-        "not_activated".
+        "demo".
     """
 
     # Check if the ampl_license_uuid file exists. NOTE: When running in Nextmv
@@ -221,37 +169,6 @@ def activate_license() -> str:
         return "nextmv"
 
     return "demo"
-
-
-def log(message: str) -> None:
-    """Logs a message. We need to use stderr since stdout is used for the
-    solution."""
-
-    print(message, file=sys.stderr)
-
-
-def read_input(input_path: str) -> dict[str, Any]:
-    """Reads the input from stdin or a given input file."""
-
-    input_file = {}
-    if input_path:
-        with open(input_path, encoding="utf-8") as file:
-            input_file = json.load(file)
-    else:
-        input_file = json.load(sys.stdin)
-
-    return input_file
-
-
-def write_output(output_path: str, output: dict[str, Any]) -> None:
-    """Writes the output to stdout or a given output file."""
-
-    content = json.dumps(output, indent=2)
-    if output_path:
-        with open(output_path, "w", encoding="utf-8") as file:
-            file.write(content + "\n")
-    else:
-        print(content)
 
 
 if __name__ == "__main__":

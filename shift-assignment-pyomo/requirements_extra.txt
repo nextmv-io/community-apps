@@ -1,4 +1,5 @@
 # Extra requirements that will be bundled with the app.
 # These are in addition to the ones already installed in
 # the runtime image (the ones in the requirements.txt file).
-# sample-dependency==0.1.0
+nextmv==v0.10.0.dev12
+

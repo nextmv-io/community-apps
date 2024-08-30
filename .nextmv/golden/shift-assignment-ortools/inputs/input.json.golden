@@ -1,46 +1,49 @@
 {
-  "solutions": [
-    {
-      "assigned_shifts": [
-        {
-          "end_time": "2023-11-20T22:00:00+02:00",
-          "shift_id": "welder_monday-late",
-          "start_time": "2023-11-20T14:00:00+02:00",
-          "worker_id": "Louis Hardy"
-        },
-        {
-          "end_time": "2023-11-20T14:00:00+02:00",
-          "shift_id": "welder_monday-early",
-          "start_time": "2023-11-20T06:00:00+02:00",
-          "worker_id": "Jacob Cunningham"
-        },
-        {
-          "end_time": "2023-11-20T14:00:00+02:00",
-          "shift_id": "normal_monday-early",
-          "start_time": "2023-11-20T06:00:00+02:00",
-          "worker_id": "Ray Heard"
-        },
-        {
-          "end_time": "2023-11-20T22:00:00+02:00",
-          "shift_id": "normal_monday-late",
-          "start_time": "2023-11-20T14:00:00+02:00",
-          "worker_id": "Mark Leath"
-        },
-        {
-          "end_time": "2023-11-20T14:00:00+02:00",
-          "shift_id": "normal_monday-early",
-          "start_time": "2023-11-20T06:00:00+02:00",
-          "worker_id": "Dylan Mccormack"
-        }
-      ]
-    }
-  ],
+  "options": {
+    "duration": 30,
+    "input": "inputs/input.json",
+    "output": "output",
+    "provider": "SCIP"
+  },
+  "solution": {
+    "assigned_shifts": [
+      {
+        "end_time": "2023-11-20T22:00:00+02:00",
+        "shift_id": "welder_monday-late",
+        "start_time": "2023-11-20T14:00:00+02:00",
+        "worker_id": "Louis Hardy"
+      },
+      {
+        "end_time": "2023-11-20T14:00:00+02:00",
+        "shift_id": "welder_monday-early",
+        "start_time": "2023-11-20T06:00:00+02:00",
+        "worker_id": "Jacob Cunningham"
+      },
+      {
+        "end_time": "2023-11-20T14:00:00+02:00",
+        "shift_id": "normal_monday-early",
+        "start_time": "2023-11-20T06:00:00+02:00",
+        "worker_id": "Ray Heard"
+      },
+      {
+        "end_time": "2023-11-20T22:00:00+02:00",
+        "shift_id": "normal_monday-late",
+        "start_time": "2023-11-20T14:00:00+02:00",
+        "worker_id": "Mark Leath"
+      },
+      {
+        "end_time": "2023-11-20T14:00:00+02:00",
+        "shift_id": "normal_monday-early",
+        "start_time": "2023-11-20T06:00:00+02:00",
+        "worker_id": "Dylan Mccormack"
+      }
+    ]
+  },
   "statistics": {
     "result": {
       "custom": {
         "active_workers": 5,
         "constraints": 44,
-        "provider": "SCIP",
         "status": "optimal",
         "total_workers": 5,
         "variables": 20

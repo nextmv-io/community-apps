@@ -1,4 +1,4 @@
 # Define the packages required by your project here.
 # For stability, it is recommended to fix the version of the packages here.
 # For example:
-nextmv==0.8.0
+nextmv==v0.10.0.dev12

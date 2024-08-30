@@ -2,15 +2,12 @@
 Template for working with AMPL.
 """
 
-import argparse
-import json
 import os
-import sys
 import time
 from platform import uname
-from typing import Any
 
-from amplpy import AMPL, ErrorHandler, OutputHandler, modules
+import nextmv
+from amplpy import AMPL, modules
 
 # Duration parameter for the solver.
 SUPPORTED_PROVIDER_DURATIONS = {
@@ -36,134 +33,83 @@ STATUS = [
 ]
 
 
-class CollectOutput(OutputHandler):
-    def __init__(self):
-        self.buffer = ""
-
-    def output(self, kind, msg):
-        self.buffer += msg
-
-
-output_handler = CollectOutput()
-
-
-class CollectWarnings(ErrorHandler):
-    def __init__(self):
-        self.buffer = ""
-
-    def warning(self, exception):
-        self.buffer += str(exception)
-
-
-error_handler = CollectWarnings()
-
-
 def main() -> None:
-    """Entry point for the template."""
+    """Entry point for the program."""
 
-    parser = argparse.ArgumentParser(description="Solve problems with AMPL.")
-    parser.add_argument(
-        "-input",
-        default="",
-        help="Path to input file. Default is stdin.",
+    options = nextmv.Options(
+        nextmv.Parameter("input", str, "", "Path to input file. Default is stdin.", False),
+        nextmv.Parameter("output", str, "", "Path to output file. Default is stdout.", False),
+        nextmv.Parameter("duration", int, 30, "Max runtime duration (in seconds).", False),
+        nextmv.Parameter("provider", str, "highs", "Solver provider.", False),
+        nextmv.Parameter("model", str, ",", "Path to folder containing the .mod file.", False),
     )
-    parser.add_argument(
-        "-model",
-        default=".",
-        help="Path to folder containing the .mod file. Default is current working directory.",
-    )
-    parser.add_argument(
-        "-output",
-        default="",
-        help="Path to output file. Default is stdout.",
-    )
-    parser.add_argument(
-        "-duration",
-        default=30,
-        help="Max runtime duration (in seconds). Default is 30.",
-        type=int,
-    )
-    parser.add_argument(
-        "-provider",
-        default="highs",
-        help="Solver provider. Default is highs.",
-    )
-    args = parser.parse_args()
 
-    # Read input "data", solve the problem and write the solution.
-    input_data = read_input(args.input)
-    log("Solving price optimization problem:")
-    log(f"  - regions: {len(input_data.get('regions', []))}")
-    log(f"  - max duration: {args.duration} seconds")
-    solution = solve(input_data, args.duration, args.provider, args.model)
-    write_output(args.output, solution)
+    input = nextmv.load_local(options=options, path=options.input)
+
+    nextmv.log("Solving price optimization problem:")
+    nextmv.log(f"  - regions: {len(input.data.get('regions', []))}")
+
+    output = solve(input, options)
+    nextmv.write_local(output, path=options.output)
 
 
-def solve(
-    input_data: dict[str, Any],
-    duration: int,
-    provider: str,
-    model: str,
-) -> dict[str, Any]:
+def solve(input: nextmv.Input, options: nextmv.Options) -> nextmv.Output:
     """Solves the given problem and returns the solution."""
 
     start_time = time.time()
+    nextmv.redirect_stdout()  # Solver chatter is logged to stderr.
 
     # Activate license.
     license_used = activate_license()
+    options.license_used = license_used
 
     # Defines the model.
     ampl = AMPL()
-    ampl.set_output_handler(output_handler)
-    ampl.set_error_handler(error_handler)
     ampl.reset()
-    ampl.read(f"{model}/ampl_model.mod")
+    ampl.read(f"{options.model}/ampl_model.mod")
 
     # Sets the solver and options.
+    provider = options.provider
     ampl.option["solver"] = provider
     if provider in SUPPORTED_PROVIDER_DURATIONS.keys():
-        ampl.option[f"{provider}_options"] = f"{SUPPORTED_PROVIDER_DURATIONS[provider]}={duration}"
+        ampl.option[f"{provider}_options"] = f"{SUPPORTED_PROVIDER_DURATIONS[provider]}={options.duration}"
 
     # Set the data on the model.
-    ampl.set["R"] = input_data["regions"]
-    ampl.param["cost_waste"] = input_data["cost_per_wasted_product"]
-    ampl.param["cost_transport"] = {r: input_data["transport_costs"][i] for i, r in enumerate(input_data["regions"])}
-    ampl.param["price_min"] = input_data["minimum_product_price"]
-    ampl.param["price_max"] = input_data["maximum_product_price"]
+    ampl.set["R"] = input.data["regions"]
+    ampl.param["cost_waste"] = input.data["cost_per_wasted_product"]
+    ampl.param["cost_transport"] = {r: input.data["transport_costs"][i] for i, r in enumerate(input.data["regions"])}
+    ampl.param["price_min"] = input.data["minimum_product_price"]
+    ampl.param["price_max"] = input.data["maximum_product_price"]
     ampl.param["quantity_min"] = {
-        r: input_data["minimum_product_allocations"][i] for i, r in enumerate(input_data["regions"])
+        r: input.data["minimum_product_allocations"][i] for i, r in enumerate(input.data["regions"])
     }
     ampl.param["quantity_max"] = {
-        r: input_data["maximum_product_allocations"][i] for i, r in enumerate(input_data["regions"])
+        r: input.data["maximum_product_allocations"][i] for i, r in enumerate(input.data["regions"])
     }
-    ampl.param["total_amount_of_supply"] = input_data["total_amount_of_supply"]
-    ampl.param["coefficients_intercept"] = input_data["coefficients"]["intercept"]
+    ampl.param["total_amount_of_supply"] = input.data["total_amount_of_supply"]
+    ampl.param["coefficients_intercept"] = input.data["coefficients"]["intercept"]
     ampl.param["coefficients_region"] = {
-        r: input_data["coefficients"]["region"][i] for i, r in enumerate(input_data["regions"])
+        r: input.data["coefficients"]["region"][i] for i, r in enumerate(input.data["regions"])
     }
-    ampl.param["coefficients_price"] = input_data["coefficients"]["price"]
-    ampl.param["coefficients_year_index"] = input_data["coefficients"]["year_index"]
-    ampl.param["coefficients_peak"] = input_data["coefficients"]["peak"]
-    ampl.param["data_year"] = input_data["year"]
-    ampl.param["data_peak"] = input_data["peak"]
+    ampl.param["coefficients_price"] = input.data["coefficients"]["price"]
+    ampl.param["coefficients_year_index"] = input.data["coefficients"]["year_index"]
+    ampl.param["coefficients_peak"] = input.data["coefficients"]["peak"]
+    ampl.param["data_year"] = input.data["year"]
+    ampl.param["data_peak"] = input.data["peak"]
 
     # Solves the problem. Verbose mode is turned off to avoid printing to
     # stdout. Only the output should be printed to stdout.
     ampl.solve(verbose=False)
-    log(f"AMPL output after solving: {output_handler.buffer}")
-    log(f"AMPL errors after solving: {error_handler.buffer}")
 
     # Convert to solution format.
     objective_val = ampl.get_objective("obj")
-    solutions = []
+    solution = {}
     if objective_val:
-        solutions.append(
-            {
-                "regions": input_data["regions"],
-                "price": {r: round(ampl.get_variable("price")[r].value(), 2) for r in ampl.get_set("R")},
-                "quantity": {r: round(ampl.get_variable("quantity")[r].value(), 8) for r in ampl.get_set("R")},
-            }
-        )
+        solution = {
+            "regions": input.data["regions"],
+            "price": {r: round(ampl.get_variable("price")[r].value(), 2) for r in ampl.get_set("R")},
+            "quantity": {r: round(ampl.get_variable("quantity")[r].value(), 8) for r in ampl.get_set("R")},
+        }
 
     solve_result = ampl.solve_result_num
     status = "unknown"
@@ -176,17 +122,17 @@ def solve(
 
     # calculate expected demand for each region
     price_solution = ampl.getVariable("price").getValues().toList()
-    coefficients = input_data["coefficients"]
+    coefficients = input.data["coefficients"]
     expected_demand = {}
 
-    for r in range(len(input_data["regions"])):
-        expected_demand[input_data["regions"][r]] = round(
+    for r in range(len(input.data["regions"])):
+        expected_demand[input.data["regions"][r]] = round(
             (
                 coefficients["intercept"]
                 + coefficients["price"] * price_solution[r][1]
                 + coefficients["region"][r]
-                + coefficients["year_index"] * (input_data["year"] - 2015)
-                + coefficients["peak"] * input_data["peak"]
+                + coefficients["year_index"] * (input.data["year"] - 2015)
+                + coefficients["peak"] * input.data["peak"]
             ),
             8,
         )
@@ -197,34 +143,27 @@ def solve(
     expected_sales = {r: 0.0 if v == -0.0 else v for r, v in expected_sales.items()}
     expected_waste = {r: 0.0 if v == -0.0 else v for r, v in expected_waste.items()}
 
-    # Creates the statistics.
-    statistics = {
-        "result": {
-            "custom": {
-                "constraints": ampl.get_value("_ncons"),
-                "provider": provider,
+    statistics = nextmv.Statistics(
+        run=nextmv.RunStatistics(duration=time.time() - start_time),
+        result=nextmv.ResultStatistics(
+            duration=ampl.get_value("_total_solve_time"),
+            value=objective_val.value(),
+            custom={
                 "status": status,
                 "variables": ampl.get_value("_nvars"),
+                "constraints": ampl.get_value("_ncons"),
                 "expected_demand": expected_demand,
                 "expected_sales": expected_sales,
                 "expected_waste": expected_waste,
             },
-            "duration": ampl.get_value("_total_solve_time"),
-            "value": objective_val.value(),
-        },
-        "run": {
-            "duration": time.time() - start_time,
-            "custom": {
-                "license_used": license_used,
-            },
-        },
-        "schema": "v1",
-    }
+        ),
+    )
 
-    return {
-        "solutions": solutions,
-        "statistics": statistics,
-    }
+    return nextmv.Output(
+        options=options,
+        solution=solution,
+        statistics=statistics,
+    )
 
 
 def activate_license() -> str:
@@ -236,7 +175,7 @@ def activate_license() -> str:
 
     Returns:
         str: The license that was activated: "license", "nextmv" or
-        "not_activated".
+        "demo".
     """
 
     # Check if the ampl_license_uuid file exists. NOTE: When running in Nextmv
@@ -259,37 +198,6 @@ def activate_license() -> str:
         return "nextmv"
 
     return "demo"
-
-
-def log(message: str) -> None:
-    """Logs a message. We need to use stderr since stdout is used for the
-    solution."""
-
-    print(message, file=sys.stderr)
-
-
-def read_input(input_path) -> dict[str, Any]:
-    """Reads the input from stdin or a given input file."""
-
-    input_file = {}
-    if input_path:
-        with open(input_path, encoding="utf-8") as file:
-            input_file = json.load(file)
-    else:
-        input_file = json.load(sys.stdin)
-
-    return input_file
-
-
-def write_output(output_path, output) -> None:
-    """Writes the output to stdout or a given output file."""
-
-    content = json.dumps(output, indent=2)
-    if output_path:
-        with open(output_path, "w", encoding="utf-8") as file:
-            file.write(content + "\n")
-    else:
-        print(content)
 
 
 if __name__ == "__main__":
