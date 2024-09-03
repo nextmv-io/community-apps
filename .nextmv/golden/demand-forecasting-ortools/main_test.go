@@ -32,7 +32,11 @@ func TestGolden(t *testing.T) {
 				},
 				{
 					Key:         "$.options.output",
-					Replacement: "output",
+					Replacement: "output.json",
+				},
+				{
+					Key:         "$.options.input",
+					Replacement: "input.json",
 				},
 			},
 			OutputProcessConfig: golden.OutputProcessConfig{

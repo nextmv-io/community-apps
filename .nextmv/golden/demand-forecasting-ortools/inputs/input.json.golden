@@ -2,8 +2,8 @@
   "options": {
     "duration": 30,
     "include_past": false,
-    "input": "inputs/input.json",
-    "output": "output",
+    "input": "input.json",
+    "output": "output.json",
     "provider": "SCIP"
   },
   "solution": [

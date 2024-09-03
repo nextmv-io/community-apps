@@ -1,8 +1,8 @@
 {
   "options": {
     "duration": 30,
-    "input": "inputs/input.json",
-    "output": "output",
+    "input": "input.json",
+    "output": "output.json",
     "penalty": 3000
   },
   "solution": {

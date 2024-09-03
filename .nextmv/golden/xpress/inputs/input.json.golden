@@ -1,7 +1,7 @@
 {
   "options": {
-    "input": "",
-    "output": "output",
+    "input": "input.json",
+    "output": "output.json",
     "duration": 30,
     "provider": "xpress"
   },
