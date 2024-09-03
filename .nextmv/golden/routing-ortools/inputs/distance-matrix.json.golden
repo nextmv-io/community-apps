@@ -1,8 +1,8 @@
 {
   "options": {
     "duration": 30,
-    "input": "inputs/distance-matrix.json",
-    "output": "output"
+    "input": "input.json",
+    "output": "output.json"
   },
   "solution": {
     "unplanned": [],

@@ -1,8 +1,8 @@
 {
   "options": {
     "duration": 30,
-    "input": "inputs/both-matrices.json",
-    "output": "output"
+    "input": "input.json",
+    "output": "output.json"
   },
   "solution": {
     "unplanned": [],
