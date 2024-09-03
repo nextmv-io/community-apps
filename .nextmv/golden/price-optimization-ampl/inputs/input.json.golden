@@ -1,10 +1,10 @@
 {
   "options": {
     "duration": 30,
-    "input": "inputs/input.json",
+    "input": "input.json",
     "license_used": "demo",
     "model": "../../../price-optimization-ampl",
-    "output": "output",
+    "output": "output.json",
     "provider": "highs"
   },
   "solution": {

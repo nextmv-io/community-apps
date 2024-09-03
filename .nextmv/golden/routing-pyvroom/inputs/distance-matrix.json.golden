@@ -3,7 +3,7 @@
     "duration": 30,
     "exploration_level": 4,
     "input": "inputs/distance-matrix.json",
-    "output": "output",
+    "output": "output.json",
     "solver": "vroom",
     "threads": 6,
     "version": "1.13.6"
