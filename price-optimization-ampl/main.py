@@ -41,7 +41,7 @@ def main() -> None:
         nextmv.Parameter("output", str, "", "Path to output file. Default is stdout.", False),
         nextmv.Parameter("duration", int, 30, "Max runtime duration (in seconds).", False),
         nextmv.Parameter("provider", str, "highs", "Solver provider.", False),
-        nextmv.Parameter("model", str, ",", "Path to folder containing the .mod file.", False),
+        nextmv.Parameter("model", str, ".", "Path to folder containing the .mod file.", False),
     )
 
     input = nextmv.load_local(options=options, path=options.input)
