@@ -36,7 +36,7 @@ def solve(input: nextmv.Input, options: nextmv.Options) -> nextmv.Output:
 
     # Creates the solver.
     solver = highspy.Highs()
-    solver.silent()
+    solver.silent()  # Solver output always logged to stdout, ignores redirect.
     solver.setOptionValue("time_limit", options.duration)
 
     # Initializes the linear sums.

@@ -35,5 +35,5 @@ ampl-module-xpress==20240115
 # ampl-module-snopt==20211109
 
 # Other packages.
-nextmv==v0.10.0.dev12
+nextmv==v0.10.0.dev13
 pandas==2.2.2

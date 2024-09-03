@@ -2,4 +2,4 @@
 highspy==1.7.2
 
 # Other packages.
-nextmv==v0.10.0.dev12
+nextmv==v0.10.0.dev13

@@ -2,5 +2,5 @@
 ortools==9.8.3296
 
 # Other packages.
-nextmv==v0.10.0.dev12
+nextmv==v0.10.0.dev13
 

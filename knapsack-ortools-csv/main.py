@@ -23,14 +23,17 @@ def main() -> None:
     """Entry point for the program."""
 
     options = nextmv.Options(
-        nextmv.Parameter("input", str, "", "Path to input file. Default is stdin.", False),
-        nextmv.Parameter("output", str, "", "Path to output file. Default is stdout.", False),
+        nextmv.Parameter("input", str, "", "Path to input folder.", False),
+        nextmv.Parameter("output", str, "", "Path to output folder.", False),
         nextmv.Parameter("duration", int, 30, "Max runtime duration (in seconds).", False),
         nextmv.Parameter("provider", str, "SCIP", "Solver provider.", False),
     )
 
-    input_loader = nextmv.LocalInputLoader()
-    input = input_loader.load(input_format=nextmv.InputFormat.CSV_ARCHIVE, options=options, path=options.input)
+    input = nextmv.load_local(
+        input_format=nextmv.InputFormat.CSV_ARCHIVE,
+        options=options,
+        path=options.input,
+    )
 
     nextmv.log("Solving knapsack problem:")
     nextmv.log(f"  - items: {len(input.data.get('items', []))}")
