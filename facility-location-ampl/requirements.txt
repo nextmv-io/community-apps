@@ -36,4 +36,4 @@ ampl-module-xpress==20240115
 
 # Other packages.
 nextmv==v0.10.0.dev12
-
+pandas==2.2.2
