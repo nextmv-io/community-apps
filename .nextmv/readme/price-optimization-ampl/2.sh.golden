@@ -1,6 +1,6 @@
 {
   "options": {
-    "input": "input.json",
+    "input": "",
     "output": "",
     "duration": 30,
     "provider": "highs",
