@@ -1,55 +1,58 @@
 {
-  "solutions": [
-    {
-      "items": [
-        {
-          "id": "cat",
-          "value": 100,
-          "weight": 20
-        },
-        {
-          "id": "water",
-          "value": 40,
-          "weight": 2
-        },
-        {
-          "id": "phone",
-          "value": 6,
-          "weight": 1
-        },
-        {
-          "id": "book",
-          "value": 63,
-          "weight": 10
-        },
-        {
-          "id": "rx",
-          "value": 81,
-          "weight": 1
-        },
-        {
-          "id": "coat",
-          "value": 44,
-          "weight": 9
-        },
-        {
-          "id": "keys",
-          "value": 92,
-          "weight": 1
-        },
-        {
-          "id": "nuts",
-          "value": 18,
-          "weight": 4
-        }
-      ]
-    }
-  ],
+  "options": {
+    "duration": 30,
+    "input": "input.json",
+    "output": "output.json",
+    "provider": "cbc"
+  },
+  "solution": {
+    "items": [
+      {
+        "id": "cat",
+        "value": 100,
+        "weight": 20
+      },
+      {
+        "id": "water",
+        "value": 40,
+        "weight": 2
+      },
+      {
+        "id": "phone",
+        "value": 6,
+        "weight": 1
+      },
+      {
+        "id": "book",
+        "value": 63,
+        "weight": 10
+      },
+      {
+        "id": "rx",
+        "value": 81,
+        "weight": 1
+      },
+      {
+        "id": "coat",
+        "value": 44,
+        "weight": 9
+      },
+      {
+        "id": "keys",
+        "value": 92,
+        "weight": 1
+      },
+      {
+        "id": "nuts",
+        "value": 18,
+        "weight": 4
+      }
+    ]
+  },
   "statistics": {
     "result": {
       "custom": {
         "constraints": 1,
-        "provider": "cbc",
         "status": "optimal",
         "variables": 11
       },

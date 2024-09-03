@@ -2,78 +2,64 @@
 Adapted example of the vehicle routing problem with Google OR-Tools.
 """
 
-import argparse
 import functools
-import json
 import numbers
-import sys
 import time
 from typing import Any
 
+import nextmv
 import numpy as np
-from ortools import __version__ as ortools_version
 from ortools.constraint_solver import pywrapcp, routing_enums_pb2
 
 
-def main():
-    """Entry point for the template."""
-    parser = argparse.ArgumentParser(description="Solve a routing problem with OR-Tools.")
-    parser.add_argument(
-        "-input",
-        default="",
-        help="Path to input file. Default is stdin.",
+def main() -> None:
+    """Entry point for the program."""
+
+    options = nextmv.Options(
+        nextmv.Parameter("input", str, "", "Path to input file. Default is stdin.", False),
+        nextmv.Parameter("output", str, "", "Path to output file. Default is stdout.", False),
+        nextmv.Parameter("duration", int, 30, "Max runtime duration (in seconds).", False),
     )
-    parser.add_argument(
-        "-output",
-        default="",
-        help="Path to output file. Default is stdout.",
-    )
-    parser.add_argument(
-        "-duration",
-        default=30,
-        help="Max runtime duration (in seconds). Default is 30.",
-        type=int,
-    )
-    args = parser.parse_args()
 
     # Read and prepare the input data.
-    input_data = read_input(args.input)
-    apply_defaults(input_data)
-    validate_input(input_data)
-    process_distance_matrix(input_data)
-    process_duration_matrix(input_data)
+    input = nextmv.load_local(options=options, path=options.input)
+    apply_defaults(input.data)
+    validate_input(input.data)
+    process_distance_matrix(input.data)
+    process_duration_matrix(input.data)
 
-    # Solve the problem and write the output.
-    log("Solving routing problem:")
-    log(f"  - vehicles: {len(input_data.get('vehicles', []))}")
-    log(f"  - stops: {len(input_data.get('stops', []))}")
-    log(f"  - max duration: {args.duration} seconds")
+    nextmv.log("Solving routing problem:")
+    nextmv.log(f"  - vehicles: {len(input.data.get('vehicles', []))}")
+    nextmv.log(f"  - stops: {len(input.data.get('stops', []))}")
 
-    solution = solve(input_data, args.duration)
-    write_output(args.output, solution)
+    output = solve(input, options)
+    nextmv.write_local(output, path=options.output)
 
 
-def solve(input_data: dict[str, Any], duration: int) -> dict[str, Any]:
+def solve(input: nextmv.Input, options: nextmv.Options) -> nextmv.Output:
     """Solves the given problem and returns the solution."""
 
+    start_time = time.time()
+    nextmv.redirect_stdout()  # Solver chatter is logged to stderr.
+
     # Prepare data.
-    speeds = [v["speed"] if "speed" in v else 1 for v in input_data["vehicles"]]
-    capacities = [int(round(v["capacity"])) if "capacity" in v else 0 for v in input_data["vehicles"]]
-    quantities = [int(round(s["quantity"])) if "quantity" in s else 0 for s in input_data["stops"]]
-    quantities += [0] * (len(input_data["vehicles"]) * 2)
-    durations = [int(round(s["duration"])) if "duration" in s else 0 for s in input_data["stops"]]
-    durations += [0] * (len(input_data["vehicles"]) * 2)
+    speeds = [v["speed"] if "speed" in v else 1 for v in input.data["vehicles"]]
+    capacities = [int(round(v["capacity"])) if "capacity" in v else 0 for v in input.data["vehicles"]]
+    quantities = [int(round(s["quantity"])) if "quantity" in s else 0 for s in input.data["stops"]]
+    quantities += [0] * (len(input.data["vehicles"]) * 2)
+    durations = [int(round(s["duration"])) if "duration" in s else 0 for s in input.data["stops"]]
+    durations += [0] * (len(input.data["vehicles"]) * 2)
     max_duration_big_m = 365 * 24 * 60 * 60  # 1 year - used to remove the max_duration constraint if not provided
-    max_durations = [v["max_duration"] if "max_duration" in v else max_duration_big_m for v in input_data["vehicles"]]
-    start_indices = [len(input_data["stops"]) + i * 2 for i in range(len(input_data["vehicles"]))]
-    end_indices = [len(input_data["stops"]) + i * 2 + 1 for i in range(len(input_data["vehicles"]))]
-    duration_matrix = input_data["duration_matrix"] if "duration_matrix" in input_data else None
-    distance_matrix = input_data["distance_matrix"] if "distance_matrix" in input_data else None
+    max_durations = [v["max_duration"] if "max_duration" in v else max_duration_big_m for v in input.data["vehicles"]]
+    start_indices = [len(input.data["stops"]) + i * 2 for i in range(len(input.data["vehicles"]))]
+    end_indices = [len(input.data["stops"]) + i * 2 + 1 for i in range(len(input.data["vehicles"]))]
+    duration_matrix = input.data["duration_matrix"] if "duration_matrix" in input.data else None
+    distance_matrix = input.data["distance_matrix"] if "distance_matrix" in input.data else None
 
     # Create the routing index manager.
     manager = pywrapcp.RoutingIndexManager(
-        len(input_data["stops"]) + 2 * len(input_data["vehicles"]),
-        len(input_data["vehicles"]),
+        len(input.data["stops"]) + 2 * len(input.data["vehicles"]),
+        len(input.data["vehicles"]),
         start_indices,
         end_indices,
     )
@@ -97,7 +83,7 @@ def solve(input_data: dict[str, Any], duration: int) -> dict[str, Any]:
     # Create and register the duration callback.
     duration_callbacks = [
         duration_matrix_callback
-        if "duration_matrix" in input_data
+        if "duration_matrix" in input.data
         else functools.partial(distance_matrix_callback, speed=speed)
         for speed in speeds
     ]
@@ -109,7 +95,7 @@ def solve(input_data: dict[str, Any], duration: int) -> dict[str, Any]:
         True,  # start cumul to zero
         "Time",  # dimension name
     )
-    for i in range(len(input_data["vehicles"])):
+    for i in range(len(input.data["vehicles"])):
         routing.SetArcCostEvaluatorOfVehicle(transit_callbacks[i], i)
 
     # Define capacity callback.
@@ -129,7 +115,7 @@ def solve(input_data: dict[str, Any], duration: int) -> dict[str, Any]:
 
     # Setting first solution heuristic.
     search_parameters = pywrapcp.DefaultRoutingSearchParameters()
-    search_parameters.time_limit.FromSeconds(duration)
+    search_parameters.time_limit.FromSeconds(options.duration)
     search_parameters.first_solution_strategy = routing_enums_pb2.FirstSolutionStrategy.AUTOMATIC
     search_parameters.local_search_metaheuristic = routing_enums_pb2.LocalSearchMetaheuristic.AUTOMATIC
 
@@ -138,16 +124,16 @@ def solve(input_data: dict[str, Any], duration: int) -> dict[str, Any]:
     solution = routing.SolveWithParameters(search_parameters)
     end_time = time.time()
 
+    routes = []
     if solution is not None:
         # Determine the routes.
-        routes = []
         max_route_duration = 0
         max_stops_in_vehicle = 0
-        min_stops_in_vehicle = len(input_data["stops"])
+        min_stops_in_vehicle = len(input.data["stops"])
         activated_vehicles = 0
-        for vehicle_index in range(len(input_data["vehicles"])):
+        for vehicle_index in range(len(input.data["vehicles"])):
             # Get the route for the vehicle.
-            input_vehicle = input_data["vehicles"][vehicle_index]
+            input_vehicle = input.data["vehicles"][vehicle_index]
             current_index, previous_index = routing.Start(vehicle_index), -1
             route_duration, stop_count = 0, 0
             vehicle_route = []
@@ -157,7 +143,7 @@ def solve(input_data: dict[str, Any], duration: int) -> dict[str, Any]:
                 node_index = manager.IndexToNode(current_index)
 
                 # Keep track of the number of stops. We do not count the start and end locations.
-                if node_index < len(input_data["stops"]):
+                if node_index < len(input.data["stops"]):
                     stop_count += 1
 
                 # Calculate cumulative duration.
@@ -169,10 +155,10 @@ def solve(input_data: dict[str, Any], duration: int) -> dict[str, Any]:
                     )
 
                 # Add the stop to the route. If it is a start/end location, assemble it on the fly.
-                if node_index < len(input_data["stops"]):
-                    vehicle_route.append({"stop": input_data["stops"][node_index]})
+                if node_index < len(input.data["stops"]):
+                    vehicle_route.append({"stop": input.data["stops"][node_index]})
                 else:
-                    is_start = (node_index - len(input_data["stops"])) % 2 == 0
+                    is_start = (node_index - len(input.data["stops"])) % 2 == 0
                     if is_start and "start_location" in input_vehicle:
                         vehicle_route.append(
                             {
@@ -210,45 +196,35 @@ def solve(input_data: dict[str, Any], duration: int) -> dict[str, Any]:
             max_stops_in_vehicle = max(max_stops_in_vehicle, stop_count)
             min_stops_in_vehicle = min(min_stops_in_vehicle, stop_count)
 
-        # Creates the statistics.
-        statistics = {
-            "result": {
-                "custom": {
+        statistics = nextmv.Statistics(
+            run=nextmv.RunStatistics(duration=end_time - start_time),
+            result=nextmv.ResultStatistics(
+                value=solution.ObjectiveValue(),
+                custom={
                     "solution_found": True,
                     "activated_vehicles": activated_vehicles,
                     "max_route_duration": max_route_duration,
                     "max_stops_in_vehicle": max_stops_in_vehicle,
                     "min_stops_in_vehicle": min_stops_in_vehicle,
                 },
-                "duration": end_time - start_time,
-                "value": solution.ObjectiveValue(),
-            },
-            "run": {
-                "duration": end_time - start_time,
-            },
-            "schema": "v1",
-        }
+            ),
+        )
     else:
-        routes = []
-        statistics = {
-            "result": {
-                "custom": {
+        statistics = nextmv.Statistics(
+            run=nextmv.RunStatistics(duration=end_time - start_time),
+            result=nextmv.ResultStatistics(
+                value=None,
+                custom={
                     "solution_found": False,
                 },
-                "duration": end_time - start_time,
-                "value": None,
-            },
-            "run": {
-                "duration": end_time - start_time,
-            },
-            "schema": "v1",
-        }
+            ),
+        )
 
-    return {
-        "solutions": [{"vehicles": routes, "unplanned": []}],
-        "statistics": statistics,
-        "version": {"ortools": ortools_version},
-    }
+    return nextmv.Output(
+        options=options,
+        solution={"vehicles": routes, "unplanned": []},
+        statistics=statistics,
+    )
 
 
 def apply_defaults(input_data: dict[str, Any]) -> None:
@@ -401,7 +377,7 @@ def calculate_distance_matrix(input_data: dict[str, Any]) -> np.ndarray:
     matrix = distances.reshape(num_locations, num_locations)
 
     end = time.time()
-    log(f"Distance matrix calculation took {round(end - start, 2)} seconds.")
+    nextmv.log(f"Distance matrix calculation took {round(end - start, 2)} seconds.")
     return matrix
 
 
@@ -456,34 +432,6 @@ def haversine(
     earth_radius = 6371000
 
     return earth_radius * c
-
-
-def log(message: str) -> None:
-    """Logs a message. We need to use stderr since stdout is used for the solution."""
-
-    print(message, file=sys.stderr)
-
-
-def read_input(input_path: str) -> dict[str, Any]:
-    """Reads the input from stdin or a given input file."""
-    input_file = {}
-    if input_path:
-        with open(input_path) as file:
-            input_file = json.load(file)
-    else:
-        input_file = json.load(sys.stdin)
-
-    return input_file
-
-
-def write_output(output_path: str, output: dict[str, Any]) -> None:
-    """Writes the output to stdout or a given output file."""
-    content = json.dumps(output, indent=2)
-    if output_path:
-        with open(output_path, "w") as file:
-            file.write(content + "\n")
-    else:
-        print(content)
 
 
 if __name__ == "__main__":

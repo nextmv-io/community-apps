@@ -1,38 +1,44 @@
 {
-  "solutions": [
-    {
-      "price": {
-        "great_lakes": 1.78,
-        "midsouth": 1.51,
-        "northeast": 2,
-        "northern_new_england": 1.59,
-        "plains": 1.21,
-        "southcentral": 2,
-        "southeast": 1.9,
-        "west": 2
-      },
-      "quantity": {
-        "great_lakes": 3.50819768,
-        "midsouth": 3.94327922,
-        "northeast": 4.46022391,
-        "northern_new_england": 0.917984,
-        "plains": 2.95956766,
-        "southcentral": 4.74101614,
-        "southeast": 3.84072787,
-        "west": 5.62900352
-      },
-      "regions": [
-        "great_lakes",
-        "midsouth",
-        "northeast",
-        "northern_new_england",
-        "southcentral",
-        "southeast",
-        "west",
-        "plains"
-      ]
-    }
-  ],
+  "options": {
+    "duration": 30,
+    "input": "input.json",
+    "license_used": "demo",
+    "model": "../../../price-optimization-ampl",
+    "output": "output.json",
+    "provider": "highs"
+  },
+  "solution": {
+    "price": {
+      "great_lakes": 1.78,
+      "midsouth": 1.51,
+      "northeast": 2,
+      "northern_new_england": 1.59,
+      "plains": 1.21,
+      "southcentral": 2,
+      "southeast": 1.9,
+      "west": 2
+    },
+    "quantity": {
+      "great_lakes": 3.50819768,
+      "midsouth": 3.94327922,
+      "northeast": 4.46022391,
+      "northern_new_england": 0.917984,
+      "plains": 2.95956766,
+      "southcentral": 4.74101614,
+      "southeast": 3.84072787,
+      "west": 5.62900352
+    },
+    "regions": [
+      "great_lakes",
+      "midsouth",
+      "northeast",
+      "northern_new_england",
+      "southcentral",
+      "southeast",
+      "west",
+      "plains"
+    ]
+  },
   "statistics": {
     "result": {
       "custom": {
@@ -67,7 +73,6 @@
           "southeast": 0,
           "west": 0
         },
-        "provider": "highs",
         "status": "optimal",
         "variables": 56
       },
@@ -75,9 +80,6 @@
       "value": 46.4511927332535
     },
     "run": {
-      "custom": {
-        "license_used": "demo"
-      },
       "duration": 0.123
     },
     "schema": "v1"

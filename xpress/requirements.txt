@@ -2,7 +2,5 @@
 xpress==9.4.2; platform_system != 'Darwin' or (platform_system == 'Darwin' and platform_machine != 'arm64')
 
 # Other packages.
-nextmv==0.9.0
-numpy==1.26.4
-pandas==2.2.0
-scipy==1.12.0
+nextmv==v0.10.0.dev13
+
