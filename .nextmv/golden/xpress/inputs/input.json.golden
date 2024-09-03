@@ -1,63 +1,66 @@
 {
-  "solutions": [
-    {
-      "items": [
-        {
-          "id": "cat",
-          "value": 100,
-          "weight": 20
-        },
-        {
-          "id": "water",
-          "value": 40,
-          "weight": 2
-        },
-        {
-          "id": "phone",
-          "value": 6,
-          "weight": 1
-        },
-        {
-          "id": "book",
-          "value": 63,
-          "weight": 10
-        },
-        {
-          "id": "rx",
-          "value": 81,
-          "weight": 1
-        },
-        {
-          "id": "coat",
-          "value": 44,
-          "weight": 9
-        },
-        {
-          "id": "keys",
-          "value": 92,
-          "weight": 1
-        },
-        {
-          "id": "nuts",
-          "value": 18,
-          "weight": 4
-        }
-      ]
-    }
-  ],
-  "statistics": {
-    "result": {
-      "custom": {
-        "constraints": 1,
-        "provider": "xpress",
-        "status": "optimal",
-        "variables": 11
+  "options": {
+    "input": "",
+    "output": "output",
+    "duration": 30,
+    "provider": "xpress"
+  },
+  "solution": {
+    "items": [
+      {
+        "id": "cat",
+        "value": 100,
+        "weight": 20
       },
-      "duration": 0.123,
-      "value": 444
-    },
+      {
+        "id": "water",
+        "value": 40,
+        "weight": 2
+      },
+      {
+        "id": "phone",
+        "value": 6,
+        "weight": 1
+      },
+      {
+        "id": "book",
+        "value": 63,
+        "weight": 10
+      },
+      {
+        "id": "rx",
+        "value": 81,
+        "weight": 1
+      },
+      {
+        "id": "coat",
+        "value": 44,
+        "weight": 9
+      },
+      {
+        "id": "keys",
+        "value": 92,
+        "weight": 1
+      },
+      {
+        "id": "nuts",
+        "value": 18,
+        "weight": 4
+      }
+    ]
+  },
+  "statistics": {
     "run": {
       "duration": 0.123
+    },
+    "result": {
+      "duration": 0.123,
+      "value": 444.0,
+      "custom": {
+        "status": "optimal",
+        "variables": 11,
+        "constraints": 1
+      }
     },
     "schema": "v1"
   }
