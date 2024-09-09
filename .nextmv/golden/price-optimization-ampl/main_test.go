@@ -32,6 +32,14 @@ func TestGolden(t *testing.T) {
 					Key:         "$.statistics.run.duration",
 					Replacement: golden.StableFloat,
 				},
+				{
+					Key:         "$.options.output",
+					Replacement: "output.json",
+				},
+				{
+					Key:         "$.options.input",
+					Replacement: "input.json",
+				},
 			},
 			ExecutionConfig: &golden.ExecutionConfig{
 				Command:    "python3",

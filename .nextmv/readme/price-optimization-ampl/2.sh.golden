@@ -1,45 +1,55 @@
 {
-  "solutions": [
-    {
-      "regions": [
-        "great_lakes",
-        "midsouth",
-        "northeast",
-        "northern_new_england",
-        "southcentral",
-        "southeast",
-        "west",
-        "plains"
-      ],
-      "price": {
-        "great_lakes": 1.78,
-        "midsouth": 1.51,
-        "northeast": 2.0,
-        "northern_new_england": 1.59,
-        "southcentral": 2.0,
-        "southeast": 1.9,
-        "west": 2.0,
-        "plains": 1.21
-      },
-      "quantity": {
-        "great_lakes": 3.50819768,
-        "midsouth": 3.94327922,
-        "northeast": 4.46022391,
-        "northern_new_england": 0.917984,
-        "southcentral": 4.74101614,
-        "southeast": 3.84072787,
-        "west": 5.62900352,
-        "plains": 2.95956766
-      }
+  "options": {
+    "input": "",
+    "output": "",
+    "duration": 30,
+    "provider": "highs",
+    "model": ".",
+    "license_used": "demo"
+  },
+  "solution": {
+    "regions": [
+      "great_lakes",
+      "midsouth",
+      "northeast",
+      "northern_new_england",
+      "southcentral",
+      "southeast",
+      "west",
+      "plains"
+    ],
+    "price": {
+      "great_lakes": 1.78,
+      "midsouth": 1.51,
+      "northeast": 2.0,
+      "northern_new_england": 1.59,
+      "southcentral": 2.0,
+      "southeast": 1.9,
+      "west": 2.0,
+      "plains": 1.21
+    },
+    "quantity": {
+      "great_lakes": 3.50819768,
+      "midsouth": 3.94327922,
+      "northeast": 4.46022391,
+      "northern_new_england": 0.917984,
+      "southcentral": 4.74101614,
+      "southeast": 3.84072787,
+      "west": 5.62900352,
+      "plains": 2.95956766
     }
-  ],
+  },
   "statistics": {
+    "run": {
+      "duration": 0.123
+    },
     "result": {
+      "duration": 0.123,
+      "value": 46.4511927332535,
       "custom": {
-        "constraints": 41,
-        "provider": "highs",
         "status": "optimal",
         "variables": 56,
+        "constraints": 41,
         "expected_demand": {
           "great_lakes": 3.50819768,
           "midsouth": 3.8645434,
@@ -70,14 +80,6 @@
           "west": 0.0,
           "plains": 0.0
         }
-      },
-      "duration": 0.123,
-      "value": 46.4511927332535
-    },
-    "run": {
-      "duration": 0.123,
-      "custom": {
-        "license_used": "demo"
       }
     },
     "schema": "v1"

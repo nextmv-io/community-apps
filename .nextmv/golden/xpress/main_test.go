@@ -30,6 +30,14 @@ func TestGolden(t *testing.T) {
 					Key:         "$.statistics.run.duration",
 					Replacement: golden.StableFloat,
 				},
+				{
+					Key:         "$.options.output",
+					Replacement: "output.json",
+				},
+				{
+					Key:         "$.options.input",
+					Replacement: "input.json",
+				},
 			},
 			// We ignore stdout here, as it may contain community license
 			// warnings depending on whether a license was set up or not (not

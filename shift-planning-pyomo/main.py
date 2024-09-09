@@ -1,10 +1,8 @@
-import argparse
 import datetime
-import json
-import logging
-import sys
+import time
 from typing import Any
 
+import nextmv
 from pyomo.environ import (
     ConcreteModel,
     Constraint,
@@ -27,56 +25,37 @@ STATUS = {
 
 
 def main() -> None:
-    """Entry point for the template."""
+    """Entry point for the program."""
 
-    parser = argparse.ArgumentParser(description="Solve shift-planning with Pyomo.")
-    parser.add_argument(
-        "-input",
-        default="",
-        help="Path to input file. Default is stdin.",
+    options = nextmv.Options(
+        nextmv.Parameter("input", str, "", "Path to input file. Default is stdin.", False),
+        nextmv.Parameter("output", str, "", "Path to output file. Default is stdout.", False),
+        nextmv.Parameter("duration", int, 30, "Max runtime duration (in seconds).", False),
+        nextmv.Parameter("provider", str, "cbc", "Solver provider.", False),
     )
-    parser.add_argument(
-        "-output",
-        default="",
-        help="Path to output file. Default is stdout.",
-    )
-    parser.add_argument(
-        "-duration",
-        default=30,
-        help="Max runtime duration (in seconds). Default is 30.",
-        type=int,
-    )
-    parser.add_argument(
-        "-provider",
-        default="cbc",
-        help="Solver provider. Default is cbc.",
-    )
-    args = parser.parse_args()
 
-    # Read input data, solve the problem, and write the solution.
-    input_data = read_input(args.input)
+    input = nextmv.load_local(options=options, path=options.input)
 
-    log("Solving shift-planning:")
-    log(f"  - shifts-templates: {len(input_data.get('shifts', []))}")
-    log(f"  - demands: {len(input_data.get('demands', []))}")
-    log(f"  - max duration: {args.duration} seconds")
+    nextmv.log("Solving shift-planning:")
+    nextmv.log(f"  - shifts-templates: {len(input.data.get('shifts', []))}")
+    nextmv.log(f"  - demands: {len(input.data.get('demands', []))}")
 
-    solution = solve(input_data, args.duration, args.provider)
-    write_output(args.output, solution)
+    output = solve(input, options)
+    nextmv.write_local(output, path=options.output)
 
 
-def solve(input_data: dict[str, Any], duration: int, provider: str) -> dict[str, Any]:
+def solve(input: nextmv.Input, options: nextmv.Options) -> nextmv.Output:
     """Solves the given problem and returns the solution."""
 
-    # Silence all Pyomo logging.
-    logging.getLogger("pyomo.core").setLevel(logging.ERROR)
+    start_time = time.time()
+    nextmv.redirect_stdout()  # Solver chatter is logged to stderr.
 
     # Create the Pyomo model
     model = ConcreteModel()
 
     # Prepare data
-    shifts, demands = convert_data(input_data)
-    options = input_data.get("options", {})
+    shifts, demands = convert_data(input.data)
+    input_options = input.data.get("options", {})
 
     # Generate concrete shifts from shift templates.
     concrete_shifts = get_concrete_shifts(shifts)
@@ -97,19 +76,19 @@ def solve(input_data: dict[str, Any], duration: int, provider: str) -> dict[str,
             model.x_assign[s["id"]].setub(s["max_workers"])
 
     # Create variables for tracking various costs.
-    if "under_supply_cost" in options:
+    if "under_supply_cost" in input_options:
         model.x_under = Var([(p,) for p in periods], within=NonNegativeIntegers)
         model.underSupply = Var(within=NonNegativeIntegers)
-    if "over_supply_cost" in options:
+    if "over_supply_cost" in input_options:
         model.overSupply = Var(within=NonNegativeIntegers)
     model.shift_cost = Var(within=NonNegativeIntegers)
 
     # Objective function: minimize the cost of the planned shifts
     obj_expr = 0
-    if "under_supply_cost" in options:
-        obj_expr += sum(model.x_under[p] for p in periods) * options["under_supply_cost"]
-    if "over_supply_cost" in options:
-        obj_expr += model.overSupply * options["over_supply_cost"]
+    if "under_supply_cost" in input_options:
+        obj_expr += sum(model.x_under[p] for p in periods) * input_options["under_supply_cost"]
+    if "over_supply_cost" in input_options:
+        obj_expr += model.overSupply * input_options["over_supply_cost"]
     obj_expr += model.shift_cost
     model.objective = Objective(expr=obj_expr, sense=minimize)
 
@@ -127,14 +106,14 @@ def solve(input_data: dict[str, Any], duration: int, provider: str) -> dict[str,
         )
 
     # Track under supply
-    if "under_supply_cost" in options:
+    if "under_supply_cost" in input_options:
         model.under_supply = Constraint(
             expr=model.underSupply
             == sum(model.x_under[p] * (p.end_time - p.start_time).seconds / 3600 for p in periods)
         )
 
     # Track over supply
-    if "over_supply_cost" in options:
+    if "over_supply_cost" in input_options:
         model.over_supply = Constraint(
             expr=model.overSupply
             == sum(model.x_assign[s["id"]] * (s["end_time"] - s["start_time"]).seconds / 3600 for s in concrete_shifts)
@@ -147,8 +126,8 @@ def solve(input_data: dict[str, Any], duration: int, provider: str) -> dict[str,
     )
 
     # Solve the model.
-    solver = SolverFactory(provider)
-    results = solver.solve(model, tee=False, timelimit=duration)
+    solver = SolverFactory(options.provider)
+    results = solver.solve(model, tee=False, timelimit=options.duration)
 
     # Convert to solution format.
     val = value(model.objective, exception=False)
@@ -170,50 +149,43 @@ def solve(input_data: dict[str, Any], duration: int, provider: str) -> dict[str,
         else [],
     }
 
-    # Creates the statistics.
-    statistics = {
-        "result": {
-            "custom": {
-                "provider": provider,
+    under_supply = 0
+    over_supply = 0
+    under_supply_cost = 0
+    over_supply_cost = 0
+    if val:
+        if "under_supply_cost" in input_options:
+            under_supply = model.underSupply()
+            under_supply_cost = under_supply * input_options["under_supply_cost"]
+        if "over_supply_cost" in input_options:
+            over_supply = model.overSupply()
+            over_supply_cost = over_supply * input_options["over_supply_cost"]
+
+    statistics = nextmv.Statistics(
+        run=nextmv.RunStatistics(duration=time.time() - start_time),
+        result=nextmv.ResultStatistics(
+            duration=results.solver.time,
+            value=val,
+            custom={
                 "status": STATUS.get(results.solver.termination_condition, "unknown"),
-                "has_solution": val is not None,
-                "constraints": model.nconstraints(),
                 "variables": model.nvariables(),
+                "constraints": model.nconstraints(),
                 "planned_shifts": len(schedule["planned_shifts"]),
                 "planned_count": sum(s["count"] for s in schedule["planned_shifts"]),
                 "shift_cost": model.shift_cost() if val else 0.0,
-                "under_supply": model.underSupply() if val and "under_supply_cost" in options else 0.0,
-                "over_supply": model.overSupply() if val and "over_supply_cost" in options else 0.0,
-                "over_supply_cost": model.overSupply() * options["over_supply_cost"]
-                if val and "over_supply_cost" in options
-                else 0.0,
-                "under_supply_cost": model.underSupply() * options["under_supply_cost"]
-                if val and "under_supply_cost" in options
-                else 0.0,
+                "under_supply": under_supply,
+                "over_supply": over_supply,
+                "over_supply_cost": over_supply_cost,
+                "under_supply_cost": under_supply_cost,
             },
-            "duration": results.solver.time,
-            "value": val,
-        },
-        "run": {
-            "duration": results.solver.time,
-        },
-        "schema": "v1",
-    }
+        ),
+    )
 
-    log(f"  - status: {statistics['result']['custom']['status']}")
-    log(f"  - value: {statistics['result']['value']}")
-    log(f"  - planned shifts: {statistics['result']['custom']['planned_shifts']}")
-    log(f"  - planned count: {statistics['result']['custom']['planned_count']}")
-    log(f"  - under supply: {statistics['result']['custom']['under_supply']}")
-    log(f"  - over supply: {statistics['result']['custom']['over_supply']}")
-    log(f"  - shift cost: {statistics['result']['custom']['shift_cost']}")
-    log(f"  - over supply cost: {statistics['result']['custom']['over_supply_cost']}")
-    log(f"  - under supply cost: {statistics['result']['custom']['under_supply_cost']}")
-
-    return {
-        "solutions": [schedule],
-        "statistics": statistics,
-    }
+    return nextmv.Output(
+        options=options,
+        solution=schedule,
+        statistics=statistics,
+    )
 
 
 class UniqueQualificationDemandPeriod:
@@ -360,44 +332,6 @@ def convert_data(
         d["end_time"] = datetime.datetime.fromisoformat(d["end_time"])
         d["qualification"] = d["qualification"] if "qualification" in d else ""
     return shifts, demands
-
-
-def log(message: str) -> None:
-    """Logs a message. We need to use stderr since stdout is used for the solution."""
-
-    print(message, file=sys.stderr)
-
-
-def read_input(input_path: str) -> dict[str, Any]:
-    """Reads the input from stdin or a given input file."""
-
-    input_file = {}
-    if input_path:
-        with open(input_path, encoding="utf-8") as file:
-            input_file = json.load(file)
-    else:
-        input_file = json.load(sys.stdin)
-
-    return input_file
-
-
-def write_output(output_path: str, output: dict[str, Any]) -> None:
-    """Writes the output to stdout or a given output file."""
-
-    content = json.dumps(output, indent=2, default=custom_serial)
-    if output_path:
-        with open(output_path, "w", encoding="utf-8") as file:
-            file.write(content + "\n")
-    else:
-        print(content)
-
-
-def custom_serial(obj):
-    """JSON serializer for objects not serializable by default serializer."""
-
-    if isinstance(obj, (datetime.datetime | datetime.date)):
-        return obj.isoformat()
-    raise TypeError("Type %s not serializable" % type(obj))
 
 
 if __name__ == "__main__":

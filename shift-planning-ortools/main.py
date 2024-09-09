@@ -2,12 +2,11 @@
 Template for working with Google OR-Tools.
 """
 
-import argparse
 import datetime
-import json
-import sys
+import time
 from typing import Any
 
+import nextmv
 from ortools.linear_solver import pywraplp
 
 # Status of the solver after optimizing.
@@ -21,54 +20,38 @@ ANY_SOLUTION = [pywraplp.Solver.FEASIBLE, pywraplp.Solver.OPTIMAL]
 
 
 def main() -> None:
-    """Entry point for the template."""
+    """Entry point for the program."""
 
-    parser = argparse.ArgumentParser(description="Solve shift-planning with OR-Tools MIP.")
-    parser.add_argument(
-        "-input",
-        default="",
-        help="Path to input file. Default is stdin.",
+    options = nextmv.Options(
+        nextmv.Parameter("input", str, "", "Path to input file. Default is stdin.", False),
+        nextmv.Parameter("output", str, "", "Path to output file. Default is stdout.", False),
+        nextmv.Parameter("duration", int, 30, "Max runtime duration (in seconds).", False),
+        nextmv.Parameter("provider", str, "SCIP", "Solver provider.", False),
     )
-    parser.add_argument(
-        "-output",
-        default="",
-        help="Path to output file. Default is stdout.",
-    )
-    parser.add_argument(
-        "-duration",
-        default=30,
-        help="Max runtime duration (in seconds). Default is 30.",
-        type=int,
-    )
-    parser.add_argument(
-        "-provider",
-        default="SCIP",
-        help="Solver provider. Default is SCIP.",
-    )
-    args = parser.parse_args()
 
-    # Read input data, solve the problem and write the solution.
-    input_data = read_input(args.input)
+    input = nextmv.load_local(options=options, path=options.input)
 
-    log("Solving shift-planning:")
-    log(f"  - shifts-templates: {len(input_data.get('shifts', []))}")
-    log(f"  - demands: {len(input_data.get('demands', []))}")
-    log(f"  - max duration: {args.duration} seconds")
+    nextmv.log("Solving shift-planning:")
+    nextmv.log(f"  - shifts-templates: {len(input.data.get('shifts', []))}")
+    nextmv.log(f"  - demands: {len(input.data.get('demands', []))}")
 
-    solution = solve(input_data, args.duration, args.provider)
-    write_output(args.output, solution)
+    output = solve(input, options)
+    nextmv.write_local(output, path=options.output)
 
 
-def solve(input_data: dict[str, Any], duration: int, provider: str) -> dict[str, Any]:
+def solve(input: nextmv.Input, options: nextmv.Options) -> nextmv.Output:
     """Solves the given problem and returns the solution."""
 
+    start_time = time.time()
+    nextmv.redirect_stdout()  # Solver chatter is logged to stderr.
+
     # Creates the solver.
-    solver = pywraplp.Solver.CreateSolver(provider)
-    solver.SetTimeLimit(duration * 1000)
+    solver = pywraplp.Solver.CreateSolver(options.provider)
+    solver.SetTimeLimit(options.duration * 1000)
 
     # Prepare data
-    shifts, demands = convert_data(input_data)
-    options = input_data.get("options", {})
+    shifts, demands = convert_data(input.data)
+    input_options = input.data.get("options", {})
 
     # Generate concrete shifts from shift templates.
     concrete_shifts = get_concrete_shifts(shifts)
@@ -89,21 +72,21 @@ def solve(input_data: dict[str, Any], duration: int, provider: str) -> dict[str,
         )
 
     # Create variables for tracking various costs.
-    if "under_supply_cost" in options:
+    if "under_supply_cost" in input_options:
         x_under = {}
         for p in periods:
             x_under[p] = solver.NumVar(0, solver.infinity(), f"UnderSupply_{p}")
         underSupply = solver.NumVar(0, solver.infinity(), "UnderSupply")
-    if "over_supply_cost" in options:
+    if "over_supply_cost" in input_options:
         overSupply = solver.NumVar(0, solver.infinity(), "OverSupply")
     shift_cost = solver.NumVar(0, solver.infinity(), "ShiftCost")
 
     # Objective function: minimize the cost of the planned shifts
     obj_expr = solver.Sum([0])
-    if "under_supply_cost" in options:
-        obj_expr += underSupply * options["under_supply_cost"]
-    if "over_supply_cost" in options:
-        obj_expr += overSupply * options["over_supply_cost"]
+    if "under_supply_cost" in input_options:
+        obj_expr += underSupply * input_options["under_supply_cost"]
+    if "over_supply_cost" in input_options:
+        obj_expr += overSupply * input_options["over_supply_cost"]
     obj_expr += shift_cost
     solver.Minimize(obj_expr)
 
@@ -112,7 +95,7 @@ def solve(input_data: dict[str, Any], duration: int, provider: str) -> dict[str,
     # We need to make sure that all demands are covered (or track under supply).
     for p in periods:
         expression = solver.Sum([x_assign[s["id"]] for s in p.covering_shifts])
-        if "under_supply_cost" in options:
+        if "under_supply_cost" in input_options:
             expression += x_under[p]
         solver.Add(
             expression == sum(d["count"] for d in p.demands),
@@ -120,14 +103,14 @@ def solve(input_data: dict[str, Any], duration: int, provider: str) -> dict[str,
         )
 
     # Track under supply
-    if "under_supply_cost" in options:
+    if "under_supply_cost" in input_options:
         solver.Add(
             underSupply == solver.Sum([x_under[p] * (p.end_time - p.start_time).seconds / 3600 for p in periods]),
             "UnderSupply",
         )
 
     # Track over supply
-    if "over_supply_cost" in options:
+    if "over_supply_cost" in input_options:
         solver.Add(
             overSupply
             == solver.Sum(
@@ -166,52 +149,46 @@ def solve(input_data: dict[str, Any], duration: int, provider: str) -> dict[str,
         else [],
     }
 
-    # Creates the statistics.
-    statistics = {
-        "result": {
-            "custom": {
-                "provider": provider,
+    under_supply = 0
+    over_supply = 0
+    under_supply_cost = 0
+    over_supply_cost = 0
+    value = None
+    if has_solution:
+        if "under_supply_cost" in input_options:
+            under_supply = underSupply.solution_value()
+            under_supply_cost = under_supply * input_options["under_supply_cost"]
+        if "over_supply_cost" in input_options:
+            over_supply = overSupply.solution_value()
+            over_supply_cost = over_supply * input_options["over_supply_cost"]
+
+        value = solver.Objective().Value()
+
+    statistics = nextmv.Statistics(
+        run=nextmv.RunStatistics(duration=time.time() - start_time),
+        result=nextmv.ResultStatistics(
+            duration=solver.WallTime() / 1000,
+            value=value,
+            custom={
                 "status": STATUS.get(status, "unknown"),
-                "has_solution": has_solution,
-                "constraints": solver.NumConstraints(),
                 "variables": solver.NumVariables(),
+                "constraints": solver.NumConstraints(),
                 "planned_shifts": len(schedule["planned_shifts"]),
                 "planned_count": sum(s["count"] for s in schedule["planned_shifts"]),
                 "shift_cost": shift_cost.solution_value() if has_solution else 0,
-                "under_supply": underSupply.solution_value()
-                if has_solution and "under_supply_cost" in options
-                else 0.0,
-                "over_supply": overSupply.solution_value() if has_solution and "over_supply_cost" in options else 0.0,
-                "over_supply_cost": overSupply.solution_value() * options["over_supply_cost"]
-                if has_solution and "over_supply_cost" in options
-                else 0.0,
-                "under_supply_cost": underSupply.solution_value() * options["under_supply_cost"]
-                if has_solution and "under_supply_cost" in options
-                else 0.0,
+                "under_supply": under_supply,
+                "over_supply": over_supply,
+                "over_supply_cost": over_supply_cost,
+                "under_supply_cost": under_supply_cost,
             },
-            "duration": solver.WallTime() / 1000,
-            "value": solver.Objective().Value() if has_solution else None,
-        },
-        "run": {
-            "duration": solver.WallTime() / 1000,
-        },
-        "schema": "v1",
-    }
+        ),
+    )
 
-    log(f"  - status: {statistics['result']['custom']['status']}")
-    log(f"  - value: {statistics['result']['value']}")
-    log(f"  - planned shifts: {statistics['result']['custom']['planned_shifts']}")
-    log(f"  - planned count: {statistics['result']['custom']['planned_count']}")
-    log(f"  - under supply: {statistics['result']['custom']['under_supply']}")
-    log(f"  - over supply: {statistics['result']['custom']['over_supply']}")
-    log(f"  - shift cost: {statistics['result']['custom']['shift_cost']}")
-    log(f"  - over supply cost: {statistics['result']['custom']['over_supply_cost']}")
-    log(f"  - under supply cost: {statistics['result']['custom']['under_supply_cost']}")
-
-    return {
-        "solutions": [schedule],
-        "statistics": statistics,
-    }
+    return nextmv.Output(
+        options=options,
+        solution=schedule,
+        statistics=statistics,
+    )
 
 
 class UniqueQualificationDemandPeriod:
@@ -358,44 +335,6 @@ def convert_data(
         d["end_time"] = datetime.datetime.fromisoformat(d["end_time"])
         d["qualification"] = d["qualification"] if "qualification" in d else ""
     return shifts, demands
-
-
-def log(message: str) -> None:
-    """Logs a message. We need to use stderr since stdout is used for the solution."""
-
-    print(message, file=sys.stderr)
-
-
-def read_input(input_path: str) -> dict[str, Any]:
-    """Reads the input from stdin or a given input file."""
-
-    input_file = {}
-    if input_path:
-        with open(input_path, encoding="utf-8") as file:
-            input_file = json.load(file)
-    else:
-        input_file = json.load(sys.stdin)
-
-    return input_file
-
-
-def write_output(output_path: str, output: dict[str, Any]) -> None:
-    """Writes the output to stdout or a given output file."""
-
-    content = json.dumps(output, indent=2, default=custom_serial)
-    if output_path:
-        with open(output_path, "w", encoding="utf-8") as file:
-            file.write(content + "\n")
-    else:
-        print(content)
-
-
-def custom_serial(obj):
-    """JSON serializer for objects not serializable by default serializer."""
-
-    if isinstance(obj, (datetime.datetime | datetime.date)):
-        return obj.isoformat()
-    raise TypeError("Type %s not serializable" % type(obj))
 
 
 if __name__ == "__main__":
