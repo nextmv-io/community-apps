@@ -29,7 +29,7 @@ def main() -> None:
     nextmv.write_local(output, path=options.output)
 
 
-def solve(input_data: nextmv.Input, options: nextmv.Options) -> nextmv.Output:
+def solve(input: nextmv.Input, options: nextmv.Options) -> nextmv.Output:
     """Solves the given problem and returns the solution."""
 
     start = time.time()
@@ -45,7 +45,7 @@ def solve(input_data: nextmv.Input, options: nextmv.Options) -> nextmv.Output:
 
     # Creates the decision variables and adds them to the linear sums.
     items = []
-    for item in input_data["items"]:
+    for item in input.data["items"]:
         item_variable = model.add_variable(
             lb=0.0,
             ub=1.0,
@@ -61,7 +61,7 @@ def solve(input_data: nextmv.Input, options: nextmv.Options) -> nextmv.Output:
     model.add_linear_constraint(
         expr=weights,
         sense=poi.ConstraintSense.LessEqual,
-        rhs=input_data["weight_capacity"],
+        rhs=input.data["weight_capacity"],
         name="weight_capacity",
     )
 
