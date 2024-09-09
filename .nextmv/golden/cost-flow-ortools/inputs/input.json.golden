@@ -1,4 +1,10 @@
 {
+  "options": {
+    "duration": 30,
+    "input": "input.json",
+    "output": "output.json",
+    "penalty": 3000
+  },
   "solution": {
     "assignments": [
       {
@@ -233,7 +239,6 @@
         "number_of_fulfilled_projects": 5,
         "number_of_nodes": 12,
         "number_of_projects": 5,
-        "number_of_unfilled_projects": 0,
         "number_of_unfulfilled_projects": 0,
         "number_of_workers": 3,
         "required_time_units": 16,

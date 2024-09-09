@@ -2,90 +2,61 @@
 Adapted example of the vehicle routing problem with Google OR-Tools.
 """
 
-import argparse
-import importlib.metadata
-import json
 import numbers
-import sys
 import time
+from importlib.metadata import version
 from typing import Any
 
+import nextmv
 import numpy as np
 import vroom
 
 
-def main():
-    """Entry point for the template."""
-    parser = argparse.ArgumentParser(description="Solve a routing problem with OR-Tools.")
-    parser.add_argument(
-        "-input",
-        default="",
-        help="Path to input file. Default is stdin.",
-    )
-    parser.add_argument(
-        "-output",
-        default="",
-        help="Path to output file. Default is stdout.",
-    )
-    parser.add_argument(
-        "-duration",
-        default=30,
-        help="Max runtime duration (in seconds). Default is 30.",
-        type=int,
-    )
-    parser.add_argument(
-        "-exploration-level",
-        default=4,
-        help="Exploration level for the solver. Default is 4.",
-        type=int,
-    )
-    parser.add_argument(
-        "-threads",
-        default=6,
-        help="Number of threads to use. Default is 6.",
-        type=int,
-    )
-    args = parser.parse_args()
+def main() -> None:
+    """Entry point for the program."""
 
-    # Read and prepare the input data.
-    input_data = read_input(args.input)
-    apply_defaults(input_data)
-    validate_input(input_data)
-    process_duration_matrix(input_data)
+    options = nextmv.Options(
+        nextmv.Parameter("input", str, "", "Path to input file. Default is stdin.", False),
+        nextmv.Parameter("output", str, "", "Path to output file. Default is stdout.", False),
+        nextmv.Parameter("duration", int, 30, "Max runtime duration (in seconds).", False),
+        nextmv.Parameter("exploration_level", int, 4, "Exploration level for the solver.", False),
+        nextmv.Parameter("threads", int, 6, "Number of threads to use.", False),
+    )
 
-    # Solve the problem and write the output.
-    log("Solving routing problem:")
-    log(f"  - vehicles: {len(input_data.get('vehicles', []))}")
-    log(f"  - stops: {len(input_data.get('stops', []))}")
-    log(f"  - max duration: {args.duration} seconds")
-    log(f"  - exploration level: {args.exploration_level}")
-    log(f"  - threads: {args.threads}")
+    input = nextmv.load_local(options=options, path=options.input)
+    apply_defaults(input.data)
+    validate_input(input.data)
+    process_duration_matrix(input.data)
 
-    solution = solve(input_data, args.exploration_level, args.threads, args.duration)
-    write_output(args.output, solution)
+    nextmv.log("Solving routing problem:")
+    nextmv.log(f"  - vehicles: {len(input.data.get('vehicles', []))}")
+    nextmv.log(f"  - stops: {len(input.data.get('stops', []))}")
+
+    output = solve(input, options)
+    nextmv.write_local(output, path=options.output)
 
 
-def solve(
-    input_data: dict[str, Any],
-    exploration_level: int,
-    threads: int,
-    duration: int,
-) -> dict[str, Any]:
+def solve(input: nextmv.Input, options: nextmv.Options) -> nextmv.Output:
     """Solves the given problem and returns the solution."""
 
+    start_time = time.time()
+    nextmv.redirect_stdout()  # Solver chatter is logged to stderr.
+    options.solver = "vroom"
+    options.version = version("pyvroom")
+
     # TODO: use duration to limit the runtime of the solver
-    _ = duration
+    _ = options.duration
 
     # Prepare data.
-    speed_factors = [v["speed_factor"] if "speed_factor" in v else 1 for v in input_data["vehicles"]]
-    capacities = [int(round(v["capacity"])) if "capacity" in v else 0 for v in input_data["vehicles"]]
-    quantities = [int(round(s["quantity"])) if "quantity" in s else 0 for s in input_data["stops"]]
-    quantities += [0] * (len(input_data["vehicles"]) * 2)
-    durations = [int(round(s["duration"])) if "duration" in s else 0 for s in input_data["stops"]]
-    durations += [0] * (len(input_data["vehicles"]) * 2)
+    speed_factors = [v["speed_factor"] if "speed_factor" in v else 1 for v in input.data["vehicles"]]
+    capacities = [int(round(v["capacity"])) if "capacity" in v else 0 for v in input.data["vehicles"]]
+    quantities = [int(round(s["quantity"])) if "quantity" in s else 0 for s in input.data["stops"]]
+    quantities += [0] * (len(input.data["vehicles"]) * 2)
+    durations = [int(round(s["duration"])) if "duration" in s else 0 for s in input.data["stops"]]
+    durations += [0] * (len(input.data["vehicles"]) * 2)
     max_duration_big_m = 365 * 24 * 60 * 60  # 1 year - used to remove the max_duration constraint if not provided
-    max_durations = [v["max_duration"] if "max_duration" in v else max_duration_big_m for v in input_data["vehicles"]]
-    duration_matrix = input_data["duration_matrix"] if "duration_matrix" in input_data else None
+    max_durations = [v["max_duration"] if "max_duration" in v else max_duration_big_m for v in input.data["vehicles"]]
+    duration_matrix = input.data["duration_matrix"] if "duration_matrix" in input.data else None
 
     # Create the routing model.
     problem_instance = vroom.Input()
@@ -95,12 +66,12 @@ def solve(
     )
 
     # Add the vehicles.
-    for i in range(len(input_data["vehicles"])):
+    for i in range(len(input.data["vehicles"])):
         problem_instance.add_vehicle(
             vroom.Vehicle(
                 id=i,
-                start=i * 2 + len(input_data["stops"]),
-                end=i * 2 + 1 + len(input_data["stops"]),
+                start=i * 2 + len(input.data["stops"]),
+                end=i * 2 + 1 + len(input.data["stops"]),
                 profile="car",
                 capacity=[capacities[i]],
                 max_travel_time=max_durations[i],
@@ -109,7 +80,7 @@ def solve(
         )
 
     # Add the stops.
-    for i in range(len(input_data["stops"])):
+    for i in range(len(input.data["stops"])):
         problem_instance.add_job(
             vroom.Job(
                 id=i,
@@ -121,17 +92,16 @@ def solve(
         )
 
     # Solve the problem.
-    start_time = time.time()
-    solution = problem_instance.solve(exploration_level=exploration_level, nb_threads=threads)
+    solution = problem_instance.solve(exploration_level=options.exploration_level, nb_threads=options.threads)
     end_time = time.time()
 
     # Translate the solution into the output format.
-    vehicles_by_idx = dict(enumerate(input_data["vehicles"]))
-    stops_by_idx = dict(enumerate(input_data["stops"]))
+    vehicles_by_idx = dict(enumerate(input.data["vehicles"]))
+    stops_by_idx = dict(enumerate(input.data["stops"]))
     unplanned_stops = []
     max_route_duration = 0
     max_stops_in_vehicle = 0
-    min_stops_in_vehicle = len(input_data["stops"])
+    min_stops_in_vehicle = len(input.data["stops"])
     activated_vehicles = 0
     routes = []
 
@@ -193,7 +163,7 @@ def solve(
                     raise ValueError(f"Unknown route type {row['type']}.")
 
         # Fully assemble routes.
-        for vehicle in input_data["vehicles"]:
+        for vehicle in input.data["vehicles"]:
             vehicle_route = vehicle_routes.get(vehicle["id"], [])
             route = {
                 "id": vehicle["id"],
@@ -212,53 +182,35 @@ def solve(
             if stop["id"] not in planned_stops:
                 unplanned_stops.append({"id": stop["id"], "location": stop["location"]})
 
-        # Creates the statistics.
-        statistics = {
-            "result": {
-                "custom": {
+        statistics = nextmv.Statistics(
+            run=nextmv.RunStatistics(duration=end_time - start_time),
+            result=nextmv.ResultStatistics(
+                duration=end_time - start_time,
+                value=solution.summary.cost,
+                custom={
                     "solution_found": True,
                     "activated_vehicles": activated_vehicles,
                     "max_route_duration": max_route_duration,
                     "max_stops_in_vehicle": max_stops_in_vehicle,
                     "min_stops_in_vehicle": min_stops_in_vehicle,
                 },
-                "duration": end_time - start_time,
-                "value": solution.summary.cost,
-            },
-            "run": {
-                "duration": end_time - start_time,
-                "custom": {
-                    "exploration_level": exploration_level,
-                    "threads": threads,
-                    "solver": "vroom",
-                    "version": get_version(),
-                },
-            },
-            "schema": "v1",
-        }
-    else:
-        statistics = {
-            "result": {
-                "custom": {
-                    "solution_found": False,
-                },
-                "duration": end_time - start_time,
-                "value": None,
-            },
-            "run": {
-                "duration": end_time - start_time,
-                "custom": {
-                    "solver": "vroom",
-                    "version": get_version(),
-                },
-            },
-            "schema": "v1",
-        }
+            ),
+        )
 
-    return {
-        "solutions": [{"vehicles": routes, "unplanned": unplanned_stops}],
-        "statistics": statistics,
-    }
+    else:
+        statistics = nextmv.Statistics(
+            run=nextmv.RunStatistics(duration=end_time - start_time),
+            result=nextmv.ResultStatistics(
+                duration=end_time - start_time,
+                value=None,
+            ),
+        )
+
+    return nextmv.Output(
+        options=options,
+        solution={"vehicles": routes, "unplanned": unplanned_stops},
+        statistics=statistics,
+    )
 
 
 def apply_defaults(input_data: dict[str, Any]) -> None:
@@ -433,7 +385,7 @@ def calculate_distance_matrix(input_data: dict[str, Any]) -> np.ndarray:
     matrix = distances.reshape(num_locations, num_locations)
 
     end = time.time()
-    log(f"Distance matrix calculation took {round(end - start, 2)} seconds.")
+    nextmv.log(f"Distance matrix calculation took {round(end - start, 2)} seconds.")
     return matrix
 
 
@@ -474,42 +426,6 @@ def haversine(
     earth_radius = 6371000
 
     return earth_radius * c
-
-
-def get_version() -> str:
-    """Returns the version of the package."""
-    try:
-        return importlib.metadata.version("pyvroom")
-    except importlib.metadata.PackageNotFoundError:
-        return "0.0.0"
-
-
-def log(message: str) -> None:
-    """Logs a message. We need to use stderr since stdout is used for the solution."""
-
-    print(message, file=sys.stderr)
-
-
-def read_input(input_path: str) -> dict[str, Any]:
-    """Reads the input from stdin or a given input file."""
-    input_file = {}
-    if input_path:
-        with open(input_path) as file:
-            input_file = json.load(file)
-    else:
-        input_file = json.load(sys.stdin)
-
-    return input_file
-
-
-def write_output(output_path: str, output: dict[str, Any]) -> None:
-    """Writes the output to stdout or a given output file."""
-    content = json.dumps(output, indent=2)
-    if output_path:
-        with open(output_path, "w") as file:
-            file.write(content + "\n")
-    else:
-        print(content)
 
 
 if __name__ == "__main__":

@@ -1,14 +1,12 @@
 #!/usr/bin/env python3
-import argparse
-import json
 import math
-import sys
+import time
 import zoneinfo
 from datetime import datetime, timedelta
 from itertools import groupby
 from operator import itemgetter
-from typing import Any
 
+import nextmv
 from ortools.linear_solver import pywraplp
 
 BLOCKS = {
@@ -45,50 +43,39 @@ STATUS = {
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Solve forecast.")
-    parser.add_argument(
-        "-input",
-        default="",
-        help="Path to input file. Default is stdin.",
-    )
-    parser.add_argument(
-        "-output",
-        default="",
-        help="Path to output file. Default is stdout.",
-    )
-    parser.add_argument(
-        "-duration",
-        default=30,
-        help="Max runtime duration (in seconds). Default is 30.",
-        type=int,
-    )
-    parser.add_argument(
-        "-include-past",
-        default=False,
-        help="Include past data in forecast.",
-        type=bool,
-    )
-    args = parser.parse_args()
+    """Entry point for the program."""
 
-    input_data = read_input(args.input)
-    solution = solve(input_data, args.duration, args.include_past)
-    write_output(args.output, solution)
+    options = nextmv.Options(
+        nextmv.Parameter("input", str, "", "Path to input file. Default is stdin.", False),
+        nextmv.Parameter("output", str, "", "Path to output file. Default is stdout.", False),
+        nextmv.Parameter("duration", int, 30, "Max runtime duration (in seconds).", False),
+        nextmv.Parameter("provider", str, "SCIP", "Solver provider.", False),
+        nextmv.Parameter("include_past", bool, False, "Include past data in forecast.", False),
+    )
+
+    input = nextmv.load_local(options=options, path=options.input)
+
+    nextmv.log("Solving demand forecasting problem:")
+    nextmv.log(f"  - demands: {len(input.data.get('demands', []))}")
+
+    output = solve(input, options)
+    nextmv.write_local(output, path=options.output)
 
 
-def solve(
-    input_data: dict[str, Any],
-    duration: int,
-    include_past: bool,
-) -> dict[str, Any]:
-    provider = "SCIP"
-    solver = pywraplp.Solver.CreateSolver(provider)
-    solver.SetTimeLimit(duration * 1000)
+def solve(input: nextmv.Input, options: nextmv.Options) -> nextmv.Output:
+    """Solves the given problem and returns the solution."""
+
+    start_timer = time.time()
+    nextmv.redirect_stdout()  # Solver chatter is logged to stderr.
+
+    solver = pywraplp.Solver.CreateSolver(options.provider)
+    solver.SetTimeLimit(options.duration * 1000)
 
     # Use a custom bigM, since solver.infinity() causes abnormal termination.
     bigm = 100000000
 
-    timezone_name = input_data["timezone"]
-    demands = input_data["demands"]
+    timezone_name = input.data["timezone"]
+    demands = input.data["demands"]
     for i in demands:
         i["demand"] = int(i["demand"])
 
@@ -177,55 +164,24 @@ def solve(
             )
         date += timedelta(days=1)
 
-    return {
-        "solutions": demands + forecast if include_past else forecast,
-        "statistics": {
-            "result": {
-                "custom": {
-                    "constraints": solver.NumConstraints(),
-                    "provider": provider,
+        statistics = nextmv.Statistics(
+            run=nextmv.RunStatistics(duration=time.time() - start_timer),
+            result=nextmv.ResultStatistics(
+                duration=solver.WallTime() / 1000,
+                value=solver.Objective().Value(),
+                custom={
                     "status": STATUS.get(status, "unknown"),
                     "variables": solver.NumVariables(),
+                    "constraints": solver.NumConstraints(),
                 },
-                "duration": solver.WallTime() / 1000,
-                "value": solver.Objective().Value(),
-            },
-            "run": {
-                "duration": solver.WallTime() / 1000,
-            },
-            "schema": "v1",
-        },
-    }
+            ),
+        )
 
-
-def log(message: str) -> None:
-    """Logs a message. We need to use stderr since stdout is used for the solution."""
-
-    print(message, file=sys.stderr)
-
-
-def read_input(input_path: str) -> dict[str, Any]:
-    """Reads the input from stdin or a given input file."""
-
-    input_file = {}
-    if input_path:
-        with open(input_path, encoding="utf-8") as file:
-            input_file = json.load(file)
-    else:
-        input_file = json.load(sys.stdin)
-
-    return input_file
-
-
-def write_output(output_path: str, output: dict[str, Any]) -> None:
-    """Writes the output to stdout or a given output file."""
-
-    content = json.dumps(output, indent=2)
-    if output_path:
-        with open(output_path, "w", encoding="utf-8") as file:
-            file.write(content + "\n")
-    else:
-        print(content)
+    return nextmv.Output(
+        options=options,
+        solution=demands + forecast if options.include_past else forecast,
+        statistics=statistics,
+    )
 
 
 if __name__ == "__main__":

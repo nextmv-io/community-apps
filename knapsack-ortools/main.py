@@ -2,12 +2,9 @@
 Template for working with Google OR-Tools.
 """
 
-import argparse
-import json
-import sys
 import time
-from typing import Any
 
+import nextmv
 from ortools.linear_solver import pywraplp
 
 # Status of the solver after optimizing.
@@ -23,48 +20,34 @@ STATUS = {
 
 
 def main() -> None:
-    """Entry point for the template."""
+    """Entry point for the program."""
 
-    parser = argparse.ArgumentParser(description="Solve problems with OR-Tools.")
-    parser.add_argument(
-        "-input",
-        default="",
-        help="Path to input file. Default is stdin.",
+    options = nextmv.Options(
+        nextmv.Parameter("input", str, "", "Path to input file. Default is stdin.", False),
+        nextmv.Parameter("output", str, "", "Path to output file. Default is stdout.", False),
+        nextmv.Parameter("duration", int, 30, "Max runtime duration (in seconds).", False),
+        nextmv.Parameter("provider", str, "SCIP", "Solver provider.", False),
     )
-    parser.add_argument(
-        "-output",
-        default="",
-        help="Path to output file. Default is stdout.",
-    )
-    parser.add_argument(
-        "-duration",
-        default=30,
-        help="Max runtime duration (in seconds). Default is 30.",
-        type=int,
-    )
-    args = parser.parse_args()
 
-    # Read input data, solve the problem and write the solution.
-    input_data = read_input(args.input)
+    input = nextmv.load_local(options=options, path=options.input)
 
-    log("Solving knapsack problem:")
-    log(f"  - items: {len(input_data.get('items', []))}")
-    log(f"  - capacity: {input_data.get('weight_capacity', 0)}")
-    log(f"  - max duration: {args.duration} seconds")
+    nextmv.log("Solving knapsack problem:")
+    nextmv.log(f"  - items: {len(input.data.get('items', []))}")
+    nextmv.log(f"  - capacity: {input.data.get('weight_capacity', 0)}")
 
-    solution = solve(input_data, args.duration)
-    write_output(args.output, solution)
+    output = solve(input, options)
+    nextmv.write_local(output, path=options.output)
 
 
-def solve(input_data: dict[str, Any], duration: int) -> dict[str, Any]:
+def solve(input: nextmv.Input, options: nextmv.Options) -> nextmv.Output:
     """Solves the given problem and returns the solution."""
 
-    start = time.time()
+    start_time = time.time()
+    nextmv.redirect_stdout()  # Solver chatter is logged to stderr.
 
     # Creates the solver.
-    provider = "SCIP"
-    solver = pywraplp.Solver.CreateSolver(provider)
-    solver.SetTimeLimit(duration * 1000)
+    solver = pywraplp.Solver.CreateSolver(options.provider)
+    solver.SetTimeLimit(options.duration * 1000)
 
     # Initializes the linear sums.
     weights = 0.0
@@ -72,7 +55,7 @@ def solve(input_data: dict[str, Any], duration: int) -> dict[str, Any]:
 
     # Creates the decision variables and adds them to the linear sums.
     items = []
-    for item in input_data["items"]:
+    for item in input.data["items"]:
         item_variable = solver.IntVar(0, 1, item["id"])
         items.append({"item": item, "variable": item_variable})
         weights += item_variable * item["weight"]
@@ -80,7 +63,7 @@ def solve(input_data: dict[str, Any], duration: int) -> dict[str, Any]:
 
     # This constraint ensures the weight capacity of the knapsack will not be
     # exceeded.
-    solver.Add(weights <= input_data["weight_capacity"])
+    solver.Add(weights <= input.data["weight_capacity"])
 
     # Sets the objective function: maximize the value of the chosen items.
     solver.Maximize(values)
@@ -91,59 +74,24 @@ def solve(input_data: dict[str, Any], duration: int) -> dict[str, Any]:
     # Determines which items were chosen.
     chosen_items = [item["item"] for item in items if item["variable"].solution_value() > 0.9]
 
-    # Creates the statistics.
-    statistics = {
-        "result": {
-            "custom": {
-                "constraints": solver.NumConstraints(),
-                "provider": provider,
+    statistics = nextmv.Statistics(
+        run=nextmv.RunStatistics(duration=time.time() - start_time),
+        result=nextmv.ResultStatistics(
+            duration=solver.WallTime() / 1000,
+            value=solver.Objective().Value(),
+            custom={
                 "status": STATUS.get(status, "unknown"),
                 "variables": solver.NumVariables(),
+                "constraints": solver.NumConstraints(),
             },
-            "duration": solver.WallTime() / 1000,
-            "value": solver.Objective().Value(),
-        },
-        "run": {
-            "duration": time.time() - start,
-        },
-        "schema": "v1",
-    }
+        ),
+    )
 
-    return {
-        "solutions": [{"items": chosen_items}],
-        "statistics": statistics,
-    }
-
-
-def log(message: str) -> None:
-    """Logs a message. We need to use stderr since stdout is used for the
-    solution."""
-
-    print(message, file=sys.stderr)
-
-
-def read_input(input_path: str) -> dict[str, Any]:
-    """Reads the input from stdin or a given input file."""
-
-    input_file = {}
-    if input_path:
-        with open(input_path, encoding="utf-8") as file:
-            input_file = json.load(file)
-    else:
-        input_file = json.load(sys.stdin)
-
-    return input_file
-
-
-def write_output(output_path: str, output: dict[str, Any]) -> None:
-    """Writes the output to stdout or a given output file."""
-
-    content = json.dumps(output, indent=2)
-    if output_path:
-        with open(output_path, "w", encoding="utf-8") as file:
-            file.write(content + "\n")
-    else:
-        print(content)
+    return nextmv.Output(
+        options=options,
+        solution={"items": chosen_items},
+        statistics=statistics,
+    )
 
 
 if __name__ == "__main__":

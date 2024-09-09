@@ -20,16 +20,24 @@ func TestGolden(t *testing.T) {
 			Args: []string{},
 			TransientFields: []golden.TransientField{
 				{
-					Key:         ".statistics.result.duration",
+					Key:         "$.statistics.result.duration",
 					Replacement: float64(0.015),
 				},
 				{
-					Key:         ".statistics.run.duration",
+					Key:         "$.statistics.run.duration",
 					Replacement: float64(0.015),
+				},
+				{
+					Key:         "$.options.output",
+					Replacement: "output.json",
+				},
+				{
+					Key:         "$.options.input",
+					Replacement: "input.json",
 				},
 			},
 			DedicatedComparison: []string{
-				".statistics.result.value",
+				"$.statistics.result.value",
 			},
 			ExecutionConfig: &golden.ExecutionConfig{
 				Command:    "python3",
