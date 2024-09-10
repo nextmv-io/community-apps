@@ -41,7 +41,7 @@ func TestGolden(t *testing.T) {
 			},
 			ExecutionConfig: &golden.ExecutionConfig{
 				Command:    "python3",
-				Args:       []string{"../../../python-pyoptinterace-knapsack/main.py"},
+				Args:       []string{"../../../python-pyoptinterface-knapsack/main.py"},
 				InputFlag:  "-input",
 				OutputFlag: "-output",
 			},

@@ -48,7 +48,7 @@ apps:
     app_id: python-pyomo-knapsack
     marketplace_app_id: knapsack.pyomo
     description: Solve a knapsack problem using Pyomo.
-  - name: python-pyoptinterace-knapsack
+  - name: python-pyoptinterface-knapsack
     type: python
     app_id:
     marketplace_app_id:

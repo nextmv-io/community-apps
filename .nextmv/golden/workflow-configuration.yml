@@ -32,9 +32,6 @@ apps:
   - name: python-ortools-costflow
     language: python
     language-version: 3.11
-  - name: hello-world
-    language: python
-    language-version: 3.11
   - name: python-ortools-knapsack
     language: python
     language-version: 3.11
