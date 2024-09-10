@@ -1,3 +1,3 @@
 xpress==9.4.2; platform_system != 'Darwin' or (platform_system == 'Darwin' and platform_machine != 'arm64')
-nextmv==v0.10.2
+nextmv==v0.10.3.dev0
 

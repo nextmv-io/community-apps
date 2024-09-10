@@ -1,64 +1,64 @@
 apps:
-  - name: python-ortools-costflow
-    language: python
-    language-version: 3.11
+  - name: go-highs-knapsack
+    language: go # we always use our main version
+  - name: go-highs-orderfulfillment
+    language: go # we always use our main version
+  - name: go-highs-shiftscheduling
+    language: go # we always use our main version
+  - name: go-nextroute
+    language: go # we always use our main version
+  - name: java-ortools-knapsack
+    language: java
+    language-version: 21
+    distribution: temurin
   - name: python-ampl-facilitylocation
     language: python
     language-version: 3.11
   - name: python-ampl-knapsack
     language: python
     language-version: 3.11
-  - name: go-highs-knapsack
-    language: go # we always use our main version
+  - name: python-ampl-priceoptimization
+    language: python
+    language-version: 3.11
   - name: python-gurobi-knapsack
-    language: python
-    language-version: 3.11
-  - name: python-highs-knapsack
-    language: python
-    language-version: 3.11
-  - name: java-ortools-knapsack
-    language: java
-    language-version: 21
-    distribution: temurin
-  - name: python-ortools-knapsack
-    language: python
-    language-version: 3.11
-  - name: python-pyomo-knapsack
     language: python
     language-version: 3.11
   - name: python-hello-world
     language: python
     language-version: 3.11
-  - name: go-nextroute
-    language: go # we always use our main version
-  - name: go-highs-orderfulfillment
-    language: go # we always use our main version
-  - name: python-ampl-priceoptimization
+  - name: python-highs-knapsack
     language: python
     language-version: 3.11
-  - name: python-ortools-routing
-    language: python
-    language-version: 3.11
-  - name: python-pyvroom-routing
-    language: python
-    language-version: 3.11
-  - name: python-ortools-shiftassignment
-    language: python
-    language-version: 3.11
-  - name: python-pyomo-shiftassignment
+  - name: python-ortools-costflow
     language: python
     language-version: 3.11
   - name: python-ortools-demandforecasting
     language: python
     language-version: 3.11
+  - name: python-ortools-knapsack
+    language: python
+    language-version: 3.11
+  - name: python-ortools-routing
+    language: python
+    language-version: 3.11
+  - name: python-ortools-shiftassignment
+    language: python
+    language-version: 3.11
   - name: python-ortools-shiftplanning
+    language: python
+    language-version: 3.11
+  - name: python-pyomo-knapsack
+    language: python
+    language-version: 3.11
+  - name: python-pyomo-shiftassignment
     language: python
     language-version: 3.11
   - name: python-pyomo-shiftplanning
     language: python
     language-version: 3.11
-  - name: go-highs-shiftscheduling
-    language: go # we always use our main version
+  - name: python-pyvroom-routing
+    language: python
+    language-version: 3.11
   - name: python-xpress-knapsack
     language: python
     language-version: 3.11

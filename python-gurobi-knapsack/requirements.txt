@@ -1,3 +1,3 @@
 gurobipy==11.0.0
-nextmv==v0.10.2
+nextmv==v0.10.3.dev0
 

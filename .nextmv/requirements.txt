@@ -1,4 +1,4 @@
 boto3>=1.34.33
 pyyaml>=6.0.1
 ruff>=0.1.7
-nextmv==v0.10.2
+nextmv==v0.10.3.dev0
