@@ -3,7 +3,7 @@
     "duration": 30,
     "input": "input.json",
     "output": "output.json",
-    "version": "0.2.6"
+    "version": "0.2.8"
   },
   "solution": {
     "items": [
