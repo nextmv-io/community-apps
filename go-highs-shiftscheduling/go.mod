@@ -1,4 +1,4 @@
-module example.com/your_project/shift-scheduling-gosdk
+module example.com/your_project/go-highs-shiftscheduling
 
 go 1.22
 

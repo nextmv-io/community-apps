@@ -1,53 +1,53 @@
 apps:
-  - name: cost-flow-ortools
+  - name: python-ortools-costflow
     scripts:
       - name: 0.sh
         silent: true
       - name: 2.sh
         skip: true
-  - name: knapsack-ampl
+  - name: python-ampl-knapsack
     scripts:
       - name: 0.sh
         silent: true
       - name: 2.sh
         skip: true
-  - name: knapsack-gosdk
+  - name: go-highs-knapsack
     scripts:
       - name: 0.sh
         silent: true
       - name: 1.sh
         skip: true
-  - name: knapsack-gurobi
+  - name: python-gurobi-knapsack
     scripts:
       - name: 0.sh
         silent: true
       - name: 2.sh
         skip: true
-  - name: knapsack-highs
+  - name: python-highs-knapsack
     scripts:
       - name: 0.sh
         silent: true
       - name: 2.sh
         skip: true
-  - name: knapsack-java-ortools
+  - name: java-ortools-knapsack
     scripts:
       - name: 0.sh
         silent: true
       - name: 2.sh
         skip: true
-  - name: knapsack-ortools
+  - name: python-ortools-knapsack
     scripts:
       - name: 0.sh
         silent: true
       - name: 2.sh
         skip: true
-  - name: knapsack-ortools-csv
+  - name: python-ortools-knapsack-csv
     scripts:
       - name: 0.sh
         silent: true
       - name: 2.sh
         skip: true
-  - name: knapsack-pyomo
+  - name: python-pyomo-knapsack
     scripts:
       - name: 0.sh
         silent: true
@@ -59,25 +59,25 @@ apps:
         silent: true
       - name: 2.sh
         skip: true
-  - name: nextroute
+  - name: go-nextroute
     scripts:
       - name: 0.sh
         silent: true
       - name: 1.sh
         skip: true
-  - name: order-fulfillment-gosdk
+  - name: go-highs-orderfulfillment
     scripts:
       - name: 0.sh
         silent: true
       - name: 1.sh
         skip: true
-  - name: price-optimization-ampl
+  - name: python-ampl-priceoptimization
     scripts:
       - name: 0.sh
         silent: true
       - name: 1.sh
         skip: true
-  - name: facility-location-ampl
+  - name: python-ampl-facilitylocation
     scripts:
       - name: 0.sh
         silent: true
@@ -89,55 +89,55 @@ apps:
         silent: true
       - name: 2.sh
         skip: true
-  - name: routing-ortools
+  - name: python-ortools-routing
     scripts:
       - name: 0.sh
         silent: true
       - name: 2.sh
         skip: true
-  - name: routing-pyvroom
+  - name: python-pyvroom-routing
     scripts:
       - name: 0.sh
         silent: true
       - name: 2.sh
         skip: true
-  - name: shift-assignment-ortools
+  - name: python-ortools-shiftassignment
     scripts:
       - name: 0.sh
         silent: true
       - name: 2.sh
         skip: true
-  - name: shift-assignment-pyomo
+  - name: python-pyomo-shiftassignment
     scripts:
       - name: 0.sh
         silent: true
       - name: 2.sh
         skip: true
-  - name: demand-forecasting-ortools
+  - name: python-ortools-demandforecasting
     scripts:
       - name: 0.sh
         silent: true
       - name: 2.sh
         skip: true
-  - name: shift-planning-ortools
+  - name: python-ortools-shiftplanning
     scripts:
       - name: 0.sh
         silent: true
       - name: 2.sh
         skip: true
-  - name: shift-planning-pyomo
+  - name: python-pyomo-shiftplanning
     scripts:
       - name: 0.sh
         silent: true
       - name: 2.sh
         skip: true
-  - name: shift-scheduling-gosdk
+  - name: go-highs-shiftscheduling
     scripts:
       - name: 0.sh
         silent: true
       - name: 1.sh
         skip: true
-  - name: xpress
+  - name: python-xpress-knapsack
     scripts:
       - name: 0.sh
         silent: true

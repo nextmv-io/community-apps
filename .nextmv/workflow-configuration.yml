@@ -1,51 +1,51 @@
 apps:
-  - name: cost-flow-ortools
+  - name: python-ortools-costflow
     type: python
-    app_id: cost-flow-ortools
+    app_id: python-ortools-costflow
     marketplace_app_id: cost.flow.ortools
     description: Solve a cost-flow problem using OR-Tools in Python.
   # AMPL is not pushed to Marketplace yet until we decide what is the best
   # way to handle licensing.
-  - name: knapsack-ampl
+  - name: python-ampl-knapsack
     type: python
     app_id:
     marketplace_app_id:
     description: Solve a knapsack problem using AMPL in Python.
-  - name: knapsack-gosdk
+  - name: go-highs-knapsack
     type: go
-    app_id: knapsack-gosdk
+    app_id: go-highs-knapsack
     marketplace_app_id: knapsack.gosdk
     description: Solve a knapsack problem using the Nextmv Go SDK.
   # Gurobi is not pushed to Marketplace yet until we decide what is the best
   # way to handle licensing.
-  - name: knapsack-gurobi
+  - name: python-gurobi-knapsack
     type: python
     app_id:
     marketplace_app_id:
     description: Solve a knapsack problem using Gurobi in Python.
-  - name: knapsack-highs
+  - name: python-highs-knapsack
     type: python
-    app_id: knapsack-highs
+    app_id: python-highs-knapsack
     marketplace_app_id: knapsack.highs
     description: Solve a knapsack problem using HiGHS in Python.
-  - name: knapsack-java-ortools
+  - name: java-ortools-knapsack
     type: java
     app_id: knapsack-jortools
     marketplace_app_id: knapsack.jortools
     description: Solve a knapsack problem using OR-Tools in Java.
-  - name: knapsack-ortools
+  - name: python-ortools-knapsack
     type: python
-    app_id: knapsack-ortools
+    app_id: python-ortools-knapsack
     marketplace_app_id: knapsack.ortools
     description: Solve a knapsack problem using OR-Tools in Python.
-  - name: knapsack-ortools-csv
+  - name: python-ortools-knapsack-csv
     type: python
     app_id:
     marketplace_app_id:
     description: Use CSV in/out for a knapsack OR-Tools problem in Python.
-  - name: knapsack-pyomo
+  - name: python-pyomo-knapsack
     type: python
-    app_id: knapsack-pyomo
+    app_id: python-pyomo-knapsack
     marketplace_app_id: knapsack.pyomo
     description: Solve a knapsack problem using Pyomo.
   - name: hello-world
@@ -58,7 +58,7 @@ apps:
     app_id: nextroute
     marketplace_app_id: nextroute
     description: Solve a vehicle routing problem using Nextmv’s Nextroute.
-  - name: order-fulfillment-gosdk
+  - name: go-highs-orderfulfillment
     type: go
     app_id: order-fulfill-gosdk
     marketplace_app_id: order.fulfill.gosdk
@@ -68,42 +68,42 @@ apps:
     app_id:
     marketplace_app_id:
     description: Solve a vehicle routing problem using OR-Tools in Java.
-  - name: routing-ortools
+  - name: python-ortools-routing
     type: python
-    app_id: routing-ortools
+    app_id: python-ortools-routing
     marketplace_app_id: routing.ortools
     description: Solve a vehicle routing problem using OR-Tools in Python.
-  - name: routing-pyvroom
+  - name: python-pyvroom-routing
     type: python
-    app_id: routing-pyvroom
+    app_id: python-pyvroom-routing
     marketplace_app_id: routing.pyvroom
     description: Solve a vehicle routing problem using Pyvroom.
-  - name: shift-assignment-ortools
+  - name: python-ortools-shiftassignment
     type: python
     app_id: shift-assign-ortools
     marketplace_app_id: shift.assign.ortools
     description: Solve a shift assignment problem using OR-Tools in Python.
-  - name: shift-assignment-pyomo
+  - name: python-pyomo-shiftassignment
     type: python
     app_id: shift-assign-pyomo
     marketplace_app_id: shift.assign.pyomo
     description: Solve a shift assignment problem using Pyomo.
-  - name: demand-forecasting-ortools
+  - name: python-ortools-demandforecasting
     type: python
-    app_id: demand-forecasting-ortools
+    app_id: python-ortools-demandforecasting
     marketplace_app_id: dem.forecast.ortools
     description: Solve a demand forecasting problem using OR-Tools.
-  - name: shift-planning-ortools
+  - name: python-ortools-shiftplanning
     type: python
     app_id: shift-plan-ortools
     marketplace_app_id: shift.plan.ortools
     description: Solve a shift planning problem using OR-Tools in Python.
-  - name: shift-planning-pyomo
+  - name: python-pyomo-shiftplanning
     type: python
     app_id: shift-plan-pyomo
     marketplace_app_id: shift.plan.pyomo
     description: Solve a shift planning problem using Pyomo.
-  - name: shift-scheduling-gosdk
+  - name: go-highs-shiftscheduling
     type: go
     app_id: shift-scheduling
     marketplace_app_id: shift.scheduling
@@ -113,12 +113,12 @@ apps:
     app_id:
     marketplace_app_id:
     description: Solve a knapsack problem using Xpress in Python.
-  - name: price-optimization-ampl
+  - name: python-ampl-priceoptimization
     type: python
     app_id:
     marketplace_app_id:
     description: Solve a price optimization problem using AMPL with Python.
-  - name: facility-location-ampl
+  - name: python-ampl-facilitylocation
     type: python
     app_id:
     marketplace_app_id:
