@@ -1,4 +1,4 @@
-module example.com/your_project/nextroute
+module example.com/your_project/go-nextroute
 
 go 1.22
 

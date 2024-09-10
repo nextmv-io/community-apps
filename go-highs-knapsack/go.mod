@@ -1,6 +1,6 @@
 module example.com/your_project/go-highs-knapsack
 
-go 1.21
+go 1.22
 
 require (
 	github.com/nextmv-io/go-highs v1.6.0

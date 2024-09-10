@@ -9,6 +9,7 @@ jobs:
       matrix:
         MOD_PATH:
           [
+            ./go-hello-world,
             ./go-highs-knapsack,
             ./go-highs-orderfulfillment,
             ./go-highs-shiftscheduling,

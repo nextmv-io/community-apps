@@ -1,12 +1,8 @@
-module example.com/your_project/shift-scheduling-gosdk
+module example.com/your_project/go-hello-world
 
 go 1.22
 
-require (
-	github.com/nextmv-io/go-highs v1.6.0
-	github.com/nextmv-io/go-mip v1.6.0
-	github.com/nextmv-io/sdk v1.8.0
-)
+require github.com/nextmv-io/sdk v1.8.0
 
 require (
 	github.com/danielgtaylor/huma v1.14.2 // indirect
