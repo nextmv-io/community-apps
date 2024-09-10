@@ -1,9 +1,39 @@
 apps:
-  - name: python-ortools-costflow
+  - name: go-highs-knapsack
+    scripts:
+      - name: 0.sh
+        silent: true
+      - name: 1.sh
+        skip: true
+  - name: go-highs-orderfulfillment
+    scripts:
+      - name: 0.sh
+        silent: true
+      - name: 1.sh
+        skip: true
+  - name: go-highs-shiftscheduling
+    scripts:
+      - name: 0.sh
+        silent: true
+      - name: 1.sh
+        skip: true
+  - name: go-nextroute
+    scripts:
+      - name: 0.sh
+        silent: true
+      - name: 1.sh
+        skip: true
+  - name: java-ortools-knapsack
     scripts:
       - name: 0.sh
         silent: true
       - name: 2.sh
+        skip: true
+  - name: python-ampl-facilitylocation
+    scripts:
+      - name: 0.sh
+        silent: true
+      - name: 1.sh
         skip: true
   - name: python-ampl-knapsack
     scripts:
@@ -11,7 +41,7 @@ apps:
         silent: true
       - name: 2.sh
         skip: true
-  - name: go-highs-knapsack
+  - name: python-ampl-priceoptimization
     scripts:
       - name: 0.sh
         silent: true
@@ -23,13 +53,25 @@ apps:
         silent: true
       - name: 2.sh
         skip: true
+  - name: python-hello-world
+    scripts:
+      - name: 0.sh
+        silent: true
+      - name: 2.sh
+        skip: true
   - name: python-highs-knapsack
     scripts:
       - name: 0.sh
         silent: true
       - name: 2.sh
         skip: true
-  - name: java-ortools-knapsack
+  - name: python-ortools-costflow
+    scripts:
+      - name: 0.sh
+        silent: true
+      - name: 2.sh
+        skip: true
+  - name: python-ortools-demandforecasting
     scripts:
       - name: 0.sh
         silent: true
@@ -47,55 +89,7 @@ apps:
         silent: true
       - name: 2.sh
         skip: true
-  - name: python-pyomo-knapsack
-    scripts:
-      - name: 0.sh
-        silent: true
-      - name: 2.sh
-        skip: true
-  - name: hello-world
-    scripts:
-      - name: 0.sh
-        silent: true
-      - name: 2.sh
-        skip: true
-  - name: go-nextroute
-    scripts:
-      - name: 0.sh
-        silent: true
-      - name: 1.sh
-        skip: true
-  - name: go-highs-orderfulfillment
-    scripts:
-      - name: 0.sh
-        silent: true
-      - name: 1.sh
-        skip: true
-  - name: python-ampl-priceoptimization
-    scripts:
-      - name: 0.sh
-        silent: true
-      - name: 1.sh
-        skip: true
-  - name: python-ampl-facilitylocation
-    scripts:
-      - name: 0.sh
-        silent: true
-      - name: 1.sh
-        skip: true
-  - name: routing-java-ortools
-    scripts:
-      - name: 0.sh
-        silent: true
-      - name: 2.sh
-        skip: true
   - name: python-ortools-routing
-    scripts:
-      - name: 0.sh
-        silent: true
-      - name: 2.sh
-        skip: true
-  - name: python-pyvroom-routing
     scripts:
       - name: 0.sh
         silent: true
@@ -107,19 +101,19 @@ apps:
         silent: true
       - name: 2.sh
         skip: true
-  - name: python-pyomo-shiftassignment
-    scripts:
-      - name: 0.sh
-        silent: true
-      - name: 2.sh
-        skip: true
-  - name: python-ortools-demandforecasting
-    scripts:
-      - name: 0.sh
-        silent: true
-      - name: 2.sh
-        skip: true
   - name: python-ortools-shiftplanning
+    scripts:
+      - name: 0.sh
+        silent: true
+      - name: 2.sh
+        skip: true
+  - name: python-pyomo-knapsack
+    scripts:
+      - name: 0.sh
+        silent: true
+      - name: 2.sh
+        skip: true
+  - name: python-pyomo-shiftassignment
     scripts:
       - name: 0.sh
         silent: true
@@ -131,13 +125,19 @@ apps:
         silent: true
       - name: 2.sh
         skip: true
-  - name: go-highs-shiftscheduling
+  - name: python-pyvroom-routing
     scripts:
       - name: 0.sh
         silent: true
-      - name: 1.sh
+      - name: 2.sh
         skip: true
   - name: python-xpress-knapsack
+    scripts:
+      - name: 0.sh
+        silent: true
+      - name: 2.sh
+        skip: true
+  - name: routing-java-ortools
     scripts:
       - name: 0.sh
         silent: true
