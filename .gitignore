@@ -179,3 +179,12 @@ order-fulfillment-gosdk/order-fulfillment-gosdk
 knapsack-gosdk/knapsack-gosdk
 shift-scheduling-gosdk/shift-scheduling-gosdk
 nextroute/nextroute
+
+# AMPL Secrets
+ampl_license_uuid*
+!ampl_license_uuid.template
+
+# Gurobi Secrets
+# Secrets
+gurobi.lic*
+!gurobi.lic.template

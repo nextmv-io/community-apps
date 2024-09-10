@@ -1,8 +1,30 @@
 # Nextmv community apps
 
-Pre-built decision models serving as the base for [Marketplace subscription
+Pre-built decision apps serving as the base for [Marketplace subscription
 apps][subscription-apps]. Each app is standalone and can be executed following
-the instructions in the README.
+the instructions in each `README`.
+
+## Hello world
+
+Get started with one of the following apps:
+
+* [go-hello-world]: Get started with Go and the Nextmv Platform.
+* [java-hello-world]: Get started with Java and the Nextmv Platform.
+* [python-hello-world]: Get started with Python and the Nextmv Platform.
+
+## More apps
+
+These examples are concrete cases of using different languages and solvers in
+decision apps that run on the Nextmv Platform.
+
+## Other, more complex, examples
+
+Use devcontainers to run the app on Docker like it would be run on Nextmv
+Cloud.
+
+* [python-pyomo-knapsack]: Use Python and Pyomo to solve a knapsack problem.
+* [java-ortools-knapsack]: Use Java and OR-Tools to solve a knapsack problem.
+* [go-nextroute]: Solve a Vehicle Routing Problem using `nextroute`.
 
 Before starting:
 
