@@ -8,4 +8,4 @@ files:
 python:
   # Packages the app depends on need to be listed in a requirements.txt file
   # that is referenced here. All listed packages will get bundled with the app.
-  pip-requirements: requirements.txt
+  pip-requirements: requirements-arm64.txt
