@@ -72,6 +72,8 @@ run on Nextmv Cloud.
   assignment problem. Demonstrates how to use devcontainers.
 * [python-pyomo-shiftplanning]: Use Python and Pyomo to solve a shift planning
   problem. Demonstrates how to use devcontainers.
+* [python-pyoptinterface-knapsack]: Use Python and PyOptInterface to solve a
+  knapsack problem. Demonstrates how to use devcontainers.
 * [python-pyvroom-routing]: Use Python and Pyvroom to solve a vehicle routing
   problem. Demonstrates how to use devcontainers.
 
@@ -106,3 +108,4 @@ run on Nextmv Cloud.
 [python-pyomo-shiftplanning]: ./python-pyomo-shiftplanning/README.md
 [python-pyvroom-routing]: ./python-pyvroom-routing/README.md
 [python-xpress-knapsack]: ./python-xpress-knapsack/README.md
+[python-pyoptinterface-knapsack]: ./python-pyoptinterface-knapsack/README.md
