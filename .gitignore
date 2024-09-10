@@ -174,7 +174,6 @@ main.jar
 *output*
 
 # Ignore app binary files
-main
 go-highs-orderfulfillment/go-highs-orderfulfillment
 go-highs-knapsack/go-highs-knapsack
 go-highs-shiftscheduling/go-highs-shiftscheduling
