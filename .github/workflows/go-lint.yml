@@ -9,10 +9,10 @@ jobs:
       matrix:
         MOD_PATH:
           [
-            ./knapsack-gosdk,
-            ./nextroute,
-            ./order-fulfillment-gosdk,
-            ./shift-scheduling-gosdk,
+            ./go-highs-knapsack,
+            ./go-highs-orderfulfillment,
+            ./go-highs-shiftscheduling,
+            ./go-nextroute,
           ]
     steps:
       - name: git clone
