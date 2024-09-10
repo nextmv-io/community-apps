@@ -4,7 +4,14 @@ Pre-built decision apps serving as the base for [Marketplace subscription
 apps][subscription-apps]. Each app is standalone and can be executed following
 the instructions in each `README`.
 
-## Hello world
+Before starting:
+
+1. [Sign up][signup] for a Nextmv account.
+1. [Install][installation] the Nextmv Platform.
+
+Visit the [docs][docs] for more information.
+
+## Hello, world
 
 Get started with one of the following apps:
 
@@ -17,88 +24,85 @@ Get started with one of the following apps:
 These examples are concrete cases of using different languages and solvers in
 decision apps that run on the Nextmv Platform.
 
+* [go-highs-knapsack]: Use Go and the HiGHS solver to solve a knapsack problem.
+* [go-highs-shiftscheduling]: Use Go and the HiGHS solver to solve a shift
+  scheduling problem.
+* [go-nextroute]: Use Go and Nextmv’s Nextroute solver to solve a vehicle
+  routing problem.
+* [python-ampl-knapsack]: Use Python and AMPL to solve a knapsack problem.
+* [python-gurobi-knapsack]: Use Python and Gurobi to solve a knapsack problem.
+* [python-highs-knapsack]: Use Python and the HiGHS solver to solve a knapsack
+  problem.
+* [python-ortools-costflow]: Use Python and Google OR-Tools to solve a cost
+  flow problem.
+* [python-ortools-knapsack]: Use Python and Google OR-Tools to solve a knapsack
+  problem.
+* [python-ortools-knapsack-multicsv]: Use Python and Google OR-Tools to solve a
+  knapsack problem with multiple CSV files.
+* [python-ortools-routing]: Use Python and Google OR-Tools to solve a vehicle
+  routing problem.
+* [python-ortools-shiftassignment]: Use Python and Google OR-Tools to solve a
+  shift assignment problem.
+* [python-ortools-shiftplanning]: Use Python and Google OR-Tools to solve a
+  shift planning problem.
+* [python-xpress-knapsack]: Use Python and FICO Xpress to solve a knapsack
+  problem.
+
 ## Other, more complex, examples
 
-Use devcontainers to run the app on Docker like it would be run on Nextmv
-Cloud.
+These apps show more complete examples and use cases of different languages and
+solvers. Most demonstrate how to use devcontainers to run the app like it would
+run on Nextmv Cloud.
 
+* [go-highs-orderfulfillment]: Use Go and the HiGHS solver to solve an order
+  fulfillment problem. Demonstrates how to use devcontainers.
+* [java-ortools-knapsack]: Use Java and Google OR-Tools to solve a knapsack
+  problem. Demonstrates how to use devcontainers.
+* [java-ortools-routing]: Use Java and Google OR-Tools to solve a vehicle
+  routing problem. Demonstrates how to use devcontainers.
+* [python-ampl-facilitylocation]: Use Python and AMPL to solve a facility
+  location problem. Demonstrates how to use devcontainers.
+* [python-ampl-priceoptimization]: Use Python and AMPL to solve a price
+  optimization problem. Demonstrates how to use devcontainers.
+* [python-ortools-demandforecasting]: Use Python and Google OR-Tools to solve a
+  demand forecasting problem. Demonstrates how to use devcontainers.
 * [python-pyomo-knapsack]: Use Python and Pyomo to solve a knapsack problem.
-* [java-ortools-knapsack]: Use Java and OR-Tools to solve a knapsack problem.
-* [go-nextroute]: Solve a Vehicle Routing Problem using `nextroute`.
-
-Before starting:
-
-1. [Sign up][signup] for a Nextmv account.
-2. [Install][installation] the Nextmv Platform.
-
-Visit the [docs][docs] for more information.
-
-* [`cost-flow-ortools`][cost-flow-ortools]: use Python and OR-Tools to solve a
-      cost flow problem.
-* [`demand-forecasting-ortools`][demand-forecasting-ortools]: use Python and
-      OR-Tools to solve demand forecasting problems.
-* [`knapsack-ampl`][knapsack-ampl]: use Python and AMPL to solve a knapsack
-      problem.
-* [`knapsack-gosdk`][knapsack-gosdk]: use the Nextmv Go SDK to solve a knapsack
-      problem.
-* [`knapsack-gurobi`][knapsack-gurobi]: use Python and Gurobi to solve a
-      knapsack problem.
-* [`knapsack-highs`][knapsack-highs]: use Python and HiGHS to solve a
-      knapsack problem.
-* [`knapsack-java-ortools`][knapsack-java-ortools]: use Java and OR-Tools to
-      solve a knapsack problem.
-* [`knapsack-ortools`][knapsack-ortools]: use Python and OR-Tools to solve a
-      knapsack problem.
-* [`knapsack-ortools-csv`][knapsack-ortools-csv]: use Python and OR-Tools to
-      solve a knapsack problem with CSV input/output.
-* [`knapsack-pyomo`][knapsack-pyomo]: use Python and Pyomo to solve a knapsack
-      problem.
-* [`nextroute`][nextroute]: use the Nextmv Go SDK to solve vehicle routing
-      problems.
-* [`order-fulfillment-gosdk`][order-fulfillment-gosdk]: use the Nextmv Go SDK to
-      solve order fulfillment problems.
-* [`routing-ortools`][routing-ortools]: use Python and OR-Tools to solve vehicle
-      routing problems.
-* [`routing-pyvroom`][routing-pyvroom]: use Python and Pyvroom to solve vehicle
-      routing problems.
-* [`routing-java-ortools`][routing-java-ortools]: use Java and OR-Tools to
-      solve vehicle routing problems.
-* [`shift-assignment-ortools`][shift-assignment-ortools]: use Python and
-      OR-Tools to solve shift assignment problems.
-* [`shift-assignment-pyomo`][shift-assignment-pyomo]: use Python and Pyomo to
-      solve shift assignment problems.
-* [`shift-planning-ortools`][shift-planning-ortools]: use Python and OR-Tools to
-      solve shift planning problems.
-* [`shift-planning-pyomo`][shift-planning-pyomo]: use Python and Pyomo to solve
-      shift planning problems.
-* [`shift-scheduling-gosdk`][shift-scheduling-gosdk]: use the Nextmv Go SDK to
-      solve shift scheduling problems.
-* [`xpress`][xpress]: use FICO-Xpress to solve various optimization problems.
-      Contains a knapsack problem as an example.
+  Demonstrates how to use devcontainers.
+* [python-pyomo-shiftassignment]: Use Python and Pyomo to solve a shift
+  assignment problem. Demonstrates how to use devcontainers.
+* [python-pyomo-shiftplanning]: Use Python and Pyomo to solve a shift planning
+  problem. Demonstrates how to use devcontainers.
+* [python-pyvroom-routing]: Use Python and Pyvroom to solve a vehicle routing
+  problem. Demonstrates how to use devcontainers.
 
 [subscription-apps]: https://nextmv.io/docs/platform/deploy-app/subscription-apps
 [installation]: https://nextmv.io/docs/platform/installation
 [docs]: https://nextmv.io/docs
 [signup]: https://cloud.nextmv.io
 
-[cost-flow-ortools]: ./cost-flow-ortools/README.md
-[knapsack-ampl]: ./knapsack-ampl/README.md
-[knapsack-gosdk]: ./knapsack-gosdk/README.md
-[knapsack-gurobi]: ./knapsack-gurobi/README.md
-[knapsack-highs]: ./knapsack-highs/README.md
-[knapsack-java-ortools]: ./knapsack-java-ortools/README.md
-[knapsack-ortools]: ./knapsack-ortools/README.md
-[knapsack-ortools-csv]: ./knapsack-ortools-csv/README.md
-[knapsack-pyomo]: ./knapsack-pyomo/README.md
-[nextroute]: ./nextroute/README.md
-[order-fulfillment-gosdk]: ./order-fulfillment-gosdk/README.md
-[routing-java-ortools]: ./routing-java-ortools/README.md
-[routing-ortools]: ./routing-ortools/README.md
-[routing-pyvroom]: ./routing-pyvroom/README.md
-[shift-assignment-ortools]: ./shift-assignment-ortools/README.md
-[shift-assignment-pyomo]: ./shift-assignment-pyomo/README.md
-[demand-forecasting-ortools]: ./demand-forecasting-ortools/README.md
-[shift-planning-ortools]: ./shift-planning-ortools/README.md
-[shift-planning-pyomo]: ./shift-planning-pyomo/README.md
-[shift-scheduling-gosdk]: ./shift-scheduling-gosdk/README.md
-[xpress]: ./xpress/README.md
+[go-hello-world]: ./go-hello-world/README.md
+[java-hello-world]: ./java-hello-world/README.md
+[python-hello-world]: ./python-hello-world/README.md
+[go-highs-knapsack]: ./go-highs-knapsack/README.md
+[go-highs-orderfulfillment]: ./go-highs-orderfulfillment/README.md
+[go-highs-shiftscheduling]: ./go-highs-shiftscheduling/README.md
+[go-nextroute]: ./go-nextroute/README.md
+[java-ortools-knapsack]: ./java-ortools-knapsack/README.md
+[java-ortools-routing]: ./java-ortools-routing/README.md
+[python-ampl-facilitylocation]: ./python-ampl-facilitylocation/README.md
+[python-ampl-knapsack]: ./python-ampl-knapsack/README.md
+[python-ampl-priceoptimization]: ./python-ampl-priceoptimization/README.md
+[python-gurobi-knapsack]: ./python-gurobi-knapsack/README.md
+[python-highs-knapsack]: ./python-highs-knapsack/README.md
+[python-ortools-costflow]: ./python-ortools-costflow/README.md
+[python-ortools-demandforecasting]: ./python-ortools-demandforecasting/README.md
+[python-ortools-knapsack]: ./python-ortools-knapsack/README.md
+[python-ortools-knapsack-multicsv]: ./python-ortools-knapsack-multicsv/README.md
+[python-ortools-routing]: ./python-ortools-routing/README.md
+[python-ortools-shiftassignment]: ./python-ortools-shiftassignment/README.md
+[python-ortools-shiftplanning]: ./python-ortools-shiftplanning/README.md
+[python-pyomo-knapsack]: ./python-pyomo-knapsack/README.md
+[python-pyomo-shiftassignment]: ./python-pyomo-shiftassignment/README.md
+[python-pyomo-shiftplanning]: ./python-pyomo-shiftplanning/README.md
+[python-pyvroom-routing]: ./python-pyvroom-routing/README.md
+[python-xpress-knapsack]: ./python-xpress-knapsack/README.md
