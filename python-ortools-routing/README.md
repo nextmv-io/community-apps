@@ -12,7 +12,7 @@ OR-Tools package. We solve a vehicle routing problem.
 1. Run the app.
 
     ```bash
-    python3 main.py -input inputs/input.json -output output.json -duration 30
+    python3 main.py -input input.json -output output.json -duration 30
     ```
 
 ## Next steps

@@ -1,7 +1,7 @@
 {
   "options": {
-    "input": "input",
-    "output": "output",
+    "input": "",
+    "output": "",
     "duration": 30,
     "provider": "SCIP"
   },

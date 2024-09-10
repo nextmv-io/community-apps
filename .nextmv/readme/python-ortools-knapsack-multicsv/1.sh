@@ -1,1 +1,1 @@
-python3 main.py -duration 30
+python3 main.py -input input -output output -duration 30 -provider SCIP

@@ -23,7 +23,19 @@ apps:
         silent: true
       - name: 1.sh
         skip: true
+  - name: java-hello-world
+    scripts:
+      - name: 0.sh
+        silent: true
+      - name: 2.sh
+        skip: true
   - name: java-ortools-knapsack
+    scripts:
+      - name: 0.sh
+        silent: true
+      - name: 2.sh
+        skip: true
+  - name: java-ortools-routing
     scripts:
       - name: 0.sh
         silent: true

@@ -1,1 +1,1 @@
-echo '{"name":"world"}' | python3 main.py
+cat input.json | python3 main.py
