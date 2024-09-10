@@ -32,7 +32,7 @@ apps:
   - name: python-ortools-costflow
     language: python
     language-version: 3.11
-  - name: python-ortools-demandforecasting
+  - name: hello-world
     language: python
     language-version: 3.11
   - name: python-ortools-knapsack
@@ -54,6 +54,9 @@ apps:
     language: python
     language-version: 3.11
   - name: python-pyomo-shiftplanning
+    language: python
+    language-version: 3.11
+  - name: python-pyoptinterface-knapsack
     language: python
     language-version: 3.11
   - name: python-pyvroom-routing

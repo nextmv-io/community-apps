@@ -53,7 +53,7 @@ apps:
         silent: true
       - name: 2.sh
         skip: true
-  - name: python-ampl-priceoptimization
+  - name: hello-world
     scripts:
       - name: 0.sh
         silent: true
@@ -132,6 +132,12 @@ apps:
       - name: 2.sh
         skip: true
   - name: python-pyomo-shiftplanning
+    scripts:
+      - name: 0.sh
+        silent: true
+      - name: 2.sh
+        skip: true
+  - name: python-pyoptinterface-knapsack
     scripts:
       - name: 0.sh
         silent: true
