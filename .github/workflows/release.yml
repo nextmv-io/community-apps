@@ -73,7 +73,7 @@ jobs:
 
       - name: determine if apps are provided through inputs or we need filters
         run: |
-          export APPS=${{ inputs.APPS }}
+          export APPS="${{ inputs.APPS }}"
           if [ $APPS != '' ]; then
             echo "These are the apps to release => $APPS"
             echo "APPS=${APPS}" >> $GITHUB_ENV
