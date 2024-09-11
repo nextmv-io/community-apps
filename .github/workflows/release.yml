@@ -89,6 +89,9 @@ jobs:
             FILTERS="${FILTERS}${app}:\n  - '${app}/**'\n"
           done
           echo "FILTERS=${FILTERS}" >> $GITHUB_ENV
+          echo $FILTERS > ../.github/filters.yml
+          echo "Successfully created filters and wrote them to .github/filters.yml"
+          cat ../.github/filters.yml
         working-directory: ./community-apps/.nextmv
 
       - name: Filter changed directories
@@ -96,8 +99,7 @@ jobs:
         if: ${{ env.FILTERS != '' }}
         uses: dorny/paths-filter@v3
         with:
-          filters: |
-            echo ${{ env.FILTERS }}
+          filters: .github/filters.yml
 
       - name: Create comma-separated string of changed paths
         id: changed_paths
