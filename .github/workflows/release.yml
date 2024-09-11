@@ -82,8 +82,11 @@ jobs:
 
           APP_NAMES_ARRAY=$(yq '.apps[].name' workflow-configuration.yml)
           APP_NAMES=$(echo ${APP_NAMES_ARRAY[@]} | tr '\n' ' ')
-          echo "APP NAMES => $APP_NAMES"
+          echo "Successfuly obtained APP NAMES => $APP_NAMES"
+
           echo "APP_NAMES=${APP_NAMES}" >> $GITHUB_ENV
+          echo "Successfully set APP_NAMES in the environment"
+
           export FILTERS = ""
           for app in $(echo "$APP_NAMES"); do
             FILTERS="${FILTERS}${app}:\n  - '${app}/**'\n"
