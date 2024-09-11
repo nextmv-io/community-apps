@@ -180,6 +180,7 @@ go-highs-orderfulfillment/go-highs-orderfulfillment
 go-highs-knapsack/go-highs-knapsack
 go-highs-shiftscheduling/go-highs-shiftscheduling
 go-nextroute/go-nextroute
+go-nextroute/main
 
 # AMPL Secrets
 ampl_license_uuid*

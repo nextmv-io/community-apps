@@ -15,7 +15,7 @@ on:
           - prod
       APPS:
         type: string
-        description: "The apps to release with this format: `app-dir1=version1,app-dir2=version2`. E. g.: `go-highs-knapsack=v1.2.0,java-ortools-knapsack=v1.2.0`"
+        description: "The apps to release, comma separated. E. g.: `go-highs-knapsack,java-ortools-knapsack`"
         required: true
 
 permissions:
@@ -40,6 +40,7 @@ jobs:
       SSH_AUTH_SOCK: /tmp/ssh_agent.sock
       GO_VERSION: ""
       PYTHON_VERSION: ""
+      APPS: ""
     permissions:
       id-token: write
       contents: write
@@ -64,6 +65,13 @@ jobs:
           git fetch --all
           git checkout ${{ github.ref_name }}
           git pull
+
+      - name: set the apps to release
+        run: |
+          export APPS=${{ inputs.APPS }}
+          echo "These are the apps to release => $APPS"
+          echo "APPS=${APPS}" >> $GITHUB_ENV
+          // TODO: Add logic to get the apps from either the input or the dirs that changed.
 
       - name: set Python version
         run: |
@@ -102,7 +110,7 @@ jobs:
         run: |
           pip install --upgrade pip
           pip install -r requirements.txt
-        working-directory: ./community-apps/.nextmv
+        working-directory: ./community-apps/.nextmv/release
 
       - name: Set up AWS CLI
         uses: aws-actions/configure-aws-credentials@v4
@@ -133,20 +141,12 @@ jobs:
           nextmv activate
           nextmv sdk install
 
-      - name: Upload apps and update manifest
+      - name: Release the apps
         run: |
           export PATH=$PATH:~/.nextmv # Make CLI available in non-interactive shell
-          python update_apps.py \
-            --apps "${{ inputs.APPS }}" \
+          python main.py \
+            --apps "${{ env.APPS }}" \
             --bucket "${{ env.BUCKET }}" \
             --folder "${{ env.FOLDER }}" \
             --manifest "${{ env.MANIFEST }}"
-        working-directory: ./community-apps/.nextmv
-
-      - name: Commit new versions
-        if: ${{ github.ref_name == 'develop' && inputs.TARGET_ENVIRONMENT == 'prod' }}
-        run: |
-          git add */VERSION
-          git commit -S -m "Bump app versions: ${{ inputs.APPS }}"
-          git push
-        working-directory: ./community-apps
+        working-directory: ./community-apps/.nextmv/release
