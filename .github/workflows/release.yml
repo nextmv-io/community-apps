@@ -87,9 +87,10 @@ jobs:
           echo "APP_NAMES=${APP_NAMES}" >> $GITHUB_ENV
           echo "Successfully set APP_NAMES in the environment"
 
-          export FILTERS = ""
-          for app in $(echo "$APP_NAMES"); do
+          export FILTERS=""
+          for app in ${APP_NAMES[@]}; do
             FILTERS="${FILTERS}${app}:\n  - '${app}/**'\n"
+            echo $FILTERS
           done
           echo "FILTERS=${FILTERS}" >> $GITHUB_ENV
         working-directory: ./community-apps/.nextmv
