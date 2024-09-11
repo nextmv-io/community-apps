@@ -20,7 +20,6 @@ on:
   push:
     branches:
       - develop
-      - feature/auto-release-workflow
 
 permissions:
   contents: read
@@ -29,7 +28,7 @@ permissions:
 jobs:
   update_apps:
     runs-on: ubuntu-latest
-    environment: ${{ inputs.TARGET_ENVIRONMENT || 'dev' }} # TODO: change to prod once detecting changes works
+    environment: ${{ inputs.TARGET_ENVIRONMENT || 'prod' }}
     env:
       BUCKET: ${{ secrets.S3_BUCKET }}
       FOLDER: ${{ secrets.S3_FOLDER }}
@@ -192,12 +191,12 @@ jobs:
           nextmv activate
           nextmv sdk install
 
-      # - name: Release the apps
-      #   run: |
-      #     export PATH=$PATH:~/.nextmv # Make CLI available in non-interactive shell
-      #     python main.py \
-      #       --apps "${{ env.APPS }}" \
-      #       --bucket "${{ env.BUCKET }}" \
-      #       --folder "${{ env.FOLDER }}" \
-      #       --manifest "${{ env.MANIFEST }}"
-      #   working-directory: ./community-apps/.nextmv/release
+      - name: Release the apps
+        run: |
+          export PATH=$PATH:~/.nextmv # Make CLI available in non-interactive shell
+          python main.py \
+            --apps "${{ env.APPS }}" \
+            --bucket "${{ env.BUCKET }}" \
+            --folder "${{ env.FOLDER }}" \
+            --manifest "${{ env.MANIFEST }}"
+        working-directory: ./community-apps/.nextmv/release
