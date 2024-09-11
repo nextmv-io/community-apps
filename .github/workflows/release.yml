@@ -18,7 +18,9 @@ on:
         description: "The apps to release, comma separated. E. g.: `go-highs-knapsack,java-ortools-knapsack`"
         required: true
   push:
-    branches: develop
+    branches:
+      - develop
+      - feature/auto-release-workflow
 
 permissions:
   contents: read
@@ -181,12 +183,12 @@ jobs:
           nextmv activate
           nextmv sdk install
 
-      - name: Release the apps
-        run: |
-          export PATH=$PATH:~/.nextmv # Make CLI available in non-interactive shell
-          python main.py \
-            --apps "${{ env.APPS }}" \
-            --bucket "${{ env.BUCKET }}" \
-            --folder "${{ env.FOLDER }}" \
-            --manifest "${{ env.MANIFEST }}"
-        working-directory: ./community-apps/.nextmv/release
+      # - name: Release the apps
+      #   run: |
+      #     export PATH=$PATH:~/.nextmv # Make CLI available in non-interactive shell
+      #     python main.py \
+      #       --apps "${{ env.APPS }}" \
+      #       --bucket "${{ env.BUCKET }}" \
+      #       --folder "${{ env.FOLDER }}" \
+      #       --manifest "${{ env.MANIFEST }}"
+      #   working-directory: ./community-apps/.nextmv/release
