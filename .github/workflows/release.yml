@@ -98,9 +98,10 @@ jobs:
       - name: Filter changed directories
         id: filter
         if: ${{ env.FILTERS != '' }}
-        uses: dorny/paths-filter@v2
+        uses: dorny/paths-filter@v3
         with:
-          filters: ${{ env.FILTERS }}
+          filters: |
+            ${{ env.FILTERS }}
 
       - name: Create comma-separated string of changed paths
         id: changed_paths
