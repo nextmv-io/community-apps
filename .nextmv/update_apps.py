@@ -35,7 +35,7 @@ parser.add_argument(
     "--apps",
     "-a",
     type=str,
-    help="Apps to release, with the version. Example: knapsack-gosdk=v1.0.0,knapsack-pyomo=v1.0.0",
+    help="Apps to release, with the version. Example: go-highs-knapsack=v1.0.0,python-pyomo-knapsack=v1.0.0",
     required=True,
 )
 parser.add_argument(

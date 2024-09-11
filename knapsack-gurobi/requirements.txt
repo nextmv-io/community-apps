@@ -1,6 +1,0 @@
-# Gurobi packages
-gurobipy==11.0.0
-
-# Other packages.
-nextmv==v0.10.0.dev13
-

@@ -1,0 +1,2 @@
+pyvroom==1.13.6
+nextmv==v0.10.3.dev0

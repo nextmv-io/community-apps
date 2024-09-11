@@ -1,6 +1,0 @@
-# OR-Tools packages.
-ortools==9.8.3296
-
-# Other packages.
-nextmv==v0.10.0.dev13
-

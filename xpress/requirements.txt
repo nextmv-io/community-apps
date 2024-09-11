@@ -1,6 +1,0 @@
-# Xpress packages.
-xpress==9.4.2; platform_system != 'Darwin' or (platform_system == 'Darwin' and platform_machine != 'arm64')
-
-# Other packages.
-nextmv==v0.10.0.dev13
-
