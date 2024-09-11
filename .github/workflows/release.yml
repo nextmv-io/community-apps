@@ -17,6 +17,8 @@ on:
         type: string
         description: "The apps to release, comma separated. E. g.: `go-highs-knapsack,java-ortools-knapsack`"
         required: true
+  push:
+    branches: develop
 
 permissions:
   contents: read
@@ -26,7 +28,7 @@ jobs:
   update_apps:
     if: ${{ inputs.APPS != '' }}
     runs-on: ubuntu-latest
-    environment: ${{ inputs.TARGET_ENVIRONMENT || 'dev' }}
+    environment: ${{ inputs.TARGET_ENVIRONMENT || 'dev' }} # TODO: change to prod once detecting changes works
     env:
       BUCKET: ${{ secrets.S3_BUCKET }}
       FOLDER: ${{ secrets.S3_FOLDER }}
@@ -41,6 +43,8 @@ jobs:
       GO_VERSION: ""
       PYTHON_VERSION: ""
       APPS: ""
+      APP_NAMES: ""
+      FILTERS: ""
     permissions:
       id-token: write
       contents: write
@@ -66,12 +70,48 @@ jobs:
           git checkout ${{ github.ref_name }}
           git pull
 
-      - name: set the apps to release
+      - name: determine if apps are provided through inputs or we need filters
         run: |
           export APPS=${{ inputs.APPS }}
+          if [ -n "$APPS" ]; then
+            echo "These are the apps to release => $APPS"
+            echo "APPS=${APPS}" >> $GITHUB_ENV
+            exit 0
+          fi
+
+          APP_NAMES=$(yq '.apps[].name' workflow-configuration.yml)
+          echo "APP_NAMES=${APP_NAMES}"
+          echo "APP_NAMES=${APP_NAMES}" >> $GITHUB_ENV
+          export FILTERS = ""
+          for app in $(echo "$APP_NAMES"); do
+            FILTERS="${FILTERS}${app}:\n  - '${app}/**'\n"
+          done
+          echo "FILTERS=${FILTERS}" >> $GITHUB_ENV
+        working-directory: ./community-apps/.nextmv
+
+      - name: Filter changed directories
+        id: filter
+        if: ${{ env.FILTERS != '' }}
+        uses: dorny/paths-filter@v2
+        with:
+          filters: ${{ env.FILTERS }}
+
+      - name: Create comma-separated string of changed paths
+        id: changed_paths
+        if: ${{ env.FILTERS != '' }}
+        run: |
+          export APPS=""
+          OUTPUTS=$(echo '${{ toJson(steps.filter.outputs) }}' | jq .)
+          for app in $(echo "${{ env.APP_NAMES }}"); do
+             if [ $(echo $OUTPUTS | jq -r --arg app "$app" '.[$app]') == "true" ]; then
+              APPS="${APPS}${app},"
+            fi
+          done
+
+          # Remove trailing comma
+          APPS="${APPS%,}"
           echo "These are the apps to release => $APPS"
           echo "APPS=${APPS}" >> $GITHUB_ENV
-          // TODO: Add logic to get the apps from either the input or the dirs that changed.
 
       - name: set Python version
         run: |
