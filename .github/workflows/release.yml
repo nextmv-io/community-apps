@@ -28,7 +28,7 @@ permissions:
 jobs:
   update_apps:
     runs-on: ubuntu-latest
-    environment: ${{ inputs.TARGET_ENVIRONMENT || 'prod' }}
+    environment: ${{ inputs.TARGET_ENVIRONMENT || 'staging' }} # TODO: Change to prod once nicely tested.
     env:
       BUCKET: ${{ secrets.S3_BUCKET }}
       FOLDER: ${{ secrets.S3_FOLDER }}
