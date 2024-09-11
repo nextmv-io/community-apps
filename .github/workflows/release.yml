@@ -81,7 +81,7 @@ jobs:
           fi
 
           APP_NAMES_ARRAY=$(yq '.apps[].name' workflow-configuration.yml)
-          APP_NAMES=${APP_NAMES_ARRAY[@]}
+          APP_NAMES=$(echo ${APP_NAMES_ARRAY[@]} | tr '\n' ' ')
           echo "APP NAMES => $APP_NAMES"
           echo "APP_NAMES=${APP_NAMES}" >> $GITHUB_ENV
           export FILTERS = ""
