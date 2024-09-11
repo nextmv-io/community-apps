@@ -80,8 +80,9 @@ jobs:
             exit 0
           fi
 
-          APP_NAMES=$(yq '[.apps[].name]' workflow-configuration.yml)
-          echo "APP_NAMES=${APP_NAMES}"
+          APP_NAMES_ARRAY=$(yq '.apps[].name' workflow-configuration.yml)
+          APP_NAMES=${APP_NAMES_ARRAY[@]}
+          echo "APP NAMES => $APP_NAMES"
           echo "APP_NAMES=${APP_NAMES}" >> $GITHUB_ENV
           export FILTERS = ""
           for app in $(echo "$APP_NAMES"); do
