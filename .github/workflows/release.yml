@@ -28,7 +28,6 @@ permissions:
 
 jobs:
   update_apps:
-    if: ${{ inputs.APPS != '' }}
     runs-on: ubuntu-latest
     environment: ${{ inputs.TARGET_ENVIRONMENT || 'dev' }} # TODO: change to prod once detecting changes works
     env:
