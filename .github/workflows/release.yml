@@ -95,8 +95,8 @@ jobs:
             echo "  - '${app}/**'" >> $FILTERS_FILE
           done
 
-          echo "Successfully created filters and wrote them to $FILTERS_FILE"
-          cat $FILTERS_FILE"
+          echo "Successfully created filters and wrote them to ${FILTERS_FILE}"
+          cat $FILTERS_FILE
         working-directory: ./community-apps/.nextmv
 
       - name: Filter changed directories
