@@ -37,6 +37,7 @@ jobs:
           if [ "${{ inputs.TARGET_ENVIRONMENT }}" != "" ]; then
             echo "environments=${{ inputs.TARGET_ENVIRONMENT }}" >> $GITHUB_OUTPUT
             exit 0
+          fi
           echo "environments=staging,prod" >> $GITHUB_OUTPUT
   update_apps:
     runs-on: ubuntu-latest
