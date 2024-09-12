@@ -15,8 +15,11 @@ on:
           - prod
       APPS:
         type: string
-        description: "The apps to release with this format: `app-dir1=version1,app-dir2=version2`. E. g.: `go-highs-knapsack=v1.2.0,java-ortools-knapsack=v1.2.0`"
+        description: "The apps to release, comma separated. E. g.: `go-highs-knapsack,java-ortools-knapsack`"
         required: true
+  push:
+    branches:
+      - develop
 
 permissions:
   contents: read
@@ -24,9 +27,8 @@ permissions:
 
 jobs:
   update_apps:
-    if: ${{ inputs.APPS != '' }}
     runs-on: ubuntu-latest
-    environment: ${{ inputs.TARGET_ENVIRONMENT || 'dev' }}
+    environment: ${{ inputs.TARGET_ENVIRONMENT || 'staging' }} # TODO: Change to prod once nicely tested.
     env:
       BUCKET: ${{ secrets.S3_BUCKET }}
       FOLDER: ${{ secrets.S3_FOLDER }}
@@ -40,6 +42,10 @@ jobs:
       SSH_AUTH_SOCK: /tmp/ssh_agent.sock
       GO_VERSION: ""
       PYTHON_VERSION: ""
+      APPS: ""
+      APP_NAMES: ""
+      FILTERS: ""
+      AUTOMATIC_APP_NAMES: false
     permissions:
       id-token: write
       contents: write
@@ -64,6 +70,57 @@ jobs:
           git fetch --all
           git checkout ${{ github.ref_name }}
           git pull
+
+      - name: determine if apps are provided through inputs or we need filters
+        run: |
+          export APPS="${{ inputs.APPS }}"
+          if [ $APPS != '' ]; then
+            echo "These are the apps to release => $APPS"
+            echo "APPS=${APPS}" >> $GITHUB_ENV
+            exit 0
+          fi
+
+          export AUTOMATIC_APP_NAMES=true
+          echo "AUTOMATIC_APP_NAMES=${AUTOMATIC_APP_NAMES}" >> $GITHUB_ENV
+
+          APP_NAMES_ARRAY=$(yq '.apps[].name' workflow-configuration.yml)
+          APP_NAMES=$(echo ${APP_NAMES_ARRAY[@]} | tr '\n' ' ')
+          echo "APP_NAMES=${APP_NAMES}" >> $GITHUB_ENV
+
+          FILTERS_FILE="../.github/filters.yml"
+          touch $FILTERS_FILE
+          for app in ${APP_NAMES[@]}; do
+            echo "${app}:" >> $FILTERS_FILE
+            echo "  - '${app}/**'" >> $FILTERS_FILE
+          done
+
+          echo "Successfully created filters and wrote them to ${FILTERS_FILE}"
+          cat $FILTERS_FILE
+        working-directory: ./community-apps/.nextmv
+
+      - name: Filter changed directories
+        id: filter
+        if: ${{ env.AUTOMATIC_APP_NAMES == 'true' }}
+        uses: dorny/paths-filter@v3
+        with:
+          filters: .github/filters.yml
+          working-directory: ./community-apps
+
+      - name: Create comma-separated string of changed paths
+        if: ${{ env.AUTOMATIC_APP_NAMES == 'true' }}
+        run: |
+          export APPS=""
+          OUTPUTS=$(echo '${{ toJson(steps.filter.outputs) }}' | jq .)
+          for app in $(echo "${{ env.APP_NAMES }}"); do
+             if [ $(echo $OUTPUTS | jq -r --arg app "$app" '.[$app]') == "true" ]; then
+              APPS="${APPS}${app},"
+            fi
+          done
+
+          # Remove trailing comma
+          APPS="${APPS%,}"
+          echo "These are the apps to release => $APPS"
+          echo "APPS=${APPS}" >> $GITHUB_ENV
 
       - name: set Python version
         run: |
@@ -102,7 +159,7 @@ jobs:
         run: |
           pip install --upgrade pip
           pip install -r requirements.txt
-        working-directory: ./community-apps/.nextmv
+        working-directory: ./community-apps/.nextmv/release
 
       - name: Set up AWS CLI
         uses: aws-actions/configure-aws-credentials@v4
@@ -133,20 +190,12 @@ jobs:
           nextmv activate
           nextmv sdk install
 
-      - name: Upload apps and update manifest
+      - name: Release the apps
         run: |
           export PATH=$PATH:~/.nextmv # Make CLI available in non-interactive shell
-          python update_apps.py \
-            --apps "${{ inputs.APPS }}" \
+          python main.py \
+            --apps "${{ env.APPS }}" \
             --bucket "${{ env.BUCKET }}" \
             --folder "${{ env.FOLDER }}" \
             --manifest "${{ env.MANIFEST }}"
-        working-directory: ./community-apps/.nextmv
-
-      - name: Commit new versions
-        if: ${{ github.ref_name == 'develop' && inputs.TARGET_ENVIRONMENT == 'prod' }}
-        run: |
-          git add */VERSION
-          git commit -S -m "Bump app versions: ${{ inputs.APPS }}"
-          git push
-        working-directory: ./community-apps
+        working-directory: ./community-apps/.nextmv/release

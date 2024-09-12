@@ -1,2 +1,2 @@
 pyomo==6.7.2
-nextmv==v0.10.3.dev0
+nextmv==v0.10.3
