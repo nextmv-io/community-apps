@@ -34,11 +34,15 @@ jobs:
       - name: Set environments
         id: set-environments
         run: |
+          ENVIRONMENTS=""
           if [ "${{ inputs.TARGET_ENVIRONMENT }}" != "" ]; then
-            echo "environments=${{ inputs.TARGET_ENVIRONMENT }}" >> $GITHUB_OUTPUT
-            exit 0
+            echo "These are the environments to release => ${{ inputs.TARGET_ENVIRONMENT }}"
+            ENVIRONMENTS="['${{ inputs.TARGET_ENVIRONMENT }}']"
+          else
+            ENVIRONMENTS="['staging', 'prod']"
           fi
-          echo "environments=staging,prod" >> $GITHUB_OUTPUT
+          echo "These are the environments to release => ${ENVIRONMENTS}"
+          echo "environments=${ENVIRONMENTS}" >> $GITHUB_OUTPUT
   update_apps:
     runs-on: ubuntu-latest
     needs: determine_environments
