@@ -123,6 +123,7 @@ jobs:
           echo "APPS=${APPS}" >> $GITHUB_ENV
 
       - name: set Python version
+        if: ${{ env.APPS != '' }}
         run: |
           export PYTHON_VERSION=$(yq '.language-support.python.version' workflow-configuration.yml)
           echo "This is the Python version => $PYTHON_VERSION"
@@ -130,11 +131,13 @@ jobs:
         working-directory: ./community-apps/.nextmv
 
       - name: set up Python
+        if: ${{ env.APPS != '' }}
         uses: actions/setup-python@v5
         with:
           python-version: ${{ env.PYTHON_VERSION }}
 
       - name: set go version
+        if: ${{ env.APPS != '' }}
         run: |
           export GO_VERSION=$(yq '.language-support.go.version' workflow-configuration.yml)
           echo "This is the Go version => $GO_VERSION"
@@ -142,11 +145,13 @@ jobs:
         working-directory: ./community-apps/.nextmv
 
       - name: set up go
+        if: ${{ env.APPS != '' }}
         uses: actions/setup-go@v5
         with:
           go-version: ${{ env.GO_VERSION }}
 
       - name: Install zig
+        if: ${{ env.APPS != '' }}
         run: |
           SIGNATURE="2d00e789fec4f71790a6e7bf83ff91d564943c5ee843c5fd966efc474b423047  zig-linux-x86_64-0.11.0.tar.xz"
           curl -sSfL https://ziglang.org/download/0.11.0/zig-linux-x86_64-0.11.0.tar.xz -o zig-linux-x86_64-0.11.0.tar.xz
@@ -156,12 +161,14 @@ jobs:
           zig version
 
       - name: Install Python dependencies
+        if: ${{ env.APPS != '' }}
         run: |
           pip install --upgrade pip
           pip install -r requirements.txt
         working-directory: ./community-apps/.nextmv/release
 
       - name: Set up AWS CLI
+        if: ${{ env.APPS != '' }}
         uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: ${{ env.ROLE }}
@@ -169,6 +176,7 @@ jobs:
           role-duration-seconds: 1200
 
       - name: Set up JDK
+        if: ${{ env.APPS != '' }}
         uses: actions/setup-java@v4
         with:
           distribution: temurin
@@ -176,12 +184,14 @@ jobs:
           cache: "maven"
 
       - name: Install Nextmv CLI
+        if: ${{ env.APPS != '' }}
         run: |
           export NEXTMV_API_KEY=$MARKETPLACE_API_KEY
           export NEXTMV_BASE_URL=https://$API_ENDPOINT
           curl -sS "https://$CONSOLE_URL/install-cli.txt" | bash -
 
       - name: Set up Nextmv CLI
+        if: ${{ env.APPS != '' }}
         run: |
           export PATH=$PATH:~/.nextmv # Make CLI available in non-interactive shell
           nextmv configure \
@@ -191,6 +201,7 @@ jobs:
           nextmv sdk install
 
       - name: Release the apps
+        if: ${{ env.APPS != '' }}
         run: |
           export PATH=$PATH:~/.nextmv # Make CLI available in non-interactive shell
           python main.py \

@@ -7,7 +7,7 @@ apps:
     description: Get started with Go and Nextmv.
   - name: go-highs-knapsack
     type: go
-    app_id: go-highs-knapsack
+    app_id: knapsack-gosdk
     marketplace_app_id: knapsack.gosdk
     marketplace_major_version: v1
     description: Use Go and HiGHS - knapsack.
@@ -55,9 +55,9 @@ apps:
     description: Use Python and AMPL - facility location.
   - name: python-ampl-knapsack
     type: python
-    app_id:
-    marketplace_app_id:
-    marketplace_major_version:
+    app_id: knapsack-ampl
+    marketplace_app_id: knapsack.ampl
+    marketplace_major_version: v1
     description: Use Python and AMPL - knapsack.
   - name: python-ampl-priceoptimization
     type: python
@@ -67,9 +67,9 @@ apps:
     description: Use Python and AMPL - price optimization.
   - name: python-gurobi-knapsack
     type: python
-    app_id:
-    marketplace_app_id:
-    marketplace_major_version:
+    app_id: knapsack-gurobi
+    marketplace_app_id: knapsack.gurobi
+    marketplace_major_version: v1
     description: Use Python and Gurobi - knapsack.
   - name: python-hello-world
     type: python
@@ -79,25 +79,25 @@ apps:
     description: Get started with Python and Nextmv.
   - name: python-highs-knapsack
     type: python
-    app_id: python-highs-knapsack
+    app_id: knapsack-highs
     marketplace_app_id: knapsack.highs
     marketplace_major_version: v1
     description: Use Python and HiGHS - knapsack.
   - name: python-ortools-costflow
     type: python
-    app_id: python-ortools-costflow
+    app_id: cost-flow-ortools
     marketplace_app_id: cost.flow.ortools
     marketplace_major_version: v1
     description: Use Python and OR-Tools - cost flow.
   - name: python-ortools-demandforecasting
     type: python
-    app_id: python-ortools-demandforecasting
+    app_id: demand-forecasting-ortools
     marketplace_app_id: dem.forecast.ortools
     marketplace_major_version: v1
     description: Use Python and OR-Tools - demand forecasting.
   - name: python-ortools-knapsack
     type: python
-    app_id: python-ortools-knapsack
+    app_id: knapsack-ortools
     marketplace_app_id: knapsack.ortools
     marketplace_major_version: v1
     description: Use Python and OR-Tools - knapsack.
@@ -109,7 +109,7 @@ apps:
     description: Use Python and OR-Tools - multi CSV knapsack.
   - name: python-ortools-routing
     type: python
-    app_id: python-ortools-routing
+    app_id: routing-ortools
     marketplace_app_id: routing.ortools
     marketplace_major_version: v1
     description: Use Python and OR-Tools - VRP.
@@ -127,7 +127,7 @@ apps:
     description: Use Python and OR-Tools - shift planning.
   - name: python-pyomo-knapsack
     type: python
-    app_id: python-pyomo-knapsack
+    app_id: knapsack-pyomo
     marketplace_app_id: knapsack.pyomo
     marketplace_major_version: v1
     description: Use Python and Pyomo - knapsack.
@@ -151,7 +151,7 @@ apps:
     description: Use Python and PyOptInterface - knapsack.
   - name: python-pyvroom-routing
     type: python
-    app_id: python-pyvroom-routing
+    app_id: routing-pyvroom
     marketplace_app_id: routing.pyvroom
     marketplace_major_version: v1
     description: Use Python and Pyvroom - VRP.
