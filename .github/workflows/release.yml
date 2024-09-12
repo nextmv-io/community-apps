@@ -26,9 +26,24 @@ permissions:
   packages: read
 
 jobs:
+  determine_environments:
+    runs-on: ubuntu-latest
+    outputs:
+      environments: ${{ steps.set-environments.outputs.environments }}
+    steps:
+      - name: Set environments
+        id: set-environments
+        run: |
+          if [ "${{ inputs.TARGET_ENVIRONMENT }}" != "" ]; then
+            echo "environments=${{ inputs.TARGET_ENVIRONMENT }}" >> $GITHUB_OUTPUT
+            exit 0
+          echo "environments=staging,prod" >> $GITHUB_OUTPUT
   update_apps:
     runs-on: ubuntu-latest
-    environment: ${{ inputs.TARGET_ENVIRONMENT || 'staging' }} # TODO: Change to prod once nicely tested.
+    needs: determine_environments
+    strategy:
+      matrix:
+        environment: ${{fromJson(needs.determine_environments.outputs.environments)}}
     env:
       BUCKET: ${{ secrets.S3_BUCKET }}
       FOLDER: ${{ secrets.S3_FOLDER }}
