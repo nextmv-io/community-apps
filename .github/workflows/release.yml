@@ -37,9 +37,9 @@ jobs:
           ENVIRONMENTS=""
           if [ "${{ inputs.TARGET_ENVIRONMENT }}" != "" ]; then
             echo "These are the environments to release => ${{ inputs.TARGET_ENVIRONMENT }}"
-            ENVIRONMENTS="[${{ inputs.TARGET_ENVIRONMENT }}]"
+            ENVIRONMENTS="['${{ inputs.TARGET_ENVIRONMENT }}']"
           else
-            ENVIRONMENTS="[staging, prod]"
+            ENVIRONMENTS="['staging', 'prod']"
           fi
           echo "These are the environments to release => ${ENVIRONMENTS}"
           echo "environments=${ENVIRONMENTS}" >> $GITHUB_OUTPUT
@@ -49,6 +49,7 @@ jobs:
     strategy:
       matrix:
         environment: ${{fromJson(needs.determine_environments.outputs.environments)}}
+    environment: ${{ matrix.environment }}
     env:
       BUCKET: ${{ secrets.S3_BUCKET }}
       FOLDER: ${{ secrets.S3_FOLDER }}
