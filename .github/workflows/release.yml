@@ -1,5 +1,5 @@
 name: release
-run-name: Deploy to ${{ inputs.TARGET_ENVIRONMENT }} by @${{ github.actor }} from ${{ github.ref_name }}
+run-name: Deploy by @${{ github.actor }} from ${{ github.ref_name }}
 
 on:
   workflow_dispatch:
@@ -39,7 +39,7 @@ jobs:
             echo "These are the environments to release => ${{ inputs.TARGET_ENVIRONMENT }}"
             ENVIRONMENTS="['${{ inputs.TARGET_ENVIRONMENT }}']"
           else
-            ENVIRONMENTS="['staging', 'prod']"
+            ENVIRONMENTS="['dev', 'staging', 'prod']"
           fi
           echo "These are the environments to release => ${ENVIRONMENTS}"
           echo "environments=${ENVIRONMENTS}" >> $GITHUB_OUTPUT
@@ -49,6 +49,7 @@ jobs:
     strategy:
       matrix:
         environment: ${{fromJson(needs.determine_environments.outputs.environments)}}
+    environment: ${{ matrix.environment }}
     env:
       BUCKET: ${{ secrets.S3_BUCKET }}
       FOLDER: ${{ secrets.S3_FOLDER }}
