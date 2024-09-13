@@ -39,7 +39,7 @@ jobs:
             echo "These are the environments to release => ${{ inputs.TARGET_ENVIRONMENT }}"
             ENVIRONMENTS="['${{ inputs.TARGET_ENVIRONMENT }}']"
           else
-            ENVIRONMENTS="['staging', 'prod']"
+            ENVIRONMENTS="['dev', 'staging', 'prod']"
           fi
           echo "These are the environments to release => ${ENVIRONMENTS}"
           echo "environments=${ENVIRONMENTS}" >> $GITHUB_OUTPUT
