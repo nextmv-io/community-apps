@@ -58,12 +58,12 @@ def solve(input: nextmv.Input, options: nextmv.Options) -> nextmv.Output:
     for item in input.data["items"]:
         item_variable = solver.IntVar(0, 1, item["id"])
         items.append({"item": item, "variable": item_variable})
-        weights += item_variable * item["weight"]
-        values += item_variable * item["value"]
+        weights += item_variable * int(item["weight"])
+        values += item_variable * int(item["value"])
 
     # This constraint ensures the weight capacity of the knapsack will not be
     # exceeded.
-    capacity = input.data["weight_capacity"][0]["weight_capacity"]  # Read as a CSV.
+    capacity = int(input.data["weight_capacity"][0]["weight_capacity"])  # Read as a CSV.
     solver.Add(weights <= capacity)
 
     # Sets the objective function: maximize the value of the chosen items.
