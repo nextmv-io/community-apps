@@ -1,5 +1,5 @@
 name: release
-run-name: Deploy to ${{ inputs.TARGET_ENVIRONMENT }} by @${{ github.actor }} from ${{ github.ref_name }}
+run-name: Deploy by @${{ github.actor }} from ${{ github.ref_name }}
 
 on:
   workflow_dispatch:
