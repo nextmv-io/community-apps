@@ -87,7 +87,12 @@ def main():
         )
 
         if options.slack_url is not None:
-            notify_slack(url=options.slack_url, app=name, version=new_app_version)
+            notify_slack(
+                url=options.slack_url,
+                app=name,
+                version=new_app_version,
+                marketplace_version=new_marketplace_version,
+            )
 
     manifest.upload(
         client=client,
