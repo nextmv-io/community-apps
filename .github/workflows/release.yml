@@ -229,5 +229,6 @@ jobs:
             --apps "${{ env.APPS }}" \
             --bucket "${{ env.BUCKET }}" \
             --folder "${{ env.FOLDER }}" \
-            --manifest "${{ env.MANIFEST }}"
+            --manifest "${{ env.MANIFEST }}" \
+            --slack-url "${{ secrets.SLACK_URL_MISSION_CONTROL }}"
         working-directory: ./community-apps/.nextmv/release
