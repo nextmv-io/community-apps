@@ -251,7 +251,7 @@ def bump_marketplace_version(
     return f"v{major}.{minor}.{patch}"
 
 
-def notify_slack(url: str, app: str, version: str, marketplace_version: str):
+def notify_slack(url: str, app: str, version: str, marketplace_version: str) -> None:
     """
     Notify Slack channel about release.
     """
