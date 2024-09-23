@@ -4,4 +4,4 @@ highsbox==1.7.2.post2
 https://merschformann.github.io/random/content/wheels/pyoptinterface/pyoptinterface-0.2.8-cp311-cp311-manylinux_2_17_aarch64.manylinux2014_aarch64.whl
 
 # Other packages.
-nextmv==v0.11.0
+nextmv==0.11.1

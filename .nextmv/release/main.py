@@ -4,6 +4,7 @@ import tarfile
 from datetime import datetime
 
 import nextmv
+import requests
 from boto3 import client as s3Client
 from log import log
 from manifest import Manifest
@@ -20,6 +21,7 @@ def main():
         nextmv.Parameter("bucket", str, description="S3 bucket.", required=True),
         nextmv.Parameter("folder", str, description="S3 bucket folder.", required=True),
         nextmv.Parameter("manifest", str, description="Manifest file.", required=True),
+        nextmv.Parameter("slack-url", str, description="Slack webhook URL.", default=None),
     )
 
     apps = [
@@ -83,6 +85,14 @@ def main():
             marketplace_version=new_marketplace_version,
             workflow_app=workflow_app,
         )
+
+        if options.slack_url is not None:
+            notify_slack(
+                url=options.slack_url,
+                app=name,
+                version=new_app_version,
+                marketplace_version=new_marketplace_version,
+            )
 
     manifest.upload(
         client=client,
@@ -239,6 +249,22 @@ def bump_marketplace_version(
         )
 
     return f"v{major}.{minor}.{patch}"
+
+
+def notify_slack(url: str, app: str, version: str, marketplace_version: str) -> None:
+    """
+    Notify Slack channel about release.
+    """
+
+    response = requests.post(
+        url,
+        json={
+            "text": f"Release notification - community-apps/{app} {version} / marketplace {marketplace_version}",
+        },
+    )
+
+    if response.status_code != 200:
+        log(f"Failed to send notification to Slack: {response.text}")
 
 
 if __name__ == "__main__":
