@@ -227,7 +227,7 @@ jobs:
           export PATH=$PATH:~/.nextmv # Make CLI available in non-interactive shell
           export SLACK_NOTIFY_PARAM="" # Only notify slack for prod releases
           if [ ${{ matrix.environment }} == "prod" ]; then
-            export SLACK_NOTIFY_PARAM="--slack-url \"${{ secrets.SLACK_URL_MISSION_CONTROL }}\""
+            export SLACK_NOTIFY_PARAM="--slack-url ${{ secrets.SLACK_URL_MISSION_CONTROL }}"
           fi
           python main.py \
             --apps "${{ env.APPS }}" \

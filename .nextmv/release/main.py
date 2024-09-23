@@ -86,7 +86,7 @@ def main():
             workflow_app=workflow_app,
         )
 
-        if options.slack_url is not None:
+        if options.slack_url:
             notify_slack(
                 url=options.slack_url,
                 app=name,
