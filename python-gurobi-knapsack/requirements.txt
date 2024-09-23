@@ -1,3 +1,3 @@
 gurobipy==11.0.0
-nextmv==0.11.1
+nextmv==0.12.0
 

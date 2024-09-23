@@ -2,4 +2,4 @@ boto3>=1.34.33
 pyyaml>=6.0.1
 ruff>=0.1.7
 requests>=2.26.0
-nextmv==0.11.1
+nextmv==0.12.0
