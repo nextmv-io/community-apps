@@ -86,20 +86,20 @@ def main():
             workflow_app=workflow_app,
         )
 
-        if options.slack_url is not None:
+        manifest.upload(
+            client=client,
+            bucket=options.bucket,
+            folder=options.folder,
+            manifest_file=options.manifest,
+        )
+
+        if options.slack_url:
             notify_slack(
                 url=options.slack_url,
                 app=name,
                 version=new_app_version,
                 marketplace_version=new_marketplace_version,
             )
-
-    manifest.upload(
-        client=client,
-        bucket=options.bucket,
-        folder=options.folder,
-        manifest_file=options.manifest,
-    )
 
 
 def push_app(name: str, version: str, workflow_app: WorkflowApp):

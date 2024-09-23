@@ -47,6 +47,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: determine_environments
     strategy:
+      fail-fast: false
       matrix:
         environment: ${{fromJson(needs.determine_environments.outputs.environments)}}
     environment: ${{ matrix.environment }}
@@ -227,7 +228,7 @@ jobs:
           export PATH=$PATH:~/.nextmv # Make CLI available in non-interactive shell
           export SLACK_NOTIFY_PARAM="" # Only notify slack for prod releases
           if [ ${{ matrix.environment }} == "prod" ]; then
-            export SLACK_NOTIFY_PARAM="--slack-url \"${{ secrets.SLACK_URL_MISSION_CONTROL }}\""
+            export SLACK_NOTIFY_PARAM="--slack-url ${{ secrets.SLACK_URL_MISSION_CONTROL }}"
           fi
           python main.py \
             --apps "${{ env.APPS }}" \
