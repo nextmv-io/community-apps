@@ -83,6 +83,14 @@ apps:
         silent: true
       - name: 2.sh
         skip: true
+  - name: python-hexaly-knapsack
+    scripts:
+      - name: 0.sh
+        silent: true
+      - name: 2.sh
+        skip: true
+      - name: 1.sh
+        skip: true
   - name: python-highs-knapsack
     scripts:
       - name: 0.sh

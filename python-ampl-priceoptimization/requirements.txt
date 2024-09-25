@@ -18,4 +18,3 @@ ampl-module-scip==20240121
 ampl-module-xpress==20240115
 
 nextmv==0.12.0
-

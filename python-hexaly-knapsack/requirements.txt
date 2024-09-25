@@ -1,0 +1,6 @@
+# Look for Hexaly’s packages in the Hexaly package index.
+--index-url https://pip.hexaly.com
+--extra-index-url https://pypi.org/simple
+
+hexaly==13.0.20240712
+nextmv==0.12.0
