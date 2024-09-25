@@ -11,4 +11,4 @@ files:
   - main.py
   # If you have a Hexaly license, uncomment the following line and make sure to
   # store your license information in that file.
-  - license.dat
+  # - license.dat
