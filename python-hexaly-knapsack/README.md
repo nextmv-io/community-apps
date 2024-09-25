@@ -1,7 +1,11 @@
-# Nextmv Python Pyvroom Routing
+# Nextmv Python Hexaly Knapsack
 
 Example for running a Python application on the Nextmv Platform using the
-Pyvroom package. We solve a vehicle routing problem.
+Hexaly solver. We solve a knapsack Mixed Integer Programming problem.
+
+If you have a Hexaly license, remove the `.template` extension from the
+`license.dat.template` file and replace the contents with your actual license
+key. Modify the `app.yaml` file to include the `license.dat` in the files list.
 
 1. Install packages.
 
@@ -12,8 +16,7 @@ Pyvroom package. We solve a vehicle routing problem.
 1. Run the app.
 
     ```bash
-    python3 main.py -input input.json -output output.json \
-        -duration 30 -exploration_level 4 -threads 6
+    python3 main.py -input input.json -output output.json -duration 30
     ```
 
 ## Mirror running on Nextmv Cloud locally
@@ -25,7 +28,7 @@ Cloud, you can use the following command:
 
 ```bash
 cat input.json | docker run -i --rm \
--v $(pwd):/app ghcr.io/nextmv-io/runtime/python:latest \
+-v $(pwd):/app ghcr.io/nextmv-io/runtime/hexaly:latest \
 sh -c 'python3 /app/main.py'
 ```
 

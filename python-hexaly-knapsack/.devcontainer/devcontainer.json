@@ -11,5 +11,6 @@
         "python.defaultInterpreterPath": "python"
       }
     }
-  }
+  },
+  "postCreateCommand": "pip install -r requirements.txt"
 }

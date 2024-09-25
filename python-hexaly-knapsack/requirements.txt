@@ -2,11 +2,5 @@
 --index-url https://pip.hexaly.com
 --extra-index-url https://pypi.org/simple
 
-# Hexaly packages.
 hexaly==13.0.20240712
-
-# Other packages.
-nextmv==0.9.0
-numpy==1.26.4
-pandas==2.2.0
-scipy==1.12.0
+nextmv==0.12.0

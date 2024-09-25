@@ -187,6 +187,9 @@ ampl_license_uuid*
 !ampl_license_uuid.template
 
 # Gurobi Secrets
-# Secrets
 gurobi.lic*
 !gurobi.lic.template
+
+# Hexaly Secrets
+license.dat*
+!license.dat.template
