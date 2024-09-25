@@ -1,5 +1,11 @@
 {
+  "solution": "Hello, world",
   "statistics": {
-    "message": "Hello, world"
+    "result": {
+      "custom": {
+        "length": 5
+      }
+    },
+    "schema": "v1"
   }
 }
