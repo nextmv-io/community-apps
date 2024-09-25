@@ -171,11 +171,22 @@ go.work.sum
 main.jar
 
 # Outputs
-*output*
+!Output.Java
+output.json
+output/
 
 # Ignore app binary files
-main
-order-fulfillment-gosdk/order-fulfillment-gosdk
-knapsack-gosdk/knapsack-gosdk
-shift-scheduling-gosdk/shift-scheduling-gosdk
-nextroute/nextroute
+go-highs-orderfulfillment/go-highs-orderfulfillment
+go-highs-knapsack/go-highs-knapsack
+go-highs-shiftscheduling/go-highs-shiftscheduling
+go-nextroute/go-nextroute
+go-nextroute/main
+
+# AMPL Secrets
+ampl_license_uuid*
+!ampl_license_uuid.template
+
+# Gurobi Secrets
+# Secrets
+gurobi.lic*
+!gurobi.lic.template

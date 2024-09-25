@@ -1,145 +1,169 @@
 apps:
-  - name: cost-flow-ortools
-    scripts:
-      - name: 0.sh
-        silent: true
-      - name: 2.sh
-        skip: true
-  - name: knapsack-ampl
-    scripts:
-      - name: 0.sh
-        silent: true
-      - name: 2.sh
-        skip: true
-  - name: knapsack-gosdk
+  - name: go-highs-knapsack
     scripts:
       - name: 0.sh
         silent: true
       - name: 1.sh
         skip: true
-  - name: knapsack-gurobi
-    scripts:
-      - name: 0.sh
-        silent: true
-      - name: 2.sh
-        skip: true
-  - name: knapsack-hexaly
+  - name: go-highs-orderfulfillment
     scripts:
       - name: 0.sh
         silent: true
       - name: 1.sh
         skip: true
-      - name: 2.sh
-        skip: true
-  - name: knapsack-highs
-    scripts:
-      - name: 0.sh
-        silent: true
-      - name: 2.sh
-        skip: true
-  - name: knapsack-java-ortools
-    scripts:
-      - name: 0.sh
-        silent: true
-      - name: 2.sh
-        skip: true
-  - name: knapsack-ortools
-    scripts:
-      - name: 0.sh
-        silent: true
-      - name: 2.sh
-        skip: true
-  - name: knapsack-ortools-csv
-    scripts:
-      - name: 0.sh
-        silent: true
-      - name: 2.sh
-        skip: true
-  - name: knapsack-pyomo
-    scripts:
-      - name: 0.sh
-        silent: true
-      - name: 2.sh
-        skip: true
-  - name: nextroute
+  - name: go-highs-shiftscheduling
     scripts:
       - name: 0.sh
         silent: true
       - name: 1.sh
         skip: true
-  - name: order-fulfillment-gosdk
+  - name: go-nextroute
     scripts:
       - name: 0.sh
         silent: true
       - name: 1.sh
         skip: true
-  - name: price-optimization-ampl
+  - name: java-hello-world
+    scripts:
+      - name: 0.sh
+        silent: true
+      - name: 2.sh
+        skip: true
+  - name: java-ortools-knapsack
+    scripts:
+      - name: 0.sh
+        silent: true
+      - name: 2.sh
+        skip: true
+  - name: java-ortools-routing
+    scripts:
+      - name: 0.sh
+        silent: true
+      - name: 2.sh
+        skip: true
+  - name: python-ampl-facilitylocation
+    scripts:
+      - name: 0.sh
+        silent: true
+      - name: 1.sh
+        silent: true
+      - name: 2.sh
+        skip: true
+  - name: python-ampl-knapsack
+    scripts:
+      - name: 0.sh
+        silent: true
+      - name: 1.sh
+        silent: true
+      - name: 2.sh
+        skip: true
+  - name: python-ampl-priceoptimization
+    scripts:
+      - name: 0.sh
+        silent: true
+      - name: 1.sh
+        silent: true
+      - name: 2.sh
+        skip: true
+  - name: hello-world
     scripts:
       - name: 0.sh
         silent: true
       - name: 1.sh
         skip: true
-  - name: facility-location-ampl
+  - name: python-gurobi-knapsack
+    scripts:
+      - name: 0.sh
+        silent: true
+      - name: 2.sh
+        skip: true
+  - name: python-hello-world
+    scripts:
+      - name: 0.sh
+        silent: true
+      - name: 2.sh
+        skip: true
+  - name: python-highs-knapsack
+    scripts:
+      - name: 0.sh
+        silent: true
+      - name: 2.sh
+        skip: true
+  - name: python-ortools-costflow
+    scripts:
+      - name: 0.sh
+        silent: true
+      - name: 2.sh
+        skip: true
+  - name: python-ortools-demandforecasting
+    scripts:
+      - name: 0.sh
+        silent: true
+      - name: 2.sh
+        skip: true
+  - name: python-ortools-knapsack
+    scripts:
+      - name: 0.sh
+        silent: true
+      - name: 2.sh
+        skip: true
+  - name: python-ortools-knapsack-multicsv
     scripts:
       - name: 0.sh
         silent: true
       - name: 1.sh
+        silent: true
+      - name: 2.sh
         skip: true
-  - name: routing-java-ortools
+  - name: python-ortools-routing
     scripts:
       - name: 0.sh
         silent: true
       - name: 2.sh
         skip: true
-  - name: routing-ortools
+  - name: python-ortools-shiftassignment
     scripts:
       - name: 0.sh
         silent: true
       - name: 2.sh
         skip: true
-  - name: routing-pyvroom
+  - name: python-ortools-shiftplanning
     scripts:
       - name: 0.sh
         silent: true
       - name: 2.sh
         skip: true
-  - name: shift-assignment-ortools
+  - name: python-pyomo-knapsack
     scripts:
       - name: 0.sh
         silent: true
       - name: 2.sh
         skip: true
-  - name: shift-assignment-pyomo
+  - name: python-pyomo-shiftassignment
     scripts:
       - name: 0.sh
         silent: true
       - name: 2.sh
         skip: true
-  - name: demand-forecasting-ortools
+  - name: python-pyomo-shiftplanning
     scripts:
       - name: 0.sh
         silent: true
       - name: 2.sh
         skip: true
-  - name: shift-planning-ortools
+  - name: python-pyoptinterface-knapsack
     scripts:
       - name: 0.sh
         silent: true
       - name: 2.sh
         skip: true
-  - name: shift-planning-pyomo
+  - name: python-pyvroom-routing
     scripts:
       - name: 0.sh
         silent: true
       - name: 2.sh
         skip: true
-  - name: shift-scheduling-gosdk
-    scripts:
-      - name: 0.sh
-        silent: true
-      - name: 1.sh
-        skip: true
-  - name: xpress
+  - name: python-xpress-knapsack
     scripts:
       - name: 0.sh
         silent: true

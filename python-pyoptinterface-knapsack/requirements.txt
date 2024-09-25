@@ -1,0 +1,5 @@
+# pyoptinterface package with the Highs solver.
+pyoptinterface[highs]==0.2.8
+
+# Other packages.
+nextmv==0.12.0

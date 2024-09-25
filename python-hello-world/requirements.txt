@@ -1,0 +1,2 @@
+# Define the packages required by your project here.
+nextmv==0.12.0

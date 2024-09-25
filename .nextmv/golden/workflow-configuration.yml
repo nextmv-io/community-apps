@@ -1,61 +1,64 @@
 apps:
-  - name: cost-flow-ortools
-    language: python
-    language-version: 3.11
-  - name: facility-location-ampl
-    language: python
-    language-version: 3.11
-  - name: knapsack-ampl
-    language: python
-    language-version: 3.11
-  - name: knapsack-gosdk
+  - name: go-highs-knapsack
     language: go # we always use our main version
-  - name: knapsack-gurobi
-    language: python
-    language-version: 3.11
-  - name: knapsack-highs
-    language: python
-    language-version: 3.11
-  - name: knapsack-java-ortools
+  - name: go-highs-orderfulfillment
+    language: go # we always use our main version
+  - name: go-highs-shiftscheduling
+    language: go # we always use our main version
+  - name: go-nextroute
+    language: go # we always use our main version
+  - name: java-ortools-knapsack
     language: java
     language-version: 21
     distribution: temurin
-  - name: knapsack-ortools
+  - name: python-ampl-facilitylocation
     language: python
     language-version: 3.11
-  - name: knapsack-pyomo
+  - name: python-ampl-knapsack
     language: python
     language-version: 3.11
-  - name: nextroute
-    language: go # we always use our main version
-  - name: order-fulfillment-gosdk
-    language: go # we always use our main version
-  - name: price-optimization-ampl
+  - name: python-ampl-priceoptimization
     language: python
     language-version: 3.11
-  - name: routing-ortools
+  - name: python-gurobi-knapsack
     language: python
     language-version: 3.11
-  - name: routing-pyvroom
+  - name: python-hello-world
     language: python
     language-version: 3.11
-  - name: shift-assignment-ortools
+  - name: python-highs-knapsack
     language: python
     language-version: 3.11
-  - name: shift-assignment-pyomo
+  - name: python-ortools-costflow
     language: python
     language-version: 3.11
-  - name: demand-forecasting-ortools
+  - name: python-ortools-knapsack
     language: python
     language-version: 3.11
-  - name: shift-planning-ortools
+  - name: python-ortools-routing
     language: python
     language-version: 3.11
-  - name: shift-planning-pyomo
+  - name: python-ortools-shiftassignment
     language: python
     language-version: 3.11
-  - name: shift-scheduling-gosdk
-    language: go # we always use our main version
-  - name: xpress
+  - name: python-ortools-shiftplanning
+    language: python
+    language-version: 3.11
+  - name: python-pyomo-knapsack
+    language: python
+    language-version: 3.11
+  - name: python-pyomo-shiftassignment
+    language: python
+    language-version: 3.11
+  - name: python-pyomo-shiftplanning
+    language: python
+    language-version: 3.11
+  - name: python-pyoptinterface-knapsack
+    language: python
+    language-version: 3.11
+  - name: python-pyvroom-routing
+    language: python
+    language-version: 3.11
+  - name: python-xpress-knapsack
     language: python
     language-version: 3.11

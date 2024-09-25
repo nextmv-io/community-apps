@@ -1,8 +1,0 @@
-# Gurobi packages
-gurobipy==11.0.0
-
-# Other packages.
-nextmv==0.9.0
-numpy==1.26.4
-pandas==2.2.0
-scipy==1.12.0
