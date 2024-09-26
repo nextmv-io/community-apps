@@ -77,6 +77,12 @@ apps:
     marketplace_app_id:
     marketplace_major_version:
     description: Get started with Python and Nextmv.
+  - name: python-hexaly-knapsack
+    type: python
+    app_id:
+    marketplace_app_id:
+    marketplace_major_version:
+    description: Use Python and Hexaly - knapsack.
   - name: python-highs-knapsack
     type: python
     app_id: knapsack-highs

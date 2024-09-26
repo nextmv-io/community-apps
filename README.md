@@ -60,6 +60,8 @@ run on Nextmv Cloud.
   problem. Demonstrates how to use devcontainers.
 * [java-ortools-routing]: Use Java and Google OR-Tools to solve a vehicle
   routing problem. Demonstrates how to use devcontainers.
+* [python-hexaly-knapsack]: Use Python and Hexaly to solve a knapsack problem.
+  Demonstrates how to use devcontainers.
 * [python-ampl-facilitylocation]: Use Python and AMPL to solve a facility
   location problem. Demonstrates how to use devcontainers.
 * [python-ampl-priceoptimization]: Use Python and AMPL to solve a price
@@ -95,6 +97,7 @@ run on Nextmv Cloud.
 [python-ampl-knapsack]: ./python-ampl-knapsack/README.md
 [python-ampl-priceoptimization]: ./python-ampl-priceoptimization/README.md
 [python-gurobi-knapsack]: ./python-gurobi-knapsack/README.md
+[python-hexaly-knapsack]: ./python-hexaly-knapsack/README.md
 [python-highs-knapsack]: ./python-highs-knapsack/README.md
 [python-ortools-costflow]: ./python-ortools-costflow/README.md
 [python-ortools-demandforecasting]: ./python-ortools-demandforecasting/README.md
