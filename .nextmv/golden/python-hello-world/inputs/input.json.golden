@@ -1,5 +1,11 @@
 {
   "statistics": {
-    "message": "Hello, world"
+    "result": {
+      "custom": {
+        "message": "Hello, world"
+      },
+      "value": 1.23
+    },
+    "schema": "v1"
   }
 }
