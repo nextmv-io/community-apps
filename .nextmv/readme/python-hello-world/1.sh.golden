@@ -2,6 +2,12 @@
   "options": {},
   "solution": {},
   "statistics": {
-    "message": "Hello, world"
+    "result": {
+      "value": 1.23,
+      "custom": {
+        "message": "Hello, world"
+      }
+    },
+    "schema": "v1"
   }
 }

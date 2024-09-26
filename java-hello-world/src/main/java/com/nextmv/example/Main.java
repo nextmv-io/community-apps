@@ -41,7 +41,11 @@ class Output {
 
     public Output(String name) {
         this.solution = new Solution();
-        this.statistics = new Statistics("Hello, " + name);
+        this.statistics = new Statistics();
+        this.statistics.result = new StatisticsResult();
+        this.statistics.result.value = 1.23;
+        this.statistics.result.custom = new StatisticsResultCustom();
+        this.statistics.result.custom.message = "Hello, " + name;
     }
 
     public static void write(Output output) {
@@ -52,12 +56,18 @@ class Output {
 
 class Solution {}
 
-class Statistics {
-    String message;
+class StatisticsResult {
+    public double value;
+    public StatisticsResultCustom custom;
+}
 
-    public Statistics(String message) {
-        this.message = message;
-    }
+class StatisticsResultCustom {
+    public String message;
+}
+
+class Statistics {
+    public String schema = "v1";
+    public StatisticsResult result;
 }
 
 
