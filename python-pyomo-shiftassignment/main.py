@@ -1,5 +1,4 @@
 import datetime
-import logging
 import time
 from typing import Any
 
@@ -10,6 +9,7 @@ import pyomo.environ as pyo
 SUPPORTED_PROVIDER_DURATIONS = {
     "cbc": "sec",
     "glpk": "tmlim",
+    "scip": "limits/time",
 }
 
 # Status of the solver after optimizing.
@@ -55,9 +55,6 @@ def solve(input: nextmv.Input, options: nextmv.Options) -> nextmv.Output:
             f"Unsupported provider: {provider}. The supported providers are: "
             f"{', '.join(SUPPORTED_PROVIDER_DURATIONS.keys())}"
         )
-
-    # Silence all Pyomo logging.
-    logging.getLogger("pyomo.core").setLevel(logging.ERROR)
 
     # Prepare data
     workers, shifts, rules_per_worker = convert_input(input.data)
@@ -146,11 +143,11 @@ def solve(input: nextmv.Input, options: nextmv.Options) -> nextmv.Output:
     )
 
     # Creates the solver.
-    solver = pyo.SolverFactory(provider)  # Use an appropriate solver name
+    solver = pyo.SolverFactory(provider)
     solver.options[SUPPORTED_PROVIDER_DURATIONS[provider]] = options.duration
 
     # Solve the model.
-    results = solver.solve(model)
+    results = solver.solve(model, tee=True)
 
     # Convert to solution format.
     schedule = {}

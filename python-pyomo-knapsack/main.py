@@ -7,6 +7,7 @@ import pyomo.environ as pyo
 SUPPORTED_PROVIDER_DURATIONS = {
     "cbc": "sec",
     "glpk": "tmlim",
+    "scip": "limits/time",
 }
 
 
@@ -84,7 +85,7 @@ def solve(input: nextmv.Input, options: nextmv.Options) -> nextmv.Output:
     model.objective = pyo.Objective(expr=values, sense=pyo.maximize)
 
     # Solves the problem.
-    results = solver.solve(model)
+    results = solver.solve(model, tee=True)
 
     # Convert to solution format.
     value = pyo.value(model.objective, exception=False)
