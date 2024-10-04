@@ -147,7 +147,7 @@ def solve(input: nextmv.Input, options: nextmv.Options) -> nextmv.Output:
     solver.options[SUPPORTED_PROVIDER_DURATIONS[provider]] = options.duration
 
     # Solve the model.
-    results = solver.solve(model, tee=True)
+    results = solver.solve(model, tee=False)  # Set tee to True for Pyomo logging.
 
     # Convert to solution format.
     schedule = {}

@@ -85,7 +85,7 @@ def solve(input: nextmv.Input, options: nextmv.Options) -> nextmv.Output:
     model.objective = pyo.Objective(expr=values, sense=pyo.maximize)
 
     # Solves the problem.
-    results = solver.solve(model, tee=True)
+    results = solver.solve(model, tee=False)  # Set tee to True for Pyomo logging.
 
     # Convert to solution format.
     value = pyo.value(model.objective, exception=False)
