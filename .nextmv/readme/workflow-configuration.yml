@@ -95,6 +95,8 @@ apps:
     scripts:
       - name: 0.sh
         silent: true
+      - name: 1.sh
+        silent: true
   - name: python-ortools-costflow
     scripts:
       - name: 0.sh
