@@ -1,0 +1,2 @@
+nextroute==1.8.0.dev2
+nextmv==0.13.1

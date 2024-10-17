@@ -1,7 +1,7 @@
 # Nextmv Go Nextroute
 
 Example for running a Go application on the Nextmv Platform using the
-`nextroute` vehicle routing problem solver.
+`Nextroute` vehicle routing problem solver.
 
 1. Run the app.
 
