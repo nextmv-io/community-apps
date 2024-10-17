@@ -24,7 +24,7 @@ func TestGolden(t *testing.T) {
 				"-solve_parallelruns", "1",
 				"-solve_iterations", "50",
 				"-solve_rundeterministically", "true",
-				"-solve.startsolutions", "1",
+				"-solve_startsolutions", "1",
 			},
 			TransientFields: []golden.TransientField{
 				{Key: "$.version.sdk", Replacement: golden.StableVersion},
