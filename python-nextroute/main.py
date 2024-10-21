@@ -5,17 +5,16 @@ import nextroute
 def main() -> None:
     """Entry point for the program."""
 
-    options = nextmv.Options(
+    parameters = [
         nextmv.Parameter("input", str, "", "Path to input file. Default is stdin.", False),
         nextmv.Parameter("output", str, "", "Path to output file. Default is stdout.", False),
-        nextmv.Parameter("solve_duration", int, 30, "Maximum duration, in seconds, of the solver.", False),
-        nextmv.Parameter("solve_parallelruns", int, -1, "Max number of parallel runs, -1 uses all resources.", False),
-        nextmv.Parameter("solve_iterations", int, -1, "Max number of iterations, -1 assumes no limit.", False),
-        nextmv.Parameter("solve_rundeterministically", bool, False, "Whether to run deterministically.", False),
-        nextmv.Parameter("solve_startsolutions", int, -1, "Number of solutions on top of initial ones.", False),
-        nextmv.Parameter("format_disable_progression", bool, False, "Disable the series data.", False),
-        # Add more options if needed.
-    )
+    ]
+
+    default_options = nextroute.Options()
+    for name, default_value in default_options.to_dict().items():
+        parameters.append(nextmv.Parameter(name.lower(), type(default_value), default_value, name, False))
+
+    options = nextmv.Options(*parameters)
 
     input = nextmv.load_local(options=options, path=options.input)
 
@@ -31,28 +30,11 @@ def solve(input: nextmv.Input, options: nextmv.Options) -> nextmv.Output:
     """Solves the given problem and returns the solution."""
 
     nextroute_input = nextroute.schema.Input.from_dict(input.data)
-    nextroute_options = nextroute.Options(
-        solve=nextroute.ParallelSolveOptions(
-            duration=options.solve_duration,
-            iterations=options.solve_iterations,
-            parallel_runs=options.solve_parallelruns,
-            run_deterministically=options.solve_rundeterministically,
-            start_solutions=options.solve_startsolutions,
-        ),
-        format=nextroute.FormatOptions(
-            disable=nextroute.DisableFormatOptions(
-                progression=options.format_disable_progression,
-            ),
-        ),
-    )
-
+    nextroute_options = nextroute.Options.extract_from_dict(options.to_dict())
     nextroute_output = nextroute.solve(nextroute_input, nextroute_options)
 
     return nextmv.Output(
-        options={
-            "nextmv": options.to_dict(),
-            "nextroute": nextroute_options.to_dict(),
-        },
+        options=options,
         solution=nextroute_output.solutions[0].to_dict(),
         statistics=nextroute_output.statistics.to_dict(),
     )
