@@ -1,85 +1,47 @@
 {
   "options": {
-    "nextmv": {
-      "format_disable_progression": true,
-      "input": "input.json",
-      "output": "output.json",
-      "solve_duration": 3,
-      "solve_iterations": 50,
-      "solve_parallelruns": 1,
-      "solve_rundeterministically": true,
-      "solve_startsolutions": 1
-    },
-    "nextroute": {
-      "check": {
-        "duration": 30,
-        "verbosity": "off"
-      },
-      "format": {
-        "disable": {
-          "progression": true
-        }
-      },
-      "model": {
-        "constraints": {
-          "disable": {
-            "attributes": false,
-            "capacities": [],
-            "capacity": false,
-            "distance_limit": false,
-            "groups": false,
-            "maximum_duration": false,
-            "maximum_stops": false,
-            "maximum_wait_stop": false,
-            "maximum_wait_vehicle": false,
-            "mixing_items": false,
-            "precedence": false,
-            "start_time_windows": false,
-            "vehicle_end_time": false,
-            "vehicle_start_time": false
-          },
-          "enable": {
-            "cluster": false
-          }
-        },
-        "objectives": {
-          "capacities": "",
-          "cluster": 0,
-          "early_arrival_penalty": 1,
-          "late_arrival_penalty": 1,
-          "min_stops": 1,
-          "travel_duration": 0,
-          "unplanned_penalty": 1,
-          "vehicle_activation_penalty": 1,
-          "vehicles_duration": 1
-        },
-        "properties": {
-          "disable": {
-            "duration_groups": false,
-            "durations": false,
-            "initial_solution": false,
-            "stop_duration_multipliers": false
-          }
-        },
-        "validate": {
-          "disable": {
-            "resources": false,
-            "start_time": false
-          },
-          "enable": {
-            "matrix": false,
-            "matrix_asymmetry_tolerance": 20
-          }
-        }
-      },
-      "solve": {
-        "duration": 3,
-        "iterations": 50,
-        "parallel_runs": 1,
-        "run_deterministically": true,
-        "start_solutions": 1
-      }
-    }
+    "check_duration": 30,
+    "check_verbosity": "off",
+    "format_disable_progression": true,
+    "input": "input.json",
+    "model_constraints_disable_attributes": false,
+    "model_constraints_disable_capacities": [],
+    "model_constraints_disable_capacity": false,
+    "model_constraints_disable_distancelimit": false,
+    "model_constraints_disable_groups": false,
+    "model_constraints_disable_maximumduration": false,
+    "model_constraints_disable_maximumstops": false,
+    "model_constraints_disable_maximumwaitstop": false,
+    "model_constraints_disable_maximumwaitvehicle": false,
+    "model_constraints_disable_mixingitems": false,
+    "model_constraints_disable_precedence": false,
+    "model_constraints_disable_starttimewindows": false,
+    "model_constraints_disable_vehicleendtime": false,
+    "model_constraints_disable_vehiclestarttime": false,
+    "model_constraints_enable_cluster": false,
+    "model_objectives_capacities": "",
+    "model_objectives_cluster": 0,
+    "model_objectives_earlyarrivalpenalty": 1,
+    "model_objectives_latearrivalpenalty": 1,
+    "model_objectives_minstops": 1,
+    "model_objectives_travelduration": 0,
+    "model_objectives_unplannedpenalty": 1,
+    "model_objectives_vehicleactivationpenalty": 1,
+    "model_objectives_vehiclesduration": 1,
+    "model_properties_disable_durationgroups": false,
+    "model_properties_disable_durations": false,
+    "model_properties_disable_initialsolution": false,
+    "model_properties_disable_stopdurationmultipliers": false,
+    "model_validate_disable_resources": false,
+    "model_validate_disable_starttime": false,
+    "model_validate_enable_matrix": false,
+    "model_validate_enable_matrixasymmetrytolerance": 20,
+    "output": "output.json",
+    "solve_duration": 3,
+    "solve_iterations": 50,
+    "solve_parallelruns": 1,
+    "solve_rundeterministically": true,
+    "solve_startsolutions": 1
   },
   "solution": {
     "objective": {

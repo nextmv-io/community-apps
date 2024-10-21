@@ -29,8 +29,8 @@ func TestGolden(t *testing.T) {
 			TransientFields: []golden.TransientField{
 				{Key: "$.statistics.result.duration", Replacement: golden.StableFloat},
 				{Key: "$.statistics.run.duration", Replacement: golden.StableFloat},
-				{Key: "$.options.nextmv.output", Replacement: "output.json"},
-				{Key: "$.options.nextmv.input", Replacement: "input.json"},
+				{Key: "$.options.output", Replacement: "output.json"},
+				{Key: "$.options.input", Replacement: "input.json"},
 			},
 			Thresholds: golden.Tresholds{
 				Float: 0.01,
