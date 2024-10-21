@@ -89,6 +89,12 @@ apps:
     marketplace_app_id: knapsack.highs
     marketplace_major_version: v1
     description: Use Python and HiGHS - knapsack.
+  - name: python-nextroute
+    type: python
+    app_id:
+    marketplace_app_id:
+    marketplace_major_version:
+    description: Use Python and Nextroute - VRP.
   - name: python-ortools-costflow
     type: python
     app_id: cost-flow-ortools

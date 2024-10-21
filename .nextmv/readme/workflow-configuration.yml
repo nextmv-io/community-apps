@@ -65,12 +65,6 @@ apps:
         silent: true
       - name: 2.sh
         skip: true
-  - name: hello-world
-    scripts:
-      - name: 0.sh
-        silent: true
-      - name: 1.sh
-        skip: true
   - name: python-gurobi-knapsack
     scripts:
       - name: 0.sh
@@ -97,6 +91,12 @@ apps:
         silent: true
       - name: 2.sh
         skip: true
+  - name: python-nextroute
+    scripts:
+      - name: 0.sh
+        silent: true
+      - name: 1.sh
+        silent: true
   - name: python-ortools-costflow
     scripts:
       - name: 0.sh

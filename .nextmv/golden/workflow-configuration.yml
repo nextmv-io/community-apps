@@ -29,6 +29,9 @@ apps:
   - name: python-highs-knapsack
     language: python
     language-version: 3.11
+  - name: python-nextroute
+    language: python
+    language-version: 3.11
   - name: python-ortools-costflow
     language: python
     language-version: 3.11
