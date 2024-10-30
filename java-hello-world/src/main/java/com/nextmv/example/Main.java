@@ -1,33 +1,31 @@
 package com.nextmv.example;
 
 import com.google.gson.Gson;
-import java.io.FileReader;
+import java.io.InputStreamReader;
 import java.io.IOException;
 import com.google.gson.JsonObject;
 
 public class Main {
-  public static void main(String[] args) {
-      Gson gson = new Gson();
-      
-      
-      try (FileReader reader = new FileReader("input.json")) {
-          // Read from stdin.
-          Input input = gson.fromJson(reader, Input.class);
+    public static void main(String[] args) {
+        Gson gson = new Gson();
+        
+        try (InputStreamReader reader = new InputStreamReader(System.in)) {
+            // Read from stdin.
+            Input input = gson.fromJson(reader, Input.class);
 
-          // ##### Insert model here
-          
-          // Print logs that render in the run view in Nextmv Console
-          System.err.println("Hello, " + input.name);
-          
-          // Write output and statistics.
-          Output output = new Output(input.name);
-          Output.write(output);
-      } catch (IOException e) {
-          e.printStackTrace();
-      }
-  }
+            // ##### Insert model here
+            
+            // Print logs that render in the run view in Nextmv Console
+            System.err.println("Hello, " + input.name);
+            
+            // Write output and statistics.
+            Output output = new Output(input.name);
+            Output.write(output);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 }
-
 
 class Input {
     String name;
