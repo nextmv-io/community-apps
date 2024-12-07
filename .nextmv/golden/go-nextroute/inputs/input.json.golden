@@ -37,6 +37,7 @@
         "early_arrival_penalty": 1,
         "late_arrival_penalty": 1,
         "min_stops": 1,
+        "stop_balance": 0,
         "travel_duration": 0,
         "unplanned_penalty": 1,
         "vehicle_activation_penalty": 1,
