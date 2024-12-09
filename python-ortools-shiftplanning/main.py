@@ -31,160 +31,162 @@ def main() -> None:
     nextmv.log(f"  - shifts-templates: {len(input.data.get('shifts', []))}")
     nextmv.log(f"  - demands: {len(input.data.get('demands', []))}")
 
-    output = solve(input, options)
+    model = DecisionModel()
+    output = model.solve(input)
     nextmv.write_local(output, path=options.output)
 
 
-def solve(input: nextmv.Input, options: nextmv.Options) -> nextmv.Output:
-    """Solves the given problem and returns the solution."""
+class DecisionModel(nextmv.Model):
+    def solve(self, input: nextmv.Input) -> nextmv.Output:
+        """Solves the given problem and returns the solution."""
 
-    start_time = time.time()
-    nextmv.redirect_stdout()  # Solver chatter is logged to stderr.
+        start_time = time.time()
+        nextmv.redirect_stdout()  # Solver chatter is logged to stderr.
 
-    # Creates the solver.
-    solver = pywraplp.Solver.CreateSolver(options.provider)
-    solver.SetTimeLimit(options.duration * 1000)
+        # Creates the solver.
+        solver = pywraplp.Solver.CreateSolver(input.options.provider)
+        solver.SetTimeLimit(input.options.duration * 1000)
 
-    # Prepare data
-    shifts, demands = convert_data(input.data)
-    input_options = input.data.get("options", {})
+        # Prepare data
+        shifts, demands = convert_data(input.data)
+        input_options = input.data.get("options", {})
 
-    # Generate concrete shifts from shift templates.
-    concrete_shifts = get_concrete_shifts(shifts)
+        # Generate concrete shifts from shift templates.
+        concrete_shifts = get_concrete_shifts(shifts)
 
-    # Determine all unique time periods in which demands occur and the shifts covering them.
-    periods = get_demand_coverage_periods(concrete_shifts, demands)
+        # Determine all unique time periods in which demands occur and the shifts covering them.
+        periods = get_demand_coverage_periods(concrete_shifts, demands)
 
-    # Determine the time we need to cover.
-    required_hours = sum((p.end_time - p.start_time).seconds for p in periods) / 3600
+        # Determine the time we need to cover.
+        required_hours = sum((p.end_time - p.start_time).seconds for p in periods) / 3600
 
-    # Create integer variables indicating how many times a shift is planned.
-    x_assign = {}
-    for s in concrete_shifts:
-        x_assign[s["id"]] = solver.IntVar(
-            s["min_workers"],
-            s["max_workers"] if s["max_workers"] >= 0 else solver.infinity(),
-            f'Planned_{s["id"]}',
-        )
-
-    # Create variables for tracking various costs.
-    if "under_supply_cost" in input_options:
-        x_under = {}
-        for p in periods:
-            x_under[p] = solver.NumVar(0, solver.infinity(), f"UnderSupply_{p}")
-        underSupply = solver.NumVar(0, solver.infinity(), "UnderSupply")
-    if "over_supply_cost" in input_options:
-        overSupply = solver.NumVar(0, solver.infinity(), "OverSupply")
-    shift_cost = solver.NumVar(0, solver.infinity(), "ShiftCost")
-
-    # Objective function: minimize the cost of the planned shifts
-    obj_expr = solver.Sum([0])
-    if "under_supply_cost" in input_options:
-        obj_expr += underSupply * input_options["under_supply_cost"]
-    if "over_supply_cost" in input_options:
-        obj_expr += overSupply * input_options["over_supply_cost"]
-    obj_expr += shift_cost
-    solver.Minimize(obj_expr)
-
-    # >> Constraints
-
-    # We need to make sure that all demands are covered (or track under supply).
-    for p in periods:
-        expression = solver.Sum([x_assign[s["id"]] for s in p.covering_shifts])
-        if "under_supply_cost" in input_options:
-            expression += x_under[p]
-        solver.Add(
-            expression == sum(d["count"] for d in p.demands),
-            f"DemandCover_{p.start_time}_{p.end_time}_{p.qualification}",
-        )
-
-    # Track under supply
-    if "under_supply_cost" in input_options:
-        solver.Add(
-            underSupply == solver.Sum([x_under[p] * (p.end_time - p.start_time).seconds / 3600 for p in periods]),
-            "UnderSupply",
-        )
-
-    # Track over supply
-    if "over_supply_cost" in input_options:
-        solver.Add(
-            overSupply
-            == solver.Sum(
-                [x_assign[s["id"]] * (s["end_time"] - s["start_time"]).seconds / 3600 for s in concrete_shifts]
+        # Create integer variables indicating how many times a shift is planned.
+        x_assign = {}
+        for s in concrete_shifts:
+            x_assign[s["id"]] = solver.IntVar(
+                s["min_workers"],
+                s["max_workers"] if s["max_workers"] >= 0 else solver.infinity(),
+                f'Planned_{s["id"]}',
             )
-            - required_hours,
-            "OverSupply",
+
+        # Create variables for tracking various costs.
+        if "under_supply_cost" in input_options:
+            x_under = {}
+            for p in periods:
+                x_under[p] = solver.NumVar(0, solver.infinity(), f"UnderSupply_{p}")
+            underSupply = solver.NumVar(0, solver.infinity(), "UnderSupply")
+        if "over_supply_cost" in input_options:
+            overSupply = solver.NumVar(0, solver.infinity(), "OverSupply")
+        shift_cost = solver.NumVar(0, solver.infinity(), "ShiftCost")
+
+        # Objective function: minimize the cost of the planned shifts
+        obj_expr = solver.Sum([0])
+        if "under_supply_cost" in input_options:
+            obj_expr += underSupply * input_options["under_supply_cost"]
+        if "over_supply_cost" in input_options:
+            obj_expr += overSupply * input_options["over_supply_cost"]
+        obj_expr += shift_cost
+        solver.Minimize(obj_expr)
+
+        # >> Constraints
+
+        # We need to make sure that all demands are covered (or track under supply).
+        for p in periods:
+            expression = solver.Sum([x_assign[s["id"]] for s in p.covering_shifts])
+            if "under_supply_cost" in input_options:
+                expression += x_under[p]
+            solver.Add(
+                expression == sum(d["count"] for d in p.demands),
+                f"DemandCover_{p.start_time}_{p.end_time}_{p.qualification}",
+            )
+
+        # Track under supply
+        if "under_supply_cost" in input_options:
+            solver.Add(
+                underSupply == solver.Sum([x_under[p] * (p.end_time - p.start_time).seconds / 3600 for p in periods]),
+                "UnderSupply",
+            )
+
+        # Track over supply
+        if "over_supply_cost" in input_options:
+            solver.Add(
+                overSupply
+                == solver.Sum(
+                    [x_assign[s["id"]] * (s["end_time"] - s["start_time"]).seconds / 3600 for s in concrete_shifts]
+                )
+                - required_hours,
+                "OverSupply",
+            )
+
+        # Track shift cost
+        solver.Add(
+            shift_cost == solver.Sum([x_assign[s["id"]] * s["cost"] for s in concrete_shifts]),
+            "ShiftCost",
         )
 
-    # Track shift cost
-    solver.Add(
-        shift_cost == solver.Sum([x_assign[s["id"]] * s["cost"] for s in concrete_shifts]),
-        "ShiftCost",
-    )
+        # Solves the problem.
+        status = solver.Solve()
 
-    # Solves the problem.
-    status = solver.Solve()
+        # Convert to solution format.
+        has_solution = status in ANY_SOLUTION
+        schedule = {
+            "planned_shifts": [
+                {
+                    "id": s["id"],
+                    "shift_id": s["shift_id"],
+                    "time_id": s["time_id"],
+                    "start_time": s["start_time"],
+                    "end_time": s["end_time"],
+                    "qualification": s["qualification"],
+                    "count": int(round(x_assign[(s["id"])].solution_value())),
+                }
+                for s in concrete_shifts
+                if x_assign[(s["id"])].solution_value() > 0.5
+            ]
+            if has_solution
+            else [],
+        }
 
-    # Convert to solution format.
-    has_solution = status in ANY_SOLUTION
-    schedule = {
-        "planned_shifts": [
-            {
-                "id": s["id"],
-                "shift_id": s["shift_id"],
-                "time_id": s["time_id"],
-                "start_time": s["start_time"],
-                "end_time": s["end_time"],
-                "qualification": s["qualification"],
-                "count": int(round(x_assign[(s["id"])].solution_value())),
-            }
-            for s in concrete_shifts
-            if x_assign[(s["id"])].solution_value() > 0.5
-        ]
-        if has_solution
-        else [],
-    }
+        under_supply = 0
+        over_supply = 0
+        under_supply_cost = 0
+        over_supply_cost = 0
+        value = None
+        if has_solution:
+            if "under_supply_cost" in input_options:
+                under_supply = underSupply.solution_value()
+                under_supply_cost = under_supply * input_options["under_supply_cost"]
+            if "over_supply_cost" in input_options:
+                over_supply = overSupply.solution_value()
+                over_supply_cost = over_supply * input_options["over_supply_cost"]
 
-    under_supply = 0
-    over_supply = 0
-    under_supply_cost = 0
-    over_supply_cost = 0
-    value = None
-    if has_solution:
-        if "under_supply_cost" in input_options:
-            under_supply = underSupply.solution_value()
-            under_supply_cost = under_supply * input_options["under_supply_cost"]
-        if "over_supply_cost" in input_options:
-            over_supply = overSupply.solution_value()
-            over_supply_cost = over_supply * input_options["over_supply_cost"]
+            value = solver.Objective().Value()
 
-        value = solver.Objective().Value()
+        statistics = nextmv.Statistics(
+            run=nextmv.RunStatistics(duration=time.time() - start_time),
+            result=nextmv.ResultStatistics(
+                duration=solver.WallTime() / 1000,
+                value=value,
+                custom={
+                    "status": STATUS.get(status, "unknown"),
+                    "variables": solver.NumVariables(),
+                    "constraints": solver.NumConstraints(),
+                    "planned_shifts": len(schedule["planned_shifts"]),
+                    "planned_count": sum(s["count"] for s in schedule["planned_shifts"]),
+                    "shift_cost": shift_cost.solution_value() if has_solution else 0,
+                    "under_supply": under_supply,
+                    "over_supply": over_supply,
+                    "over_supply_cost": over_supply_cost,
+                    "under_supply_cost": under_supply_cost,
+                },
+            ),
+        )
 
-    statistics = nextmv.Statistics(
-        run=nextmv.RunStatistics(duration=time.time() - start_time),
-        result=nextmv.ResultStatistics(
-            duration=solver.WallTime() / 1000,
-            value=value,
-            custom={
-                "status": STATUS.get(status, "unknown"),
-                "variables": solver.NumVariables(),
-                "constraints": solver.NumConstraints(),
-                "planned_shifts": len(schedule["planned_shifts"]),
-                "planned_count": sum(s["count"] for s in schedule["planned_shifts"]),
-                "shift_cost": shift_cost.solution_value() if has_solution else 0,
-                "under_supply": under_supply,
-                "over_supply": over_supply,
-                "over_supply_cost": over_supply_cost,
-                "under_supply_cost": under_supply_cost,
-            },
-        ),
-    )
-
-    return nextmv.Output(
-        options=options,
-        solution=schedule,
-        statistics=statistics,
-    )
+        return nextmv.Output(
+            options=input.options,
+            solution=schedule,
+            statistics=statistics,
+        )
 
 
 class UniqueQualificationDemandPeriod:
