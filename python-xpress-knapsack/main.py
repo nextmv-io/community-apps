@@ -32,65 +32,67 @@ def main() -> None:
     nextmv.log(f"  - items: {len(input.data.get('items', []))}")
     nextmv.log(f"  - capacity: {input.data.get('weight_capacity', 0)}")
 
-    output = solve(input, options)
+    model = DecisionModel()
+    output = model.solve(input)
     nextmv.write_local(output, path=options.output)
 
 
-def solve(input: nextmv.Input, options: nextmv.Options) -> nextmv.Output:
-    """Solves the given problem and returns the solution."""
+class DecisionModel(nextmv.Model):
+    def solve(self, input: nextmv.Input) -> nextmv.Output:
+        """Solves the given problem and returns the solution."""
 
-    start_time = time.time()
-    nextmv.redirect_stdout()  # Solver chatter is logged to stderr.
+        start_time = time.time()
+        nextmv.redirect_stdout()  # Solver chatter is logged to stderr.
 
-    # Creates the problem.
-    problem = xp.problem()
-    problem.setControl("timelimit", options.duration)
+        # Creates the problem.
+        problem = xp.problem()
+        problem.setControl("timelimit", input.options.duration)
 
-    # Initializes the linear sums.
-    weights = 0.0
-    values = 0.0
+        # Initializes the linear sums.
+        weights = 0.0
+        values = 0.0
 
-    # Creates the decision variables and adds them to the linear sums.
-    items = []
-    for item in input.data["items"]:
-        item_variable = xp.var(vartype=xp.binary, name=item["id"])
-        problem.addVariable(item_variable)
-        items.append({"item": item, "variable": item_variable})
-        weights += item_variable * item["weight"]
-        values += item_variable * item["value"]
+        # Creates the decision variables and adds them to the linear sums.
+        items = []
+        for item in input.data["items"]:
+            item_variable = xp.var(vartype=xp.binary, name=item["id"])
+            problem.addVariable(item_variable)
+            items.append({"item": item, "variable": item_variable})
+            weights += item_variable * item["weight"]
+            values += item_variable * item["value"]
 
-    # This constraint ensures the weight capacity of the knapsack will not be
-    # exceeded.
-    problem.addConstraint(weights <= input.data["weight_capacity"])
+        # This constraint ensures the weight capacity of the knapsack will not be
+        # exceeded.
+        problem.addConstraint(weights <= input.data["weight_capacity"])
 
-    # Sets the objective function: maximize the value of the chosen items.
-    problem.setObjective(values, sense=xp.maximize)
+        # Sets the objective function: maximize the value of the chosen items.
+        problem.setObjective(values, sense=xp.maximize)
 
-    # Solves the problem.
-    _, status = problem.optimize()
+        # Solves the problem.
+        _, status = problem.optimize()
 
-    # Determines which items were chosen.
-    chosen_items = [item["item"] for item in items if problem.getSolution(item["variable"]) > 0.9]
+        # Determines which items were chosen.
+        chosen_items = [item["item"] for item in items if problem.getSolution(item["variable"]) > 0.9]
 
-    options.provider = "xpress"
-    statistics = nextmv.Statistics(
-        run=nextmv.RunStatistics(duration=time.time() - start_time),
-        result=nextmv.ResultStatistics(
-            duration=problem.getAttrib("time"),
-            value=problem.getAttrib("objval"),
-            custom={
-                "status": STATUS.get(status, "unknown"),
-                "variables": problem.getAttrib("cols"),
-                "constraints": problem.getAttrib("rows"),
-            },
-        ),
-    )
+        input.options.provider = "xpress"
+        statistics = nextmv.Statistics(
+            run=nextmv.RunStatistics(duration=time.time() - start_time),
+            result=nextmv.ResultStatistics(
+                duration=problem.getAttrib("time"),
+                value=problem.getAttrib("objval"),
+                custom={
+                    "status": STATUS.get(status, "unknown"),
+                    "variables": problem.getAttrib("cols"),
+                    "constraints": problem.getAttrib("rows"),
+                },
+            ),
+        )
 
-    return nextmv.Output(
-        options=options,
-        solution={"items": chosen_items},
-        statistics=statistics,
-    )
+        return nextmv.Output(
+            options=input.options,
+            solution={"items": chosen_items},
+            statistics=statistics,
+        )
 
 
 if __name__ == "__main__":

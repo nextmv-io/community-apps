@@ -45,92 +45,94 @@ def main() -> None:
     nextmv.log(f"  - items: {len(input.data.get('items', []))}")
     nextmv.log(f"  - capacity: {input.data.get('weight_capacity', 0)}")
 
-    output = solve(input, options)
+    model = DecisionModel()
+    output = model.solve(input)
     nextmv.write_local(output, path=options.output)
 
 
-def solve(input: nextmv.Input, options: nextmv.Options) -> nextmv.Output:
-    """Solves the given problem and returns the solution."""
+class DecisionModel(nextmv.Model):
+    def solve(self, input: nextmv.Input) -> nextmv.Output:
+        """Solves the given problem and returns the solution."""
 
-    start_time = time.time()
-    nextmv.redirect_stdout()  # Solver chatter is logged to stderr.
+        start_time = time.time()
+        nextmv.redirect_stdout()  # Solver chatter is logged to stderr.
 
-    # Activate license.
-    license_used = activate_license()
-    options.license_used = license_used
+        # Activate license.
+        license_used = activate_license()
+        input.options.license_used = license_used
 
-    # Defines the model.
-    ampl = AMPL()
-    ampl.eval(
-        r"""
-        # Sets
-        set I; # Set of items.
+        # Defines the model.
+        ampl = AMPL()
+        ampl.eval(
+            r"""
+            # Sets
+            set I; # Set of items.
 
-        # Parameters
-        param W >= 0; # Maximum weight capacity.
-        param v {I} >= 0; # Value of each item.
-        param w {I} >= 0; # Weight of each item.
+            # Parameters
+            param W >= 0; # Maximum weight capacity.
+            param v {I} >= 0; # Value of each item.
+            param w {I} >= 0; # Weight of each item.
 
-        # Variables
-        var x {I} binary; # 1 if item is selected, 0 otherwise.
+            # Variables
+            var x {I} binary; # 1 if item is selected, 0 otherwise.
 
-        # Objective
-        maximize z: sum {i in I} v[i] * x[i];
+            # Objective
+            maximize z: sum {i in I} v[i] * x[i];
 
-        # Constraints
-        s.t. weight_limit: sum {i in I} w[i] * x[i] <= W;
-        """
-    )
+            # Constraints
+            s.t. weight_limit: sum {i in I} w[i] * x[i] <= W;
+            """
+        )
 
-    # Sets the solver and options.
-    provider = options.provider
-    ampl.option["solver"] = provider
-    if provider in SUPPORTED_PROVIDER_DURATIONS.keys():
-        ampl.option[f"{provider}_options"] = f"{SUPPORTED_PROVIDER_DURATIONS[provider]}={options.duration}"
+        # Sets the solver and options.
+        provider = input.options.provider
+        ampl.option["solver"] = provider
+        if provider in SUPPORTED_PROVIDER_DURATIONS.keys():
+            ampl.option[f"{provider}_options"] = f"{SUPPORTED_PROVIDER_DURATIONS[provider]}={input.options.duration}"
 
-    # Set the data on the model.
-    ampl.set["I"] = [item["id"] for item in input.data["items"]]
-    ampl.param["W"] = input.data["weight_capacity"]
-    ampl.param["v"] = {item["id"]: item["value"] for item in input.data["items"]}
-    ampl.param["w"] = {item["id"]: item["weight"] for item in input.data["items"]}
+        # Set the data on the model.
+        ampl.set["I"] = [item["id"] for item in input.data["items"]]
+        ampl.param["W"] = input.data["weight_capacity"]
+        ampl.param["v"] = {item["id"]: item["value"] for item in input.data["items"]}
+        ampl.param["w"] = {item["id"]: item["weight"] for item in input.data["items"]}
 
-    # Solves the problem. Verbose mode is turned off to avoid printing to
-    # stdout. Only the output should be printed to stdout.
-    ampl.solve()
+        # Solves the problem. Verbose mode is turned off to avoid printing to
+        # stdout. Only the output should be printed to stdout.
+        ampl.solve()
 
-    # Convert to solution format.
-    value = ampl.get_objective("z")
-    chosen_items = []
-    if value:
-        chosen_items = [item for item in input.data["items"] if ampl.get_variable("x")[item["id"]].value() > 0.9]
+        # Convert to solution format.
+        value = ampl.get_objective("z")
+        chosen_items = []
+        if value:
+            chosen_items = [item for item in input.data["items"] if ampl.get_variable("x")[item["id"]].value() > 0.9]
 
-    solve_result = ampl.solve_result_num
-    status = "unknown"
-    for s in STATUS:
-        lb = s.get("lb")
-        ub = s.get("ub")
-        if lb is not None and ub is not None and lb <= solve_result <= ub:
-            status = s.get("status")
-            break
+        solve_result = ampl.solve_result_num
+        status = "unknown"
+        for s in STATUS:
+            lb = s.get("lb")
+            ub = s.get("ub")
+            if lb is not None and ub is not None and lb <= solve_result <= ub:
+                status = s.get("status")
+                break
 
-    statistics = nextmv.Statistics(
-        run=nextmv.RunStatistics(duration=time.time() - start_time),
-        result=nextmv.ResultStatistics(
-            duration=ampl.get_value("_total_solve_time"),
-            value=value.value(),
-            custom={
-                "status": status,
-                "variables": ampl.get_value("_nvars"),
-                "constraints": ampl.get_value("_ncons"),
-            },
-        ),
-    )
+        statistics = nextmv.Statistics(
+            run=nextmv.RunStatistics(duration=time.time() - start_time),
+            result=nextmv.ResultStatistics(
+                duration=ampl.get_value("_total_solve_time"),
+                value=value.value(),
+                custom={
+                    "status": status,
+                    "variables": ampl.get_value("_nvars"),
+                    "constraints": ampl.get_value("_ncons"),
+                },
+            ),
+        )
 
-    return nextmv.Output(
-        options=options,
-        solution={"items": chosen_items},
-        statistics=statistics,
-    )
+        return nextmv.Output(
+            options=input.options,
+            solution={"items": chosen_items},
+            statistics=statistics,
+        )
 
 
 def activate_license() -> str:

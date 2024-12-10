@@ -20,61 +20,63 @@ def main() -> None:
     nextmv.log(f"  - items: {len(input.data.get('items', []))}")
     nextmv.log(f"  - capacity: {input.data.get('weight_capacity', 0)}")
 
-    output = solve(input, options)
+    model = DecisionModel()
+    output = model.solve(input)
     nextmv.write_local(output, path=options.output)
 
 
-def solve(input: nextmv.Input, options: nextmv.Options) -> nextmv.Output:
-    """Solves the given problem and returns the solution."""
+class DecisionModel(nextmv.Model):
+    def solve(self, input: nextmv.Input) -> nextmv.Output:
+        """Solves the given problem and returns the solution."""
 
-    start_time = time.time()
+        start_time = time.time()
 
-    # Creates the solver.
-    solver = highspy.Highs()
-    solver.silent()  # Solver output ignores stdout redirect, silence it.
-    solver.setOptionValue("time_limit", options.duration)
+        # Creates the solver.
+        solver = highspy.Highs()
+        solver.silent()  # Solver output ignores stdout redirect, silence it.
+        solver.setOptionValue("time_limit", input.options.duration)
 
-    # Initializes the linear sums.
-    weights = 0.0
-    values = 0.0
+        # Initializes the linear sums.
+        weights = 0.0
+        values = 0.0
 
-    # Creates the decision variables and adds them to the linear sums.
-    items = []
-    for item in input.data["items"]:
-        item_variable = solver.addVariable(0.0, 1.0, item["value"])
-        items.append({"item": item, "variable": item_variable})
-        weights += item_variable * item["weight"]
-        values += item_variable * item["value"]
+        # Creates the decision variables and adds them to the linear sums.
+        items = []
+        for item in input.data["items"]:
+            item_variable = solver.addVariable(0.0, 1.0, item["value"])
+            items.append({"item": item, "variable": item_variable})
+            weights += item_variable * item["weight"]
+            values += item_variable * item["value"]
 
-    # This constraint ensures the weight capacity of the knapsack will not be
-    # exceeded.
-    solver.addConstr(weights <= input.data["weight_capacity"])
+        # This constraint ensures the weight capacity of the knapsack will not be
+        # exceeded.
+        solver.addConstr(weights <= input.data["weight_capacity"])
 
-    # Sets the objective function: maximize the value of the chosen items.
-    status = solver.maximize(values)
+        # Sets the objective function: maximize the value of the chosen items.
+        status = solver.maximize(values)
 
-    # Determines which items were chosen.
-    chosen_items = [item["item"] for item in items if solver.val(item["variable"]) > 0.9]
+        # Determines which items were chosen.
+        chosen_items = [item["item"] for item in items if solver.val(item["variable"]) > 0.9]
 
-    options.version = version("highspy")
+        input.options.version = version("highspy")
 
-    statistics = nextmv.Statistics(
-        run=nextmv.RunStatistics(duration=time.time() - start_time),
-        result=nextmv.ResultStatistics(
-            value=sum(item["value"] for item in chosen_items),
-            custom={
-                "status": str(status),
-                "variables": solver.numVariables,
-                "constraints": solver.numConstrs,
-            },
-        ),
-    )
+        statistics = nextmv.Statistics(
+            run=nextmv.RunStatistics(duration=time.time() - start_time),
+            result=nextmv.ResultStatistics(
+                value=sum(item["value"] for item in chosen_items),
+                custom={
+                    "status": str(status),
+                    "variables": solver.numVariables,
+                    "constraints": solver.numConstrs,
+                },
+            ),
+        )
 
-    return nextmv.Output(
-        options=options,
-        solution={"items": chosen_items},
-        statistics=statistics,
-    )
+        return nextmv.Output(
+            options=input.options,
+            solution={"items": chosen_items},
+            statistics=statistics,
+        )
 
 
 if __name__ == "__main__":
