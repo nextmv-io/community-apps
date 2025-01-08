@@ -16,6 +16,9 @@ Example for running a Python application on the Nextmv Platform using the
       -solve_duration 10
     ```
 
+Alternatively, you may reference the `main.ipynb` Jupyter notebook which, in
+addition to running locally, showcases how to push the app and run it remotely.
+
 ## Next steps
 
 * Open `main.py` and modify the model.

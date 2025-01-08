@@ -19,6 +19,9 @@ key. Modify the `app.yaml` file to include the `gurobi.lic` in the files list.
     python3 main.py -input input.json -output output.json -duration 30
     ```
 
+Alternatively, you may reference the `main.ipynb` Jupyter notebook which, in
+addition to running locally, showcases how to push the app and run it remotely.
+
 ## Next steps
 
 * Open `main.py` and modify the model.
