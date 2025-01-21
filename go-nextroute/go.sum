@@ -302,8 +302,8 @@ github.com/modern-go/reflect2 v0.0.0-20180701023420-4b7aa43c6742/go.mod h1:bx2lN
 github.com/modern-go/reflect2 v1.0.1/go.mod h1:bx2lNnkwVCuqBIxFjflWJWanXIb3RllmbCylyMrvgv0=
 github.com/modern-go/reflect2 v1.0.2/go.mod h1:yWuevngMOJpCy52FWWMvUC8ws7m/LJsjYzDa0/r8luk=
 github.com/mwitkow/go-conntrack v0.0.0-20161129095857-cc309e4a2223/go.mod h1:qRWi+5nqEBWmkhHvq77mSJWrCKwh8bxhgT7d/eI7P4U=
-github.com/nextmv-io/nextroute v1.11.0 h1:8+wRIq1vrSck8H77eiigbP6FGR5p93GB5kD6Qwi8EHo=
-github.com/nextmv-io/nextroute v1.11.0/go.mod h1:ZPVGnU48OehlxfPb4Aw5XW2wPGrIBSnukz1Pkgf3kUs=
+github.com/nextmv-io/nextroute v1.11.2 h1:zwsp6vthKWUFGVpjMoHnFZyk+pbS1ZlW3VO5tIuTt2c=
+github.com/nextmv-io/nextroute v1.11.2/go.mod h1:ZPVGnU48OehlxfPb4Aw5XW2wPGrIBSnukz1Pkgf3kUs=
 github.com/nextmv-io/sdk v1.8.3-0.20241219091227-002f36a342d6 h1:icnvtf2R9Zg9Qs+SyVbQ6HEZ5fPj6A+7ywxOT2lrWus=
 github.com/nextmv-io/sdk v1.8.3-0.20241219091227-002f36a342d6/go.mod h1:Y48XLPcIOOxRgO86ICNpqGrH2N5+dd1TDNvef/FD2Kc=
 github.com/opentracing/opentracing-go v1.2.0/go.mod h1:GxEUsuufX4nBwe+T+Wl9TAgYrxe9dPLANfrWvHYVTgc=
