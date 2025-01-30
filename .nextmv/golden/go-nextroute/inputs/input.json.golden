@@ -69,6 +69,7 @@
       "parallel_runs": 1,
       "plateau": {
         "absolute_threshold": -1,
+        "delay": 0,
         "duration": 0,
         "iterations": 0,
         "relative_threshold": 0
