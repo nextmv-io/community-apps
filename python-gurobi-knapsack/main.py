@@ -1,27 +1,19 @@
-import os
 import time
 
-import gurobipy as gp
 import nextmv
+import nextmv_gurobipy as ngp
 from gurobipy import GRB
-
-# Status of the solver after optimizing.
-STATUS = {
-    GRB.SUBOPTIMAL: "suboptimal",
-    GRB.INFEASIBLE: "infeasible",
-    GRB.OPTIMAL: "optimal",
-    GRB.UNBOUNDED: "unbounded",
-}
 
 
 def main() -> None:
     """Entry point for the program."""
 
-    options = nextmv.Options(
+    nmv_options = nextmv.Options(
         nextmv.Parameter("input", str, "", "Path to input file. Default is stdin.", False),
         nextmv.Parameter("output", str, "", "Path to output file. Default is stdout.", False),
-        nextmv.Parameter("duration", int, 30, "Max runtime duration (in seconds).", False),
     )
+    ngp_options = ngp.ModelOptions().to_nextmv()
+    options = nmv_options.merge(ngp_options)
 
     input = nextmv.load_local(options=options, path=options.input)
 
@@ -39,19 +31,7 @@ class DecisionModel(nextmv.Model):
         """Solves the given problem and returns the solution."""
 
         start_time = time.time()
-        nextmv.redirect_stdout()  # Solver chatter is logged to stderr.
-
-        # Creates the environment.
-        env = gp.Env(empty=True)
-
-        # Read the license file, if available.
-        if os.path.isfile("gurobi.lic"):
-            env.readParams("gurobi.lic")
-
-        # Creates the model.
-        env.start()
-        model = gp.Model(env=env)
-        model.Params.TimeLimit = input.options.duration
+        model = ngp.Model(input.options, ".")
 
         # Initializes the linear sums.
         weights = 0.0
@@ -75,27 +55,10 @@ class DecisionModel(nextmv.Model):
         # Solves the problem.
         model.optimize()
 
-        # Determines which items were chosen.
-        chosen_items = [item["item"] for item in items if item["variable"].X > 0.9]
-
-        input.options.provider = "gurobi"
-        statistics = nextmv.Statistics(
-            run=nextmv.RunStatistics(duration=time.time() - start_time),
-            result=nextmv.ResultStatistics(
-                duration=model.Runtime,
-                value=model.ObjVal,
-                custom={
-                    "status": STATUS.get(model.Status, "unknown"),
-                    "variables": model.NumVars,
-                    "constraints": model.NumConstrs,
-                },
-            ),
-        )
-
         return nextmv.Output(
             options=input.options,
-            solution={"items": chosen_items},
-            statistics=statistics,
+            solution=ngp.Solution(model),
+            statistics=ngp.Statistics(model=model, run_duration_start=start_time),
         )
 
 

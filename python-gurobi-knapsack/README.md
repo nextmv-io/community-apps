@@ -16,7 +16,7 @@ key. Modify the `app.yaml` file to include the `gurobi.lic` in the files list.
 1. Run the app.
 
     ```bash
-    python3 main.py -input input.json -output output.json -duration 30
+    python3 main.py -input input.json -output output.json -TimeLimit 30
     ```
 
 Alternatively, you may reference the `main.ipynb` Jupyter notebook which, in

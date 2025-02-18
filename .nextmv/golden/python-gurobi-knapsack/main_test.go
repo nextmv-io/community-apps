@@ -18,7 +18,7 @@ func TestGolden(t *testing.T) {
 		"inputs",
 		golden.Config{
 			Args: []string{
-				"-duration",
+				"-TimeLimit",
 				"30",
 			},
 			TransientFields: []golden.TransientField{
