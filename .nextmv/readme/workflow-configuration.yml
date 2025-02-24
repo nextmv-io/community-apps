@@ -91,6 +91,12 @@ apps:
         silent: true
       - name: 2.sh
         skip: true
+  - name: python-nextmv-gurobipy-knapsack
+    scripts:
+      - name: 0.sh
+        silent: true
+      - name: 2.sh
+        skip: true
   - name: python-nextroute
     scripts:
       - name: 0.sh
