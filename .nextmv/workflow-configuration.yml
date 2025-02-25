@@ -89,6 +89,18 @@ apps:
     marketplace_app_id: knapsack.highs
     marketplace_major_version: v1
     description: Use Python and HiGHS - knapsack.
+  - name: python-nextmv-gurobipy-knapsack
+    type: python
+    app_id:
+    marketplace_app_id:
+    marketplace_major_version:
+    description: Use the Python Nextmv & gurobipy integration - knapsack.
+  - name: python-nextmv-scikit-learn-diabetes
+    type: python
+    app_id:
+    marketplace_app_id:
+    marketplace_major_version:
+    description: Use the Python Nextmv & scikit-learn integration - diabetes.
   - name: python-nextroute
     type: python
     app_id:

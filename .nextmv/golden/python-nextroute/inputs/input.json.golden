@@ -1,4 +1,5 @@
 {
+  "assets": [],
   "options": {
     "check_duration": 30,
     "check_verbosity": "off",

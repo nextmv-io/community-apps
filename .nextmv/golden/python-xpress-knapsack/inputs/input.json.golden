@@ -1,4 +1,5 @@
 {
+  "assets": [],
   "options": {
     "input": "input.json",
     "output": "output.json",
