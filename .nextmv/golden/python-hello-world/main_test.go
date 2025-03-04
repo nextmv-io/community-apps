@@ -23,6 +23,9 @@ func TestGolden(t *testing.T) {
 				Command: "python3",
 				Args:    []string{"../../../python-hello-world/main.py"},
 			},
+			DedicatedComparison: []string{
+				"$.statistics.result.value",
+			},
 		},
 	)
 }
