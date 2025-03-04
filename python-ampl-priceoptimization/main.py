@@ -4,6 +4,7 @@ from platform import uname
 
 import nextmv
 from amplpy import AMPL, modules
+from visuals import create_visuals
 
 # Duration parameter for the solver.
 SUPPORTED_PROVIDER_DURATIONS = {
@@ -158,11 +159,14 @@ class DecisionModel(nextmv.Model):
                 },
             ),
         )
+        
+        assets = create_visuals(solution,statistics)
 
         return nextmv.Output(
             options=input.options,
             solution=solution,
             statistics=statistics,
+            assets=assets
         )
 
 
