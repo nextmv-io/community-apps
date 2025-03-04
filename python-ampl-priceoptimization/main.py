@@ -159,14 +159,14 @@ class DecisionModel(nextmv.Model):
                 },
             ),
         )
-        
-        assets = create_visuals(solution,statistics)
+
+        assets = create_visuals(solution, statistics)
 
         return nextmv.Output(
             options=input.options,
             solution=solution,
             statistics=statistics,
-            assets=assets
+            assets=assets,
         )
 
 
