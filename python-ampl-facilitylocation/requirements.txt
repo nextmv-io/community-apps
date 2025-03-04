@@ -2,20 +2,20 @@
 --index-url https://pypi.ampl.com
 --extra-index-url https://pypi.org/simple
 
-amplpy==0.13.3
+amplpy==0.14.0
 ampltools==0.7.5
-ampl-module-base==20240126
-ampl-module-copt==20240115
-ampl-module-cbc==20240115
-ampl-module-gcg==20240221
+ampl-module-base==20241203
+ampl-module-copt==20241228
+ampl-module-cbc==20250206
+ampl-module-gcg==20240724
 ampl-module-gecode==20220504
 ampl-module-gokestrel==20211022
-ampl-module-gurobi==20240115
-ampl-module-highs==20240115
+ampl-module-gurobi==20250204
+ampl-module-highs==20241119
 ampl-module-lgo==20190908
-ampl-module-open==20240121
-ampl-module-scip==20240121
-ampl-module-xpress==20240115
+ampl-module-open==20250206
+ampl-module-scip==20240724
+ampl-module-xpress==20241227
 
 nextmv==0.18.0
 pandas==2.2.2
