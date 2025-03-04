@@ -47,6 +47,9 @@ func TestGolden(t *testing.T) {
 				InputFlag:  "-input",
 				OutputFlag: "-output",
 			},
+			DedicatedComparison: []string{
+				"$.statistics.result.value",
+			},
 		},
 	)
 }
