@@ -75,6 +75,8 @@ apps:
     scripts:
       - name: 0.sh
         silent: true
+      - name: 1.sh
+        silent: true
       - name: 2.sh
         skip: true
   - name: python-hexaly-knapsack
