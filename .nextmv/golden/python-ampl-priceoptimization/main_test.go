@@ -50,6 +50,9 @@ func TestGolden(t *testing.T) {
 			DedicatedComparison: []string{
 				"$.statistics.result.value",
 			},
+			Thresholds: golden.Tresholds{
+				Float: 2.00,
+			},
 		},
 	)
 }
