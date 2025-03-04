@@ -1,3 +1,5 @@
 {
-  "name": "world"
+  "name": "world",
+  "radius": 6378,
+  "distance": 147.6 
 }
