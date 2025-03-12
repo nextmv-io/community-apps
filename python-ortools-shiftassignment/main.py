@@ -69,7 +69,7 @@ class DecisionModel(nextmv.Model):
         solver.SetTimeLimit(input.options.duration * 1000)
 
         # Prepare data
-        workers, shifts, rules_per_worker = convert_input(input.data)
+        workers, shifts, rules_per_worker, earliest_shift_start_time, latest_shift_end_time = convert_input(input.data)
 
         # Create binary variables indicating whether an worker is assigned to a shift
         x_assign = {}
@@ -155,13 +155,16 @@ class DecisionModel(nextmv.Model):
 
         # Ensure that the minimum and maximum work hours per day are respected
         for e in workers:
-            for day in range((shifts[-1]["start_time"] - shifts[0]["start_time"]).days + 1):
+            for day in range((latest_shift_end_time - earliest_shift_start_time).days + 1):
+                day_start = earliest_shift_start_time + datetime.timedelta(days=day)
+                day_end = day_start + datetime.timedelta(days=1)
                 solver.Add(
                     solver.Sum(
                         [
-                            x_assign[(e["id"], s["id"])] * (s["end_time"] - s["start_time"]).total_seconds() / 3600
+                            x_assign[(e["id"], s["id"])]
+                            * ((min(s["end_time"], day_end) - max(s["start_time"], day_start)).total_seconds() / 3600)
                             for s in shifts
-                            if (s["start_time"] - shifts[0]["start_time"]).days == day
+                            if s["start_time"] < day_end and s["end_time"] >= day_start
                         ]
                     )
                     <= rules_per_worker[e["id"]]["max_work_hours_per_day"],
@@ -170,27 +173,27 @@ class DecisionModel(nextmv.Model):
                 solver.Add(
                     solver.Sum(
                         [
-                            x_assign[(e["id"], s["id"])] * (s["end_time"] - s["start_time"]).total_seconds() / 3600
+                            x_assign[(e["id"], s["id"])]
+                            * ((min(s["end_time"], day_end) - max(s["start_time"], day_start)).total_seconds() / 3600)
                             for s in shifts
-                            if (s["start_time"] - shifts[0]["start_time"]).days == day
+                            if s["start_time"] < day_end and s["end_time"] >= day_start
                         ]
                     )
                     >= rules_per_worker[e["id"]]["min_work_hours_per_day"],
                     f"MinWorkHours_{e['id']}_{day}",
                 )
-
-        # Ensure total hours worked by each worker are correctly calculated
-        for e in workers:
-            solver.Add(
-                total_hours[e["id"]]
-                == solver.Sum(
-                    [
-                        x_assign[(e["id"], s["id"])] * (s["end_time"] - s["start_time"]).total_seconds() / 3600
-                        for s in shifts
-                    ]
-                ),
-                f"TotalHours_{e['id']}",
-            )
+                # Ensure total hours worked by each worker are correctly calculated
+                for e in workers:
+                    solver.Add(
+                        total_hours[e["id"]]
+                        == solver.Sum(
+                            [
+                                x_assign[(e["id"], s["id"])] * (s["end_time"] - s["start_time"]).total_seconds() / 3600
+                                for s in shifts
+                            ]
+                        ),
+                        f"TotalHours_{e['id']}",
+                    )
 
         # Ensure that the maximum work hours per week are respected
         for e in workers:
@@ -335,7 +338,13 @@ def convert_input(input_data: dict[str, Any]) -> tuple[list, list, dict]:
             raise ValueError(f"Invalid rule for worker {e['id']}")
         rules_per_worker[e["id"]] = rule[0]
 
-    return workers, shifts, rules_per_worker
+    # Calculate earliest shift start time and latest shift end time
+    earliest_shift_start_time = min(s["start_time"] for s in shifts)
+    earliest_shift_start_time = earliest_shift_start_time.replace(hour=0, minute=0, second=0, microsecond=0)
+    latest_shift_end_time = max(s["end_time"] for s in shifts)
+    latest_shift_end_time = latest_shift_end_time.replace(hour=23, minute=59, second=59, microsecond=999999)
+
+    return workers, shifts, rules_per_worker, earliest_shift_start_time, latest_shift_end_time
 
 
 if __name__ == "__main__":
