@@ -73,18 +73,17 @@ class DecisionModel(nextmv.Model):
 
         # Create binary variables indicating whether an worker is assigned to a shift
         x_assign = {}
+        total_hours = {}
+        deviations = {}
+
         for e in workers:
             for s in shifts:
                 x_assign[(e["id"], s["id"])] = solver.BoolVar(f"Assignment_{e['id']}_{s['id']}")
 
-        # Create auxiliary variables for total hours worked by each worker
-        total_hours = {}
-        for e in workers:
+            # Create auxiliary variables for total hours worked by each worker
             total_hours[e["id"]] = solver.NumVar(0, solver.infinity(), f"TotalHours_{e['id']}")
 
-        # Create auxiliary variables for deviation from mean hours worked
-        deviations = {}
-        for e in workers:
+            # Create auxiliary variables for deviation from mean hours worked
             deviations[e["id"]] = solver.NumVar(0, solver.infinity(), f"Deviation_{e['id']}")
 
         # >>> Constraints
@@ -104,16 +103,13 @@ class DecisionModel(nextmv.Model):
                 f"worker_{e['id']}",
             )
 
-        # Each worker must be assigned to at most their maximum number of shifts
-        for e in workers:
-            rules = rules_per_worker[e["id"]]
+            # Each worker must be assigned to at most their maximum number of shifts
             solver.Add(
                 solver.Sum([x_assign[(e["id"], s["id"])] for s in shifts]) <= rules["max_shifts"],
                 f"worker_{e['id']}",
             )
 
-        # Ensure that the minimum rest time between shifts is respected
-        for e in workers:
+            # Ensure that the minimum rest time between shifts is respected
             rest_time = datetime.timedelta(hours=rules_per_worker[e["id"]]["min_rest_hours_between_shifts"])
             for s1, shift1 in enumerate(shifts):
                 for s2, shift2 in enumerate(shifts):
@@ -131,17 +127,14 @@ class DecisionModel(nextmv.Model):
                         f"Rest_{e['id']}_{shift1['id']}_{shift2['id']}",
                     )
 
-        # Ensure that availabilities are respected
-        for e in workers:
+            # Ensure that availabilities are respected
             for s in shifts:
                 if not any(
                     a["start_time"] <= s["start_time"] and a["end_time"] >= s["end_time"] for a in e["availability"]
                 ):
                     x_assign[(e["id"], s["id"])].SetBounds(0, 0)
 
-        # Ensure that workers are qualified for the shift
-        for e in workers:
-            for s in shifts:
+                # Ensure that workers are qualified for the shift
                 if "qualification" not in s or s["qualification"] == "":
                     # No qualifications required for shift (worker can be assigned)
                     continue
@@ -153,8 +146,7 @@ class DecisionModel(nextmv.Model):
                     # The worker does not have the required qualification (worker cannot be assigned)
                     x_assign[(e["id"], s["id"])].SetBounds(0, 0)
 
-        # Ensure that the minimum and maximum work hours per day are respected
-        for e in workers:
+            # Ensure that the minimum and maximum work hours per day are respected
             for day in range((latest_shift_end_time - earliest_shift_start_time).days + 1):
                 day_start = earliest_shift_start_time + datetime.timedelta(days=day)
                 day_end = day_start + datetime.timedelta(days=1)
@@ -195,8 +187,7 @@ class DecisionModel(nextmv.Model):
                         f"TotalHours_{e['id']}",
                     )
 
-        # Ensure that the maximum work hours per week are respected
-        for e in workers:
+            # Ensure that the maximum work hours per week are respected
             for week in range((latest_shift_end_time - earliest_shift_start_time).days // 7 + 1):
                 week_start = earliest_shift_start_time + datetime.timedelta(weeks=week)
                 week_end = week_start + datetime.timedelta(days=7)
