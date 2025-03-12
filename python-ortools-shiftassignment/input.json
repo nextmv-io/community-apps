@@ -94,7 +94,10 @@
   "rules": [
     {
       "id": "standard",
-      "min_rest_hours_between_shifts": 11
+      "min_rest_hours_between_shifts": 11,
+      "min_work_hours_per_day": 0,
+      "max_work_hours_per_day": 24,
+      "max_work_hours_per_week": 48
     }
   ],
   "shifts": [

@@ -22,6 +22,27 @@ def main() -> None:
         nextmv.Parameter("output", str, "", "Path to output file. Default is stdout.", False),
         nextmv.Parameter("duration", int, 30, "Max runtime duration (in seconds).", False),
         nextmv.Parameter("provider", str, "SCIP", "Solver provider.", False),
+        nextmv.Parameter(
+            "factor-maximize-weekly-hours-per-worker",
+            float,
+            0.0,
+            "Weight to apply for maximizing total weekly hours per worker (up to allowed maximum).",
+            False,
+        ),
+        nextmv.Parameter(
+            "factor-balance-total-hours",
+            float,
+            0.0,
+            "Weight to apply for balancing worker hours.",
+            False,
+        ),
+        nextmv.Parameter(
+            "factor-maximize-preferences",
+            float,
+            1.0,
+            "Weight to apply for total preference matches.",
+            False,
+        ),
     )
 
     input = nextmv.load_local(options=options, path=options.input)
@@ -54,7 +75,17 @@ class DecisionModel(nextmv.Model):
         x_assign = {}
         for e in workers:
             for s in shifts:
-                x_assign[(e["id"], s["id"])] = solver.BoolVar(f'Assignment_{e["id"]}_{s["id"]}')
+                x_assign[(e["id"], s["id"])] = solver.BoolVar(f"Assignment_{e['id']}_{s['id']}")
+
+        # Create auxiliary variables for total hours worked by each worker
+        total_hours = {}
+        for e in workers:
+            total_hours[e["id"]] = solver.NumVar(0, solver.infinity(), f"TotalHours_{e['id']}")
+
+        # Create auxiliary variables for deviation from mean hours worked
+        deviations = {}
+        for e in workers:
+            deviations[e["id"]] = solver.NumVar(0, solver.infinity(), f"Deviation_{e['id']}")
 
         # >>> Constraints
 
@@ -122,13 +153,82 @@ class DecisionModel(nextmv.Model):
                     # The worker does not have the required qualification (worker cannot be assigned)
                     x_assign[(e["id"], s["id"])].SetBounds(0, 0)
 
+        # Ensure that the minimum and maximum work hours per day are respected
+        for e in workers:
+            for day in range((shifts[-1]["start_time"] - shifts[0]["start_time"]).days + 1):
+                solver.Add(
+                    solver.Sum(
+                        [
+                            x_assign[(e["id"], s["id"])] * (s["end_time"] - s["start_time"]).total_seconds() / 3600
+                            for s in shifts
+                            if (s["start_time"] - shifts[0]["start_time"]).days == day
+                        ]
+                    )
+                    <= rules_per_worker[e["id"]]["max_work_hours_per_day"],
+                    f"MaxWorkHours_{e['id']}_{day}",
+                )
+                solver.Add(
+                    solver.Sum(
+                        [
+                            x_assign[(e["id"], s["id"])] * (s["end_time"] - s["start_time"]).total_seconds() / 3600
+                            for s in shifts
+                            if (s["start_time"] - shifts[0]["start_time"]).days == day
+                        ]
+                    )
+                    >= rules_per_worker[e["id"]]["min_work_hours_per_day"],
+                    f"MinWorkHours_{e['id']}_{day}",
+                )
+
+        # Ensure total hours worked by each worker are correctly calculated
+        for e in workers:
+            solver.Add(
+                total_hours[e["id"]]
+                == solver.Sum(
+                    [
+                        x_assign[(e["id"], s["id"])] * (s["end_time"] - s["start_time"]).total_seconds() / 3600
+                        for s in shifts
+                    ]
+                ),
+                f"TotalHours_{e['id']}",
+            )
+
+        # Ensure that the maximum work hours per week are respected
+        for e in workers:
+            for week in range((shifts[-1]["start_time"] - shifts[0]["start_time"]).days // 7 + 1):
+                solver.Add(
+                    solver.Sum(
+                        [
+                            x_assign[(e["id"], s["id"])] * (s["end_time"] - s["start_time"]).total_seconds() / 3600
+                            for s in shifts
+                            if (s["start_time"] - shifts[0]["start_time"]).days // 7 == week
+                        ]
+                    )
+                    <= rules_per_worker[e["id"]]["max_work_hours_per_week"],
+                    f"MaxWorkHours_{e['id']}_Week{week}",
+                )
+
         # >>> Objective
         objective = solver.Objective()
+        preference_weight = input.options.factor_maximize_preferences
+        balance_hours_weight = input.options.factor_balance_total_hours
+        weekly_hours_weight = input.options.factor_maximize_weekly_hours_per_worker
+        avg_hours = solver.Sum([total_hours[e["id"]] for e in workers]) / len(workers)
+
         for e in workers:
+            # Maximize preferences
             for s in shifts:
                 pref = e["preferences"].get(s["id"], 0)
                 if pref > 0:
-                    objective.SetCoefficient(x_assign[(e["id"], s["id"])], pref)
+                    objective.SetCoefficient(x_assign[(e["id"], s["id"])], pref * preference_weight)
+
+            # Minimize variance in total hours worked
+            deviation = total_hours[e["id"]] - avg_hours
+            solver.Add(deviations[e["id"]] == deviation)
+            objective.SetCoefficient(deviations[e["id"]], -balance_hours_weight)
+
+            # Maximize total hours worked up to the maximum allowed
+            objective.SetCoefficient(total_hours[e["id"]], weekly_hours_weight)
+
         objective.SetMaximization()
 
         # Solves the problem.
@@ -155,7 +255,16 @@ class DecisionModel(nextmv.Model):
             active_workers = len({s["worker_id"] for s in schedule["assigned_shifts"]})
             total_workers = len(workers)
             value = solver.Objective().Value()
-
+            mean_hours_worked = sum(total_hours[e["id"]].solution_value() for e in workers) / len(workers)
+            variance_hours_worked = sum(
+                (total_hours[e["id"]].solution_value() - mean_hours_worked) ** 2 for e in workers
+            ) / len(workers)
+            preferences_matched = sum(
+                e["preferences"].get(s["shift_id"], 0)
+                for e in workers
+                for s in schedule["assigned_shifts"]
+                if s["worker_id"] == e["id"]
+            )
         statistics = nextmv.Statistics(
             run=nextmv.RunStatistics(duration=time.time() - start_time),
             result=nextmv.ResultStatistics(
@@ -167,6 +276,9 @@ class DecisionModel(nextmv.Model):
                     "constraints": solver.NumConstraints(),
                     "active_workers": active_workers,
                     "total_workers": total_workers,
+                    "mean_hours_worked": mean_hours_worked,
+                    "variance_hours_worked": variance_hours_worked,
+                    "preferences_matched": preferences_matched,
                 },
             ),
         )
@@ -196,6 +308,9 @@ def convert_input(input_data: dict[str, Any]) -> tuple[list, list, dict]:
     for r in input_data["rules"]:
         r["min_shifts"] = r.get("min_shifts", 0)
         r["max_shifts"] = r.get("max_shifts", 1000)
+        r["min_work_hours_per_day"] = r.get("min_work_hours_per_day", 0)
+        r["max_work_hours_per_day"] = r.get("max_work_hours_per_day", 24)
+        r["max_work_hours_per_week"] = r.get("max_work_hours_per_week", 24 * 7)
 
     # Add default values for workers
     for e in workers:
