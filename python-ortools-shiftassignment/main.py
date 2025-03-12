@@ -197,13 +197,16 @@ class DecisionModel(nextmv.Model):
 
         # Ensure that the maximum work hours per week are respected
         for e in workers:
-            for week in range((shifts[-1]["start_time"] - shifts[0]["start_time"]).days // 7 + 1):
+            for week in range((latest_shift_end_time - earliest_shift_start_time).days // 7 + 1):
+                week_start = earliest_shift_start_time + datetime.timedelta(weeks=week)
+                week_end = week_start + datetime.timedelta(days=7)
                 solver.Add(
                     solver.Sum(
                         [
-                            x_assign[(e["id"], s["id"])] * (s["end_time"] - s["start_time"]).total_seconds() / 3600
+                            x_assign[(e["id"], s["id"])]
+                            * ((min(s["end_time"], week_end) - max(s["start_time"], week_start)).total_seconds() / 3600)
                             for s in shifts
-                            if (s["start_time"] - shifts[0]["start_time"]).days // 7 == week
+                            if s["start_time"] < week_end and s["end_time"] > week_start
                         ]
                     )
                     <= rules_per_worker[e["id"]]["max_work_hours_per_week"],
