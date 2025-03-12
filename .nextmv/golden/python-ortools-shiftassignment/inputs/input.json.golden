@@ -2,6 +2,9 @@
   "assets": [],
   "options": {
     "duration": 30,
+    "factor_balance_total_hours": 0,
+    "factor_maximize_preferences": 1,
+    "factor_maximize_weekly_hours_per_worker": 0,
     "input": "input.json",
     "output": "output.json",
     "provider": "SCIP"
@@ -16,13 +19,13 @@
       },
       {
         "end_time": "2023-11-20T14:00:00+02:00",
-        "shift_id": "welder_monday-early",
+        "shift_id": "normal_monday-early",
         "start_time": "2023-11-20T06:00:00+02:00",
         "worker_id": "Jacob Cunningham"
       },
       {
         "end_time": "2023-11-20T14:00:00+02:00",
-        "shift_id": "normal_monday-early",
+        "shift_id": "welder_monday-early",
         "start_time": "2023-11-20T06:00:00+02:00",
         "worker_id": "Ray Heard"
       },
@@ -44,10 +47,13 @@
     "result": {
       "custom": {
         "active_workers": 5,
-        "constraints": 44,
+        "constraints": 89,
+        "mean_hours_worked": 8,
+        "preferences_matched": 4,
         "status": "optimal",
         "total_workers": 5,
-        "variables": 20
+        "variables": 30,
+        "variance_hours_worked": 0
       },
       "duration": 0.123,
       "value": 4
