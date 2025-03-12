@@ -153,10 +153,9 @@ class DecisionModel(nextmv.Model):
                 solver.Add(
                     solver.Sum(
                         [
-                            x_assign[(e["id"], s["id"])]
-                            * ((min(s["end_time"], day_end) - max(s["start_time"], day_start)).total_seconds() / 3600)
+                            x_assign[(e["id"], s["id"])] * overlap(s, day_start, day_end)
                             for s in shifts
-                            if s["start_time"] < day_end and s["end_time"] >= day_start
+                            if overlap(s, day_start, day_end) > 0
                         ]
                     )
                     <= rules_per_worker[e["id"]]["max_work_hours_per_day"],
@@ -165,10 +164,9 @@ class DecisionModel(nextmv.Model):
                 solver.Add(
                     solver.Sum(
                         [
-                            x_assign[(e["id"], s["id"])]
-                            * ((min(s["end_time"], day_end) - max(s["start_time"], day_start)).total_seconds() / 3600)
+                            x_assign[(e["id"], s["id"])] * overlap(s, day_start, day_end)
                             for s in shifts
-                            if s["start_time"] < day_end and s["end_time"] >= day_start
+                            if overlap(s, day_start, day_end) > 0
                         ]
                     )
                     >= rules_per_worker[e["id"]]["min_work_hours_per_day"],
@@ -194,22 +192,27 @@ class DecisionModel(nextmv.Model):
                 solver.Add(
                     solver.Sum(
                         [
-                            x_assign[(e["id"], s["id"])]
-                            * ((min(s["end_time"], week_end) - max(s["start_time"], week_start)).total_seconds() / 3600)
+                            x_assign[(e["id"], s["id"])] * overlap(s, week_start, week_end)
                             for s in shifts
-                            if s["start_time"] < week_end and s["end_time"] > week_start
+                            if overlap(s, week_start, week_end) > 0
                         ]
                     )
                     <= rules_per_worker[e["id"]]["max_work_hours_per_week"],
                     f"MaxWorkHours_{e['id']}_Week{week}",
                 )
 
+        # Calculate deviation from mean hours worked
+        balance_hours_weight = input.options.factor_balance_total_hours
+        if balance_hours_weight > 0:
+            avg_hours = solver.Sum([total_hours[e["id"]] for e in workers]) / len(workers)
+            for e in workers:
+                deviation = total_hours[e["id"]] - avg_hours
+                solver.Add(deviations[e["id"]] == deviation)
+
         # >>> Objective
         objective = solver.Objective()
         preference_weight = input.options.factor_maximize_preferences
-        balance_hours_weight = input.options.factor_balance_total_hours
         weekly_hours_weight = input.options.factor_maximize_weekly_hours_per_worker
-        avg_hours = solver.Sum([total_hours[e["id"]] for e in workers]) / len(workers)
 
         for e in workers:
             # Maximize preferences
@@ -219,12 +222,12 @@ class DecisionModel(nextmv.Model):
                     objective.SetCoefficient(x_assign[(e["id"], s["id"])], pref * preference_weight)
 
             # Minimize variance in total hours worked
-            deviation = total_hours[e["id"]] - avg_hours
-            solver.Add(deviations[e["id"]] == deviation)
-            objective.SetCoefficient(deviations[e["id"]], -balance_hours_weight)
+            if balance_hours_weight > 0:
+                objective.SetCoefficient(deviations[e["id"]], -balance_hours_weight)
 
             # Maximize total hours worked up to the maximum allowed
-            objective.SetCoefficient(total_hours[e["id"]], weekly_hours_weight)
+            if weekly_hours_weight > 0:
+                objective.SetCoefficient(total_hours[e["id"]], weekly_hours_weight)
 
         objective.SetMaximization()
 
@@ -285,6 +288,11 @@ class DecisionModel(nextmv.Model):
             solution=schedule,
             statistics=statistics,
         )
+
+
+def overlap(shift: dict, start: datetime.datetime, end: datetime.datetime) -> float:
+    """Calculates the overlap between a shift and a time interval. Returns the overlap in hours."""
+    return max(0, (min(shift["end_time"], end) - max(shift["start_time"], start)).total_seconds() / 3600)
 
 
 def convert_input(input_data: dict[str, Any]) -> tuple[list, list, dict]:
