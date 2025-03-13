@@ -74,7 +74,7 @@ class DecisionModel(nextmv.Model):
         # Create binary variables indicating whether an worker is assigned to a shift
         x_assign = {}
         total_hours = {}
-        deviations = {}
+        absolute_deviations = {}
 
         for e in workers:
             for s in shifts:
@@ -84,7 +84,7 @@ class DecisionModel(nextmv.Model):
             total_hours[e["id"]] = solver.NumVar(0, solver.infinity(), f"TotalHours_{e['id']}")
 
             # Create auxiliary variables for deviation from mean hours worked
-            deviations[e["id"]] = solver.NumVar(0, solver.infinity(), f"Deviation_{e['id']}")
+            absolute_deviations[e["id"]] = solver.NumVar(0, solver.infinity(), f"AbsoluteDeviation_{e['id']}")
 
         # >>> Constraints
 
@@ -214,7 +214,8 @@ class DecisionModel(nextmv.Model):
             avg_hours = solver.Sum([total_hours[e["id"]] for e in workers]) / len(workers)
             for e in workers:
                 deviation = total_hours[e["id"]] - avg_hours
-                solver.Add(deviations[e["id"]] == deviation)
+                solver.Add(absolute_deviations[e["id"]] >= deviation)
+                solver.Add(absolute_deviations[e["id"]] >= -deviation)
 
         # >>> Objective
         objective = solver.Objective()
@@ -230,7 +231,7 @@ class DecisionModel(nextmv.Model):
 
             # Minimize variance in total hours worked
             if balance_hours_weight > 0:
-                objective.SetCoefficient(deviations[e["id"]], -balance_hours_weight)
+                objective.SetCoefficient(absolute_deviations[e["id"]], -balance_hours_weight)
 
             # Maximize total hours worked up to the maximum allowed
             if weekly_hours_weight > 0:
@@ -243,7 +244,7 @@ class DecisionModel(nextmv.Model):
 
         # Convert to solution format.
         schedule = {}
-        active_workers, total_workers = 0, 0
+        active_workers, total_workers, mean_hours_worked, variance_hours_worked, preferences_matched = 0, 0, 0, 0, 0
         value = None
         if status == pywraplp.Solver.OPTIMAL or status == pywraplp.Solver.FEASIBLE:
             schedule = {
