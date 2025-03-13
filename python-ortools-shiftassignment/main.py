@@ -191,22 +191,22 @@ class DecisionModel(nextmv.Model):
                         f"TotalHours_{e['id']}",
                     )
 
-        #     # Ensure that the maximum work hours per week are respected
-        #     if "max_work_hours_per_week" in rules:
-        #         for week in range((latest_shift_end_time - earliest_shift_start_time).days // 7 + 1):
-        #             week_start = earliest_shift_start_time + datetime.timedelta(weeks=week)
-        #             week_end = week_start + datetime.timedelta(days=7)
-        #             solver.Add(
-        #                 solver.Sum(
-        #                     [
-        #                         x_assign[(e["id"], s["id"])] * overlap(s, week_start, week_end)
-        #                         for s in shifts
-        #                         if overlap(s, week_start, week_end) > 0
-        #                     ]
-        #                 )
-        #                 <= rules["max_work_hours_per_week"],
-        #                 f"MaxWorkHours_{e['id']}_Week{week}",
-        #             )
+            # Ensure that the maximum work hours per week are respected
+            if "max_work_hours_per_week" in rules:
+                for week in range((latest_shift_end_time - earliest_shift_start_time).days // 7 + 1):
+                    week_start = earliest_shift_start_time + datetime.timedelta(weeks=week)
+                    week_end = week_start + datetime.timedelta(days=7)
+                    solver.Add(
+                        solver.Sum(
+                            [
+                                x_assign[(e["id"], s["id"])] * overlap(s, week_start, week_end)
+                                for s in shifts
+                                if overlap(s, week_start, week_end) > 0
+                            ]
+                        )
+                        <= rules["max_work_hours_per_week"],
+                        f"MaxWorkHours_{e['id']}_Week{week}",
+                    )
 
         # Calculate deviation from mean hours worked
         balance_hours_weight = input.options.factor_balance_total_hours
