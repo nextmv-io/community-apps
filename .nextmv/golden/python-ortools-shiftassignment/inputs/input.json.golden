@@ -2,6 +2,9 @@
   "assets": [],
   "options": {
     "duration": 30,
+    "factor_balance_total_hours": 0,
+    "factor_maximize_preferences": 1,
+    "factor_maximize_weekly_hours_per_worker": 0,
     "input": "input.json",
     "output": "output.json",
     "provider": "SCIP"
@@ -44,10 +47,13 @@
     "result": {
       "custom": {
         "active_workers": 5,
-        "constraints": 44,
+        "constraints": 59,
+        "mean_hours_worked": 8,
+        "preferences_matched": 4,
         "status": "optimal",
         "total_workers": 5,
-        "variables": 20
+        "variables": 30,
+        "variance_hours_worked": 0
       },
       "duration": 0.123,
       "value": 4
