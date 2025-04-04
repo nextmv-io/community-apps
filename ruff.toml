@@ -11,6 +11,12 @@ lint.select = [
     "UP",  # pyupgrade
 ]
 
+# Ignore specific directories
+exclude = [
+    "python-gurobi-price-optimization",
+]
+
+
 # Rule configuration.
 line-length = 120
 
