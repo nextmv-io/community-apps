@@ -17,11 +17,11 @@ def main():
     """
 
     options = nextmv.Options(
-        nextmv.Parameter("apps", str, description="Apps to release, comma-separated.", required=True),
-        nextmv.Parameter("bucket", str, description="S3 bucket.", required=True),
-        nextmv.Parameter("folder", str, description="S3 bucket folder.", required=True),
-        nextmv.Parameter("manifest", str, description="Manifest file.", required=True),
-        nextmv.Parameter("slack-url", str, description="Slack webhook URL.", default=None),
+        nextmv.Option("apps", str, description="Apps to release, comma-separated.", required=True),
+        nextmv.Option("bucket", str, description="S3 bucket.", required=True),
+        nextmv.Option("folder", str, description="S3 bucket folder.", required=True),
+        nextmv.Option("manifest", str, description="Manifest file.", required=True),
+        nextmv.Option("slack-url", str, description="Slack webhook URL.", default=None),
     )
 
     apps = [

@@ -18,25 +18,25 @@ def main() -> None:
     """Entry point for the program."""
 
     options = nextmv.Options(
-        nextmv.Parameter("input", str, "", "Path to input file. Default is stdin.", False),
-        nextmv.Parameter("output", str, "", "Path to output file. Default is stdout.", False),
-        nextmv.Parameter("duration", int, 30, "Max runtime duration (in seconds).", False),
-        nextmv.Parameter("provider", str, "SCIP", "Solver provider.", False),
-        nextmv.Parameter(
+        nextmv.Option("input", str, "", "Path to input file. Default is stdin.", False),
+        nextmv.Option("output", str, "", "Path to output file. Default is stdout.", False),
+        nextmv.Option("duration", int, 30, "Max runtime duration (in seconds).", False),
+        nextmv.Option("provider", str, "SCIP", "Solver provider.", False),
+        nextmv.Option(
             "factor-maximize-weekly-hours-per-worker",
             float,
             0.0,
             "Weight to apply for maximizing total weekly hours per worker (up to allowed maximum).",
             False,
         ),
-        nextmv.Parameter(
+        nextmv.Option(
             "factor-balance-total-hours",
             float,
             0.0,
             "Weight to apply for balancing worker hours.",
             False,
         ),
-        nextmv.Parameter(
+        nextmv.Option(
             "factor-maximize-preferences",
             float,
             1.0,

@@ -6,7 +6,7 @@ input = nextmv.load_local()
 name = input.data["name"]
 
 options = nextmv.Options(
-    nextmv.Parameter("details", bool, True, "Print details to logs. Default true.", False),
+    nextmv.Option("details", bool, True, "Print details to logs. Default true.", False),
 )
 
 ##### Insert model here
