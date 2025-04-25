@@ -16,7 +16,7 @@ def main() -> None:
 
     options = nextmv.Options(*parameters)
 
-    input = nextmv.load_local(options=options, path=options.input)
+    input = nextmv.load(options=options, path=options.input)
 
     nextmv.log("Solving vehicle routing problem:")
     nextmv.log(f"  - stops: {len(input.data.get('stops', []))}")
@@ -24,7 +24,7 @@ def main() -> None:
 
     model = DecisionModel()
     output = model.solve(input)
-    nextmv.write_local(output, path=options.output)
+    nextmv.write(output, path=options.output)
 
 
 class DecisionModel(nextmv.Model):

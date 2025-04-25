@@ -15,7 +15,7 @@ def main() -> None:
     gp_opt = ngp.ModelOptions().to_nextmv()
     options = opt.merge(gp_opt)
 
-    input = nextmv.load_local(options=options, path=options.input)
+    input = nextmv.load(options=options, path=options.input)
 
     nextmv.log("Solving knapsack problem:")
     nextmv.log(f"  - items: {len(input.data.get('items', []))}")
@@ -23,7 +23,7 @@ def main() -> None:
 
     model = DecisionModel()
     output = model.solve(input)
-    nextmv.write_local(output, path=options.output)
+    nextmv.write(output, path=options.output)
 
 
 class DecisionModel(nextmv.Model):
