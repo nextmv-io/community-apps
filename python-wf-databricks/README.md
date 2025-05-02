@@ -19,6 +19,7 @@ capabilities.
 ## Environment Setup
 
 1. Install the required dependencies:
+
    ```bash
    pip3 install -r requirements.txt
    ```
@@ -53,9 +54,62 @@ The application implements a workflow with two main steps:
    - Processes the JSON output and adds additional metadata
    - Returns the enhanced result
 
+## Example Notebook: Hello World with Nextmv
+
+The repository includes a sample Databricks notebook (`hello-world-nextmv-app.ipynb`)
+that demonstrates how to use Nextmv with Databricks.
+
+### Features
+
+- Integration between Nextmv and Databricks via the Nextmv Python SDK
+- Running models on Databricks with results viewable in the Nextmv UI
+
+### Prerequisites for the Notebook
+
+Before running the notebook, you need to set up your Nextmv API Key as a
+Databricks managed secret:
+
+```bash
+
+databricks secrets put-secret --json '{
+    "scope": "<scope-name>",
+    "key": "nextmv-api-key",
+    "string_value": "<api-key-secret>"
+}'
+```
+
+### Required Dependencies
+
+The notebook requires the following Python packages:
+
+- `nextmv[all]`
+- `plotly`
+
+### Notebook Structure
+
+1. **Setup and Configuration**
+   - Installation of required packages
+   - Connection to Nextmv using API key
+   - Creation/usage of Nextmv app space
+
+2. **Sample Data Processing**
+   - Demonstrates working with input data
+   - Shows how to track runs in Nextmv
+   - Includes visualization capabilities
+
+### Benefits of Using Nextmv
+
+- View and share results via the Nextmv UI
+- Manage and compare multiple versions of your model
+- Provide a no-code UI for testing model parameters
+
+To run this notebook, make sure you have the necessary Databricks workspace
+access and Nextmv API key configured in your secrets management system.
+
 ## Output
 
 The workflow produces a JSON output that includes:
+
 - The original Databricks job output
 - Additional metadata:
   - `db_task_run_id`: The Databricks task run ID
