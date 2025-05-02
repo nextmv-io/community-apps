@@ -31,6 +31,13 @@ The content of this worklflow is based on the [Gurobi example](https://colab.res
    - `DATABRICKS_HOST`: Your Databricks workspace URL
    - `DATABRICKS_TOKEN`: Your Databricks access token
 
+## Setup
+
+1. Add the `avocado-ml-regressor` notebook to your Databricks workspace
+2. Create a Databricks Workflow with the regressor notebook as a Task
+3. Run the `avocado-price-optimizer` notebook once from Databricks
+4. Run your workflow locally or push the workflow to a workflow app on Nextmv
+
 ## Usage
 
 The application can be run using the following command:
