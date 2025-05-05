@@ -14,6 +14,9 @@ lint.select = [
 # Ignore specific directories
 exclude = [
     "python-gurobi-price-optimization",
+    "python-wf-databricks/hello-world-nextmv-app.ipynb",
+    "python-wf-databricks-ml-gurobi-price-optimization/avocado-price-optimizer.ipynb",
+    "python-wf-databricks-ml-gurobi-price-optimization/avocado-ml-regressor.ipynb"
 ]
 
 
