@@ -1,7 +1,7 @@
 target-version="py312"
 
 # Rule selection.
-select = [
+lint.select = [
     "E",  # pycodestyle errors
     "W",  # pycodestyle warnings
     "F",  # pyflakes
@@ -11,8 +11,21 @@ select = [
     "UP",  # pyupgrade
 ]
 
+# Ignore specific directories
+exclude = [
+    "python-gurobi-price-optimization",
+]
+
+
 # Rule configuration.
 line-length = 120
 
 # Allow generous cyclomatic complexity for examples.
-mccabe.max-complexity = 25
+lint.mccabe.max-complexity = 25
+
+[lint.per-file-ignores]
+# Set a different max complexity for a specific file
+"python-ortools-shiftassignment/main.py" = ["C901"]
+"python-gurobi-knapsack/main.ipynb" = ["I001"]
+"python-highs-knapsack/main.ipynb" = ["I001"]
+"python-nextroute/main.ipynb" = ["I001"]

@@ -101,6 +101,12 @@ apps:
     marketplace_app_id:
     marketplace_major_version:
     description: Use the Python Nextmv & scikit-learn integration - diabetes.
+  - name: python-gurobi-price-optimization
+    type: python
+    app_id:
+    marketplace_app_id:
+    marketplace_major_version:
+    description: Use a Nextmvified Gurobi notebook for price optimization.
   - name: python-nextroute
     type: python
     app_id:
