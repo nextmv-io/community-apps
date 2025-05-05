@@ -1,13 +1,9 @@
 import json
 
 import nextmv
-import nextmv.cloud as cloud
 import pandas as pd
-import os
-from nextpipe import FlowSpec, app, needs, step
 from databricks.sdk import WorkspaceClient
-from databricks.sdk.service import jobs
-import time
+from nextpipe import FlowSpec, app, needs, step
 
 options = nextmv.Options(
     nextmv.Parameter("db_job_id", str, default="1234567890"),
@@ -27,6 +23,7 @@ options = nextmv.Options(
     ),
 )
 
+
 # >>> Workflow definition
 class DecisionFlow(FlowSpec):
     @step
@@ -37,13 +34,13 @@ class DecisionFlow(FlowSpec):
 
         # Authenticate (assumes DATABRICKS_HOST and DATABRICKS_TOKEN env vars are set as Nextmv secrets)
         w = WorkspaceClient()
-        
+
         # Make sure the job exists
         try:
             w.jobs.get(db_job_id)
-        except Exception:
+        except Exception as err:
             nextmv.log(f"Databricks job with ID {db_job_id} not found")
-            raise Exception(f"Databricks job with ID {db_job_id} not found")
+            raise Exception(f"Databricks job with ID {db_job_id} not found") from err
 
         # Run the job
         run = w.jobs.run_now(job_id=db_job_id).result()
@@ -58,14 +55,14 @@ class DecisionFlow(FlowSpec):
         result["statistics"]["result"]["custom"]["db_task_run_id"] = run_id
         result["statistics"]["result"]["custom"]["db_job_id"] = options.db_job_id
         return result
-    
+
     @needs(predecessors=[create_db_ml_run])
     @step
     def prep(input: dict):
         """Prepares the input data."""
         ml_output = input["solution"]
         return ml_output
-    
+
     @app(
         app_id="avocado-price-optimizer",
         instance_id="staging",
@@ -98,10 +95,12 @@ class DecisionFlow(FlowSpec):
         )
         return output
 
+
 def main():
-    # Load input data
+    # To load an input, use the following.
     # input = nextmv.load_local()
-    client = cloud.Client(api_key=os.getenv("NEXTMV_API_KEY"))
+    # To acces another Nextmv app, use the following.
+    # client = cloud.Client(api_key=os.getenv("NEXTMV_API_KEY"))
 
     # Run workflow
     flow = DecisionFlow("DecisionFlow", input=None)
@@ -109,6 +108,7 @@ def main():
     result = flow.get_result(flow.postprocess)
     # Write out the result
     nextmv.write_local(result)
+
 
 if __name__ == "__main__":
     main()

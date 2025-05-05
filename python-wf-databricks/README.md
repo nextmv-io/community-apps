@@ -45,7 +45,7 @@ python3 main.py --db_job_id=<your-databricks-job-id>
 
 The application implements a workflow with two main steps:
 
-1. `create_db_run`: 
+1. `create_db_run`:
    - Creates and initiates a run of the specified Databricks job
    - Returns the run ID for tracking
 
