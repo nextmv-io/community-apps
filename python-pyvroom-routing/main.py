@@ -19,7 +19,7 @@ def main() -> None:
         nextmv.Option("threads", int, 6, "Number of threads to use.", False),
     )
 
-    input = nextmv.load_local(options=options, path=options.input)
+    input = nextmv.load(options=options, path=options.input)
     apply_defaults(input.data)
     validate_input(input.data)
     process_duration_matrix(input.data)
@@ -30,7 +30,7 @@ def main() -> None:
 
     model = DecisionModel()
     output = model.solve(input)
-    nextmv.write_local(output, path=options.output)
+    nextmv.write(output, path=options.output)
 
 
 class DecisionModel(nextmv.Model):
@@ -139,7 +139,7 @@ class DecisionModel(nextmv.Model):
                                 convert_stop(
                                     "start",
                                     {
-                                        "id": f'{vehicle["id"]}_start',
+                                        "id": f"{vehicle['id']}_start",
                                         "location": vehicle["start_location"],
                                     },
                                     row,
@@ -151,7 +151,7 @@ class DecisionModel(nextmv.Model):
                                 convert_stop(
                                     "end",
                                     {
-                                        "id": f'{vehicle["id"]}_end',
+                                        "id": f"{vehicle['id']}_end",
                                         "location": vehicle["end_location"],
                                     },
                                     row,

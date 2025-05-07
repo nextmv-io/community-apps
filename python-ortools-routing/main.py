@@ -18,7 +18,7 @@ def main() -> None:
     )
 
     # Read and prepare the input data.
-    input = nextmv.load_local(options=options, path=options.input)
+    input = nextmv.load(options=options, path=options.input)
     apply_defaults(input.data)
     validate_input(input.data)
     process_distance_matrix(input.data)
@@ -30,7 +30,7 @@ def main() -> None:
 
     model = DecisionModel()
     output = model.solve(input)
-    nextmv.write_local(output, path=options.output)
+    nextmv.write(output, path=options.output)
 
 
 class DecisionModel(nextmv.Model):
@@ -164,7 +164,7 @@ class DecisionModel(nextmv.Model):
                                 {
                                     "stop": {
                                         "location": input_vehicle["start_location"],
-                                        "id": f'{input_vehicle["id"]}_start',
+                                        "id": f"{input_vehicle['id']}_start",
                                     }
                                 }
                             )
@@ -173,7 +173,7 @@ class DecisionModel(nextmv.Model):
                                 {
                                     "stop": {
                                         "location": input_vehicle["end_location"],
-                                        "id": f'{input_vehicle["id"]}_end',
+                                        "id": f"{input_vehicle['id']}_end",
                                     }
                                 }
                             )

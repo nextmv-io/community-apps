@@ -31,7 +31,7 @@ def main() -> None:
         nextmv.Option("provider", str, "cbc", "Solver provider.", False),
     )
 
-    input = nextmv.load_local(options=options, path=options.input)
+    input = nextmv.load(options=options, path=options.input)
 
     nextmv.log("Solving shift-planning:")
     nextmv.log(f"  - shifts-templates: {len(input.data.get('shifts', []))}")
@@ -39,7 +39,7 @@ def main() -> None:
 
     model = DecisionModel()
     output = model.solve(input)
-    nextmv.write_local(output, path=options.output)
+    nextmv.write(output, path=options.output)
 
 
 class DecisionModel(nextmv.Model):

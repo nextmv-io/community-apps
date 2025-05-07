@@ -25,7 +25,7 @@ def main() -> None:
         nextmv.Option("provider", str, "SCIP", "Solver provider.", False),
     )
 
-    input = nextmv.load_local(
+    input = nextmv.load(
         input_format=nextmv.InputFormat.CSV_ARCHIVE,
         options=options,
         path=options.input,
@@ -37,7 +37,7 @@ def main() -> None:
 
     model = DecisionModel()
     output = model.solve(input)
-    nextmv.write_local(output, path=options.output)
+    nextmv.write(output, path=options.output)
 
 
 class DecisionModel(nextmv.Model):

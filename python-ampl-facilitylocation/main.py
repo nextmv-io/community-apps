@@ -43,7 +43,7 @@ def main() -> None:
         nextmv.Option("modelpath", str, ".", "Path to the directory with the model file.", False),
     )
 
-    input = nextmv.load_local(options=options, path=options.input)
+    input = nextmv.load(options=options, path=options.input)
 
     nextmv.log("Solving stochastic facility location problem:")
     nextmv.log(f"  - facilities: {input.data.get('FACILITIES', [])}")
@@ -51,7 +51,7 @@ def main() -> None:
 
     model = DecisionModel()
     output = model.solve(input)
-    nextmv.write_local(output, path=options.output)
+    nextmv.write(output, path=options.output)
 
 
 class DecisionModel(nextmv.Model):

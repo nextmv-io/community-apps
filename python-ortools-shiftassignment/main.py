@@ -45,7 +45,7 @@ def main() -> None:
         ),
     )
 
-    input = nextmv.load_local(options=options, path=options.input)
+    input = nextmv.load(options=options, path=options.input)
 
     nextmv.log("Solving shift-assignment:")
     nextmv.log(f"  - shifts: {len(input.data.get('shifts', []))}")
@@ -54,7 +54,7 @@ def main() -> None:
 
     model = DecisionModel()
     output = model.solve(input)
-    nextmv.write_local(output, path=options.output)
+    nextmv.write(output, path=options.output)
 
 
 class DecisionModel(nextmv.Model):

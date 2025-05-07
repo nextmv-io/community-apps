@@ -68,7 +68,7 @@ def main():
     flow.run()
     result = flow.get_result(flow.return_db_result)
     # Write out the result
-    nextmv.write_local(result)
+    nextmv.write(result)
 
 
 if __name__ == "__main__":
