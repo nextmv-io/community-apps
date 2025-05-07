@@ -185,3 +185,19 @@ apps:
         silent: true
       - name: 2.sh
         skip: true
+  - name: python-wf-databricks
+    scripts:
+      - name: 0.sh
+        silent: true
+      - name: 1.sh
+        skip: true
+      - name: 2.sh
+        skip: true
+  - name: python-wf-databricks-ml-gurobi-price-optimization
+    scripts:
+      - name: 0.sh
+        silent: true
+      - name: 1.sh
+        skip: true
+      - name: 2.sh
+        skip: true
