@@ -6,17 +6,17 @@ from databricks.sdk import WorkspaceClient
 from nextpipe import FlowSpec, app, needs, step
 
 options = nextmv.Options(
-    nextmv.Parameter("db_job_id", str, default="1234567890"),
-    nextmv.Parameter(
+    nextmv.Option("db_job_id", str, default="1234567890"),
+    nextmv.Option(
         name="input",
-        param_type=str,
+        option_type=str,
         default="input",
         description="Path to the input data.",
         required=False,
     ),
-    nextmv.Parameter(
+    nextmv.Option(
         name="supply",
-        param_type=int,
+        option_type=int,
         default=30,
         description="Total amount of avocado supply.",
         required=False,

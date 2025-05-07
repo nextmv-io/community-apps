@@ -6,13 +6,13 @@ def main() -> None:
     """Entry point for the program."""
 
     parameters = [
-        nextmv.Parameter("input", str, "", "Path to input file. Default is stdin.", False),
-        nextmv.Parameter("output", str, "", "Path to output file. Default is stdout.", False),
+        nextmv.Option("input", str, "", "Path to input file. Default is stdin.", False),
+        nextmv.Option("output", str, "", "Path to output file. Default is stdout.", False),
     ]
 
     default_options = nextroute.Options()
     for name, default_value in default_options.to_dict().items():
-        parameters.append(nextmv.Parameter(name.lower(), type(default_value), default_value, name, False))
+        parameters.append(nextmv.Option(name.lower(), type(default_value), default_value, name, False))
 
     options = nextmv.Options(*parameters)
 

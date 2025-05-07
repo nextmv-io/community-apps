@@ -9,8 +9,8 @@ def main() -> None:
     """Entry point for the program."""
 
     opt = nextmv.Options(
-        nextmv.Parameter("input", str, "", "Path to input file. Default is stdin.", False),
-        nextmv.Parameter("output", str, "", "Path to output file. Default is stdout.", False),
+        nextmv.Option("input", str, "", "Path to input file. Default is stdin.", False),
+        nextmv.Option("output", str, "", "Path to output file. Default is stdout.", False),
     )
     gp_opt = ngp.ModelOptions().to_nextmv()
     options = opt.merge(gp_opt)

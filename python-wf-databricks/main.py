@@ -8,7 +8,7 @@ from nextpipe import FlowSpec, needs, step
 
 # Option to pass a Databricks job ID to run
 options = nextmv.Options(
-    nextmv.Parameter("db_job_id", str, default="1234567890"),
+    nextmv.Option("db_job_id", str, default="1234567890"),
 )
 
 
