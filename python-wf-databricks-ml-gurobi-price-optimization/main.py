@@ -98,7 +98,7 @@ class DecisionFlow(FlowSpec):
 
 def main():
     # To load an input, use the following.
-    # input = nextmv.load_local()
+    # input = nextmv.load()
     # To acces another Nextmv app, use the following.
     # client = cloud.Client(api_key=os.getenv("NEXTMV_API_KEY"))
 
@@ -107,7 +107,7 @@ def main():
     flow.run()
     result = flow.get_result(flow.postprocess)
     # Write out the result
-    nextmv.write_local(result)
+    nextmv.write(result)
 
 
 if __name__ == "__main__":
