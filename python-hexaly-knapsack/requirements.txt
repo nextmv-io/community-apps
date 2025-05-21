@@ -3,4 +3,4 @@
 --extra-index-url https://pypi.org/simple
 
 hexaly==13.0.20240712
-nextmv==0.25.3
+nextmv==0.26.3

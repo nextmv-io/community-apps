@@ -17,4 +17,4 @@ ampl-module-open==20250206
 ampl-module-scip==20240724
 ampl-module-xpress==20241227
 
-nextmv==0.25.3
+nextmv==0.26.3

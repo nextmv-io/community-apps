@@ -1,2 +1,2 @@
 ortools==9.12.4544
-nextmv==0.25.3
+nextmv==0.26.3

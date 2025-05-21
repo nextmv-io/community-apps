@@ -13,7 +13,7 @@ The content of this worklflow is based on the [Gurobi example](https://colab.res
 - Nextmv API key
 - Databricks workspace access (with DATABRICKS_HOST and DATABRICKS_TOKEN)
 - The following Python packages (specified in `requirements.txt`):
-  - nextmv==0.25.3
+  - nextmv==0.26.3
   - nextpipe==0.1.3
   - pandas==2.2.3
   - databricks-sdk
