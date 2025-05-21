@@ -1,0 +1,5 @@
+nextpipe==0.2.1
+nextmv==0.26.2
+requests==2.32.3
+plotly==6.1.0
+pandas==2.2.3
