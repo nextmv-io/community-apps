@@ -16,85 +16,6 @@ STATUS = {
 }
 
 
-def solve(
-    input: dict,
-    provider: str,
-    duration: int,
-) -> tuple[dict, str]:
-    """Solves the region allocation problem and returns the solution."""
-    # Creates the solver.
-    start_time = time.time()
-    solver = pywraplp.Solver.CreateSolver(provider)
-    solver.SetTimeLimit(duration * 1000)
-
-    # Prepare the distance matrix.
-    distance_matrix = {}
-    for region in input["regions"]:
-        for hub in input["hubs"]:
-            distance = calculate_distance(region, hub)
-            distance_matrix[(region["id"], hub["id"])] = distance
-
-    # Creates the decision variables.
-    assignments = {}
-    for region in input["regions"]:
-        for hub in input["hubs"]:
-            variable = solver.IntVar(0, 1, f"{region['id']}_{hub['id']}")
-            assignments[(region["id"], hub["id"])] = variable
-
-    # Make sure that each region is assigned to exactly one hub.
-    for region in input["regions"]:
-        solver.Add(sum(assignments[(region["id"], hub["id"])] for hub in input["hubs"]) == 1)
-
-    # Make sure that the demand of the regions assigned to the hub is covered by its capacity.
-    for hub in input["hubs"]:
-        solver.Add(
-            sum(assignments[(region["id"], hub["id"])] * region["demand"] for region in input["regions"])
-            <= hub["capacity"]
-        )
-
-    # Set the objective function to minimize the total distance.
-    objective = solver.Objective()
-    for region in input["regions"]:
-        for hub in input["hubs"]:
-            distance = distance_matrix[(region["id"], hub["id"])]
-            objective.SetCoefficient(assignments[(region["id"], hub["id"])], distance)
-    objective.SetMinimization()
-
-    # Solves the problem.
-    status = solver.Solve()
-
-    # Get the assigned regions.
-    assignments_result = {
-        region["id"]: next(
-            hub["id"] for hub in input["hubs"] if assignments[(region["id"], hub["id"])].solution_value() > 0.5
-        )
-        for region in input["regions"]
-    }
-    solution = {
-        "assignments": assignments_result,
-        "hubs": input["hubs"],
-        "regions": input["regions"],
-    }
-
-    # Collect some statistics.
-    statistics = {
-        "run": {
-            "duration": time.time() - start_time,
-        },
-        "result": {
-            "duration": solver.WallTime() / 1000,
-            "value": solver.Objective().Value(),
-            "custom": {
-                "status": STATUS.get(status, "unknown"),
-                "variables": solver.NumVariables(),
-                "constraints": solver.NumConstraints(),
-            },
-        },
-    }
-
-    return solution, statistics
-
-
 def calculate_distance(region: dict, hub: dict) -> float:
     """Calculates the distance between a region and a hub using the haversine formula."""
     region_coords = region["center"]
@@ -125,8 +46,75 @@ class DecisionModel(nextmv.Model):
         # Redirect solver chatter to stderr.
         nextmv.redirect_stdout()
 
-        # Solve the problem.
-        solution, statistics = solve(input.data, input.options.provider, input.options.duration)
+        # Creates the solver.
+        start_time = time.time()
+        solver = pywraplp.Solver.CreateSolver(input.options.provider)
+        solver.SetTimeLimit(input.options.duration * 1000)
+
+        # Prepare the distance matrix.
+        distance_matrix = {}
+        for region in input.data["regions"]:
+            for hub in input.data["hubs"]:
+                distance = calculate_distance(region, hub)
+                distance_matrix[(region["id"], hub["id"])] = distance
+
+        # Creates the decision variables.
+        assignments = {}
+        for region in input.data["regions"]:
+            for hub in input.data["hubs"]:
+                variable = solver.IntVar(0, 1, f"{region['id']}_{hub['id']}")
+                assignments[(region["id"], hub["id"])] = variable
+
+        # Make sure that each region is assigned to exactly one hub.
+        for region in input.data["regions"]:
+            solver.Add(sum(assignments[(region["id"], hub["id"])] for hub in input.data["hubs"]) == 1)
+
+        # Make sure that the demand of the regions assigned to the hub is covered by its capacity.
+        for hub in input.data["hubs"]:
+            solver.Add(
+                sum(assignments[(region["id"], hub["id"])] * region["demand"] for region in input.data["regions"])
+                <= hub["capacity"]
+            )
+
+        # Set the objective function to minimize the total distance.
+        objective = solver.Objective()
+        for region in input.data["regions"]:
+            for hub in input.data["hubs"]:
+                distance = distance_matrix[(region["id"], hub["id"])]
+                objective.SetCoefficient(assignments[(region["id"], hub["id"])], distance)
+        objective.SetMinimization()
+
+        # Solves the problem.
+        status = solver.Solve()
+
+        # Get the assigned regions.
+        assignments_result = {
+            region["id"]: next(
+                hub["id"] for hub in input.data["hubs"] if assignments[(region["id"], hub["id"])].solution_value() > 0.5
+            )
+            for region in input.data["regions"]
+        }
+        solution = {
+            "assignments": assignments_result,
+            "hubs": input.data["hubs"],
+            "regions": input.data["regions"],
+        }
+
+        # Collect some statistics.
+        statistics = {
+            "run": {
+                "duration": time.time() - start_time,
+            },
+            "result": {
+                "duration": solver.WallTime() / 1000,
+                "value": solver.Objective().Value(),
+                "custom": {
+                    "status": STATUS.get(status, "unknown"),
+                    "variables": solver.NumVariables(),
+                    "constraints": solver.NumConstraints(),
+                },
+            },
+        }
 
         # Prepare the output.
         return nextmv.Output(
