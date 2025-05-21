@@ -48,7 +48,11 @@ to docs for alternative methods).:
 1. Create a new instance using the version.
 
     ```bash
-    nextmv app instance create -a region-allocation-workflow -v v1.0.0 -i main -n "Main Instance"
+    nextmv app instance create \
+        -a region-allocation-workflow \
+        -v v1.0.0 \
+        -i main \
+        -n "Main Instance"
     ```
 
 1. Create a secrets collection via [console][console] and add your
