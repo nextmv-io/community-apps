@@ -108,15 +108,19 @@ def geojson_assignment(
     for region in list(regions["features"]):
         if region["properties"]["plz"] not in solution_regions:
             regions["features"].remove(region)
+
     # Set colors for the hubs
     hub_ids = [hub["id"] for hub in result["solution"]["hubs"]]
     hues = {hub: i / len(hub_ids) for i, hub in enumerate(hub_ids)}
     hub_plzs = {hub["plz"] for hub in result["solution"]["hubs"]}
+
     # Get region polygons
     region_polygons = {feature["properties"]["plz"]: feature for feature in regions["features"]}
+
     # Get additional information
     region_info = {region["plz"]: region for region in result["solution"]["regions"]}
     hub_info = {hub["plz"]: hub for hub in result["solution"]["hubs"]}
+
     # Set color and metadata for each region
     for region, hub in result["solution"]["assignments"].items():
         # Get the region polygon
@@ -177,6 +181,7 @@ def geojson_demand(
     region_polygons = {feature["properties"]["plz"]: feature for feature in geojson["features"]}
     hub_plzs = {hub["plz"] for hub in result["solution"]["hubs"]}
     max_demand = max(region["demand"] for region in solution["regions"])
+
     # Calculate normalized demand and set color for each region
     for region, hub in solution["assignments"].items():
         # Get the region polygon
@@ -209,50 +214,16 @@ def geojson_demand(
                 ]
             )
         region_polygon["properties"]["metadata"] = metadata
+
     # Remove regions that are not in the solution
     solution_regions = set(solution["assignments"].keys())
     for region in list(geojson["features"]):
         if region["properties"]["plz"] not in solution_regions:
             geojson["features"].remove(region)
+
     # Set the ID for each feature
     for region in geojson["features"]:
         region["id"] = region["properties"]["plz"]
-
-
-def create_demand_plot(
-    result: dict,
-    geojson: dict,
-) -> dict:
-    """Creates a choropleth map of the regions and their demand."""
-    # Convert demand to suitable dataframe
-    solution = result["solution"]
-    region_info = {region["plz"]: region for region in solution["regions"]}
-    data = [
-        {"region": region, "demand": region_info[region]["demand"], "hub": hub}
-        for region, hub in solution["assignments"].items()
-    ]
-    df = pd.DataFrame(data)
-    # Determine the center of the map
-    xs = [r["center"]["x"] for r in solution["regions"]]
-    ys = [r["center"]["y"] for r in solution["regions"]]
-    min_x, max_x = min(xs), max(xs)
-    min_y, max_y = min(ys), max(ys)
-    center_x = (min_x + max_x) / 2
-    center_y = (min_y + max_y) / 2
-    # Create a plot of the regions and their assignments
-    fig = plotly.express.choropleth_map(
-        df,
-        geojson=geojson,
-        featureidkey="id",
-        locations="region",
-        color="demand",
-        map_style="satellite-streets",  # TODO: fix this
-        center={"lat": center_y, "lon": center_x},
-        zoom=8,
-        color_continuous_scale=plotly.express.colors.sequential.Plasma,
-    )
-    fig.update_geos(fitbounds="locations", visible=False)
-    return json.loads(fig.to_json())
 
 
 def create_utilization_plot(
@@ -266,6 +237,7 @@ def create_utilization_plot(
     hub_demands = {hub["id"]: 0 for hub in solution["hubs"]}
     for region, hub in solution["assignments"].items():
         hub_demands[hub] += region_info[region]["demand"]
+
     # Create a plot of the hub utilization
     df = pd.DataFrame(
         [
