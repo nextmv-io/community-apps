@@ -13,6 +13,14 @@ tracking. This is to better show that tracking runs can be easily added to
 existing code. Find the `POST TRACKED RUN TO NEXTMV PLATFORM` comment in
 `main.py` to see where the tracked run is created.
 
+## Problem description
+
+This model solves the region to hub allocation problem. I.e., given a set of
+regions with certain demands and a set of hubs with certain capacities, the goal
+is to assign each region to a hub such that the total demand of the regions
+assigned to a hub does not exceed the hub's capacity. The objective is to
+keep the regions as close to their assigned hub as possible.
+
 ## Run the example
 
 1. Install packages.
