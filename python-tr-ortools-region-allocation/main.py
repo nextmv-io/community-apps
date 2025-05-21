@@ -151,8 +151,8 @@ if __name__ == "__main__":
     # Note: Above code is intentionally not using nextmv features to better demonstrate
     #       that tracking a run can be added easily to any existing code. You only need
     #       lines below.
-    client = nextmv.cloud.Client(api_key=os.environ.get("NEXTMV_API_KEY_PROD"))
-    app = nextmv.cloud.Application(client=client, id="demo-app-7")
+    client = nextmv.cloud.Client(api_key=os.environ.get("NEXTMV_API_KEY"))
+    app = nextmv.cloud.Application(client=client, id=os.environ.get("NEXTMV_APP_ID"))
     tracked_result = app.track_run_with_result(
         tracked_run=nextmv.cloud.TrackedRun(
             input=input_data,
@@ -163,7 +163,7 @@ if __name__ == "__main__":
             ),
             status=nextmv.cloud.StatusV2.succeeded,
             error=None,
-            logs="Hello world",
+            logs="Hello Nextmv!",
         ),
     )
     nextmv.log(f"Tracked run: {tracked_result.id}")
