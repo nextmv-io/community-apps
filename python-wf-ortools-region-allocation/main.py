@@ -98,10 +98,7 @@ def main():
     nextmv.write(flow.get_result(flow.bundle_assets))
 
 
-def geojson_assignment(
-    result: dict,
-    regions: dict,
-) -> None:
+def geojson_assignment(result: dict, regions: dict) -> None:
     """Colorizes the regions based on the assignment and adds metadata as a popup."""
     # Remove regions that are not in the solution
     solution_regions = set(result["solution"]["assignments"].keys())
@@ -161,7 +158,7 @@ def geojson_assignment(
         region_polygon["properties"]["metadata"] = metadata
 
 
-def value_to_color(value):
+def value_to_color(value: float) -> str:
     """Converts a value in the range [0, 1] to a hex color code using the Plasma color scale."""
     value = max(0, min(1, value))
     plasma_colors = plotly.express.colors.sequential.Plasma
@@ -169,10 +166,7 @@ def value_to_color(value):
     return plasma_colors[index]
 
 
-def geojson_demand(
-    result: dict,
-    geojson: dict,
-) -> None:
+def geojson_demand(result: dict, geojson: dict) -> None:
     """Creates geojson for a choropleth map of the regions and their demand."""
     # Prepare data.
     solution = result["solution"]
