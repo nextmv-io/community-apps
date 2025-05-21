@@ -45,6 +45,19 @@ to docs for alternative methods).:
     nextmv app run --app region-allocation-workflow --instance-id main --input input.json
     ```
 
+## Sneak peek
+
+When you run the workflow, it will attach the visual assets to the run. You can
+see these in [console][console] for example. Here is a sneak peek of them.
+
+Demand of the regions visualized as a choropleth map:
+
+![sneak peek demand](https://nextmv-io.github.io/community-apps/content/apps/python-wf-ortools-region-allocation/demand.png)
+
+Allocation of the regions to the hubs visualized as a map:
+
+![sneak peek allocation](https://nextmv-io.github.io/community-apps/content/apps/python-wf-ortools-region-allocation/allocation.png)
+
 ## Next steps
 
 * Add run tracking to your own code.
@@ -52,6 +65,7 @@ to docs for alternative methods).:
   [Contact][contact] us!
 
 [region-allocation]: ../python-ortools-region-allocation
+[console]: https://cloud.nextmv.io
 [docs]: https://docs.nextmv.io
 [cli]: https://docs.nextmv.io/docs/using-nextmv/setup/install#nextmv-cli
 [blog]: https://www.nextmv.io/blog
