@@ -1,0 +1,4 @@
+# Define the packages required by your project here.
+nextmv==0.18.0
+plotly==6.0.0
+requests==2.32.3
