@@ -1,0 +1,2 @@
+export NEXTMV_API_KEY=your_api_key
+export NEXTMV_APP_ID=your_app_id
