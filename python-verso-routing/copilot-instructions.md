@@ -4,7 +4,8 @@
 
 Use [Nextmv python SDK][nextmv-py].
 Use Nextmv [documentation][nextmv-docs].
-Use [Ruff][ruff] for linting rules.
+Lint python files with [Ruff][ruff].
+Lint json files with prettier.
 
 ## Visualization
 

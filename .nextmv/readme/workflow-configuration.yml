@@ -179,6 +179,12 @@ apps:
         silent: true
       - name: 2.sh
         skip: true
+  - name: python-verso-routing
+    scripts:
+      - name: 0.sh
+        silent: true
+      - name: 1.sh
+        skip: true
   - name: python-xpress-knapsack
     scripts:
       - name: 0.sh
