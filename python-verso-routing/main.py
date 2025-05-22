@@ -4,10 +4,8 @@ import nextmv
 import requests
 from visuals import create_visuals
 
-# from visuals import create_visuals
-
 # Read the input from stdin.
-input = nextmv.load_local()
+input = nextmv.load()
 
 options = nextmv.Options(
     nextmv.Parameter(
@@ -20,6 +18,7 @@ VROOM_API_KEY = os.getenv("VROOM_API_KEY")
 vroom_api_url = f"https://api.verso-optim.com/vrp/v1/solve?api_key={VROOM_API_KEY}"
 headers = {"Content-Type": "application/json"}
 
+# Call VROOM API to solve the problem
 try:
     response = requests.post(vroom_api_url, headers=headers, json=input.data)
     response.raise_for_status()
@@ -31,14 +30,11 @@ except requests.exceptions.RequestException as e:
 
 solution = vroom_result if vroom_result else None
 
-#######
-
+# Create visuals with geojson for each route
 assets = create_visuals(solution)
 
-# pull summary of solution into statistics
+# Pull summary of solution into Nextmvstatistics
 summary = solution.get("summary", {})
-
-# extract polylines and convert to geojson so we can view the map
 
 # Write output and statistics.
 output = nextmv.Output(
