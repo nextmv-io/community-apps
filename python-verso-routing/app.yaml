@@ -9,4 +9,4 @@ python:
 # (e.g.: configs/*.json) is supported.
 files:
   - main.py
-  # - visuals.py
+  - visuals.py

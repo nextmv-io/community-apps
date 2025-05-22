@@ -3,6 +3,8 @@ import os
 import nextmv
 import requests
 
+from visuals import create_visuals
+
 # from visuals import create_visuals
 
 # Read the input from stdin.
@@ -32,7 +34,7 @@ solution = vroom_result if vroom_result else None
 
 #######
 
-# assets = create_visuals(name, input.data["radius"], input.data["distance"])
+assets = create_visuals(solution)
 
 # pull summary of solution into statistics
 summary = solution.get("summary", {})
@@ -48,6 +50,6 @@ output = nextmv.Output(
             custom=summary,
         ),
     ),
-    # assets=assets,
+    assets=[assets],
 )
-nextmv.write_local(output)
+nextmv.write(output)
