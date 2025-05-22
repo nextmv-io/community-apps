@@ -20,7 +20,7 @@ def generate_color(index: int, total: int) -> str:
     hue = (index * golden_ratio) % 1.0
 
     # Convert HSL to RGB
-    def hsl_to_rgb(h: float, s: float = 0.7, l: float = 0.5) -> str:
+    def hsl_to_rgb(hue: float, saturation: float = 0.7, lightness: float = 0.5) -> str:
         def hue_to_rgb(p: float, q: float, t: float) -> float:
             if t < 0:
                 t += 1
@@ -34,12 +34,12 @@ def generate_color(index: int, total: int) -> str:
                 return p + (q - p) * (2/3 - t) * 6
             return p
 
-        q = l * (1 + s) if l < 0.5 else l + s - l * s
-        p = 2 * l - q
+        q = lightness * (1 + saturation) if lightness < 0.5 else lightness + saturation - lightness * saturation
+        p = 2 * lightness - q
 
-        r = hue_to_rgb(p, q, h + 1/3)
-        g = hue_to_rgb(p, q, h)
-        b = hue_to_rgb(p, q, h - 1/3)
+        r = hue_to_rgb(p, q, hue + 1/3)
+        g = hue_to_rgb(p, q, hue)
+        b = hue_to_rgb(p, q, hue - 1/3)
 
         return f"#{int(r * 255):02x}{int(g * 255):02x}{int(b * 255):02x}"
 
