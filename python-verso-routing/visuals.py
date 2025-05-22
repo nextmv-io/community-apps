@@ -1,23 +1,24 @@
-import json
-from typing import Dict, List, Any
+from typing import Any
+
 from nextmv import Asset
+
 
 def generate_color(index: int, total: int) -> str:
     """
     Generates a color from a continuous color spectrum based on index and total count.
     Uses HSL color space to ensure good color separation.
-    
+
     Args:
         index: The index of the vehicle (0-based)
         total: Total number of vehicles
-        
+
     Returns:
         str: Hex color code
     """
     # Use golden ratio to get well-distributed hues
     golden_ratio = 0.618033988749895
     hue = (index * golden_ratio) % 1.0
-    
+
     # Convert HSL to RGB
     def hsl_to_rgb(h: float, s: float = 0.7, l: float = 0.5) -> str:
         def hue_to_rgb(p: float, q: float, t: float) -> float:
@@ -35,36 +36,36 @@ def generate_color(index: int, total: int) -> str:
 
         q = l * (1 + s) if l < 0.5 else l + s - l * s
         p = 2 * l - q
-        
+
         r = hue_to_rgb(p, q, h + 1/3)
         g = hue_to_rgb(p, q, h)
         b = hue_to_rgb(p, q, h - 1/3)
-        
+
         return f"#{int(r * 255):02x}{int(g * 255):02x}{int(b * 255):02x}"
-    
+
     return hsl_to_rgb(hue)
 
-def create_visuals(solution: Dict[str, Any]) -> Asset:
+def create_visuals(solution: dict[str, Any]) -> Asset:
     """
     Creates a GeoJSON visualization from the routes in the solution.
     Includes both route lines and step points.
-    
+
     Args:
         solution: The solution dictionary containing route information
-        
+
     Returns:
         Asset: A Nextmv Asset containing the GeoJSON visualization
     """
     features = []
-    
+
     # Extract routes directly from solution
     routes = solution.get("routes", [])
     total_routes = len(routes)
-    
+
     for i, route in enumerate(routes):
         vehicle_id = route.get("vehicle")
         route_color = generate_color(i, total_routes)
-        
+
         # Get coordinates from steps
         coordinates = []
         for step in route.get("steps", []):
@@ -72,7 +73,7 @@ def create_visuals(solution: Dict[str, Any]) -> Asset:
                 # Convert [lng, lat] to [lat, lng] for Leaflet
                 lng, lat = step["location"]
                 coordinates.append([lng, lat])
-                
+
                 # Create point feature for each step
                 point_feature = {
                     "type": "Feature",
@@ -98,7 +99,7 @@ def create_visuals(solution: Dict[str, Any]) -> Asset:
                     }
                 }
                 features.append(point_feature)
-        
+
         # Create line feature for the route
         line_feature = {
             "type": "Feature",
@@ -121,13 +122,13 @@ def create_visuals(solution: Dict[str, Any]) -> Asset:
             }
         }
         features.append(line_feature)
-    
+
     # Create GeoJSON FeatureCollection
     geojson = {
         "type": "FeatureCollection",
         "features": features
     }
-    
+
     # Create and return Nextmv Asset
     return Asset(
         name="Route Visualization",
@@ -138,4 +139,4 @@ def create_visuals(solution: Dict[str, Any]) -> Asset:
             "label": "Route Visualization",
             "type": "custom-tab"
         }
-    ) 
+    )

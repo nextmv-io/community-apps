@@ -2,7 +2,6 @@ import os
 
 import nextmv
 import requests
-
 from visuals import create_visuals
 
 # from visuals import create_visuals
