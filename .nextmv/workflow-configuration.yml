@@ -137,6 +137,12 @@ apps:
     marketplace_app_id:
     marketplace_major_version:
     description: Use Python and OR-Tools - multi CSV knapsack.
+  - name: python-ortools-region-allocation
+    type: python
+    app_id:
+    marketplace_app_id:
+    marketplace_major_version:
+    description: Use Python and OR-Tools - region allocation.
   - name: python-ortools-routing
     type: python
     app_id: routing-ortools
@@ -185,6 +191,18 @@ apps:
     marketplace_app_id: routing.pyvroom
     marketplace_major_version: v1
     description: Use Python and Pyvroom - VRP.
+  - name: python-tr-ortools-region-allocation
+    type: python
+    app_id:
+    marketplace_app_id:
+    marketplace_major_version:
+    description: Use tracked runs in Python - region allocation.
+  - name: python-wf-ortools-region-allocation
+    type: python
+    app_id:
+    marketplace_app_id:
+    marketplace_major_version:
+    description: Use workflows in Python - region allocation.
   - name: python-xpress-knapsack
     type: python
     app_id:

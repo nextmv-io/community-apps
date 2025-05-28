@@ -131,6 +131,12 @@ apps:
         silent: true
       - name: 2.sh
         skip: true
+  - name: python-ortools-region-allocation
+    scripts:
+      - name: 0.sh
+        silent: true
+      - name: 2.sh
+        skip: true
   - name: python-ortools-routing
     scripts:
       - name: 0.sh
@@ -179,6 +185,12 @@ apps:
         silent: true
       - name: 2.sh
         skip: true
+  - name: python-tr-ortools-region-allocation
+    scripts:
+      - name: 0.sh
+        silent: true
+      - name: 2.sh
+        skip: true
   - name: python-verso-routing
     scripts:
       - name: 0.sh
@@ -206,4 +218,16 @@ apps:
       - name: 1.sh
         skip: true
       - name: 2.sh
+        skip: true
+  - name: python-wf-ortools-region-allocation
+    scripts:
+      - name: 1.sh
+        skip: true
+      - name: 3.sh
+        skip: true
+      - name: 4.sh
+        skip: true
+      - name: 5.sh
+        skip: true
+      - name: 6.sh
         skip: true

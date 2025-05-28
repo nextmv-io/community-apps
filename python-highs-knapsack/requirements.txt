@@ -1,2 +1,2 @@
 highspy==1.9.0
-nextmv==0.25.0
+nextmv==0.26.3
