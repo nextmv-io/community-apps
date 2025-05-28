@@ -1,13 +1,11 @@
 import asyncio
-import datetime
-import json
-import numpy as np
-import os
 
 import nextmv
 import nextroute.schema as nextrouteSchema
+import numpy as np
 from nextpipe import FlowSpec, app, needs, step
-from traveltimepy import Coordinates, Driving, Location, Property, TravelTimeSdk, Transportation
+from traveltimepy import Coordinates, Location, Property, Transportation, TravelTimeSdk
+
 
 async def async_part(input_data: dict):
     sdk = TravelTimeSdk(app_id="TT_APP_ID", api_key="TT_API_KEY")
@@ -15,7 +13,7 @@ async def async_part(input_data: dict):
     # Create locations for all stops
     locations = []
     location_ids = []
-    
+
     # Add stops first
     for stop in nextroute_input.stops:
         locations.append(
@@ -40,7 +38,7 @@ async def async_part(input_data: dict):
             )
         )
         location_ids.append(start_id)
-        
+
         # Add end location
         end_id = f"{vehicle.id}-end"
         locations.append(
@@ -107,11 +105,11 @@ class Flow(FlowSpec):
         nextroute_input = nextrouteSchema.Input.from_dict(input)
         nextroute_input.duration_matrix = results["duration_matrix"]
         nextroute_input.distance_matrix = results["distance_matrix"]
-        
+
         # Verify matrix format and specific routes
         location_ids = results["location_ids"]
         nextmv.log(f"Location order in matrix: {location_ids}")
-        
+
         # Check routes from vehicle start to first few stops
         start_idx = location_ids.index("vehicle-1-start")
         for i in range(3):  # Check first 3 stops
@@ -119,7 +117,7 @@ class Flow(FlowSpec):
             duration = results["duration_matrix"][start_idx][stop_idx]
             distance = results["distance_matrix"][start_idx][stop_idx]
             nextmv.log(f"Vehicle start to location-{i+1}: {duration} seconds, {distance} meters")
-        
+
         return nextroute_input.to_dict()
 
     @app(app_id="travel-time-routing", instance_id="latest")
@@ -133,7 +131,7 @@ class Flow(FlowSpec):
 def main():
     # Load input data
     input = nextmv.load()
-    
+
     # Run workflow
     flow = Flow("DecisionFlow", input.data)
     flow.run()
