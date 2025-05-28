@@ -1,7 +1,7 @@
-from typing import Any
-import polyline
 import math
+from typing import Any
 
+import polyline
 from nextmv import Asset
 
 
@@ -50,24 +50,24 @@ def generate_color(index: int, total: int) -> str:
 def get_arrow_coordinates(start: list[float], end: list[float], fraction: float = 0.5) -> tuple[list[float], float]:
     """
     Calculate the position and bearing of an arrow between two points.
-    
+
     Args:
         start: Start coordinates [lng, lat]
         end: End coordinates [lng, lat]
         fraction: Position along the line (0-1)
-        
+
     Returns:
         tuple: (arrow position [lng, lat], bearing in degrees)
     """
     # Calculate position
     lng = start[0] + (end[0] - start[0]) * fraction
     lat = start[1] + (end[1] - start[1]) * fraction
-    
+
     # Calculate bearing
     d_lng = end[0] - start[0]
     d_lat = end[1] - start[1]
     bearing = math.degrees(math.atan2(d_lng, d_lat))
-    
+
     return [lng, lat], bearing
 
 def create_visuals(solution: dict[str, Any]) -> Asset:
@@ -97,7 +97,7 @@ def create_visuals(solution: dict[str, Any]) -> Asset:
             if "location" in step:
                 lng, lat = step["location"]
                 step_coordinates.append([lng, lat])
-                
+
                 # Create point feature for each step
                 point_feature = {
                     "type": "Feature",
@@ -132,7 +132,7 @@ def create_visuals(solution: dict[str, Any]) -> Asset:
             route_coordinates = polyline.decode(route["geometry"])
             # Convert [lat, lng] to [lng, lat] for Leaflet
             route_coordinates = [[lng, lat] for lat, lng in route_coordinates]
-            
+
             line_feature = {
                 "type": "Feature",
                 "properties": {
