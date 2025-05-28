@@ -1,4 +1,6 @@
 from typing import Any
+import polyline
+import math
 
 from nextmv import Asset
 
@@ -45,10 +47,33 @@ def generate_color(index: int, total: int) -> str:
 
     return hsl_to_rgb(hue)
 
+def get_arrow_coordinates(start: list[float], end: list[float], fraction: float = 0.5) -> tuple[list[float], float]:
+    """
+    Calculate the position and bearing of an arrow between two points.
+    
+    Args:
+        start: Start coordinates [lng, lat]
+        end: End coordinates [lng, lat]
+        fraction: Position along the line (0-1)
+        
+    Returns:
+        tuple: (arrow position [lng, lat], bearing in degrees)
+    """
+    # Calculate position
+    lng = start[0] + (end[0] - start[0]) * fraction
+    lat = start[1] + (end[1] - start[1]) * fraction
+    
+    # Calculate bearing
+    d_lng = end[0] - start[0]
+    d_lat = end[1] - start[1]
+    bearing = math.degrees(math.atan2(d_lng, d_lat))
+    
+    return [lng, lat], bearing
+
 def create_visuals(solution: dict[str, Any]) -> Asset:
     """
     Creates a GeoJSON visualization from the routes in the solution.
-    Includes both route lines and step points.
+    Includes route lines and step points.
 
     Args:
         solution: The solution dictionary containing route information
@@ -66,14 +91,13 @@ def create_visuals(solution: dict[str, Any]) -> Asset:
         vehicle_id = route.get("vehicle")
         route_color = generate_color(i, total_routes)
 
-        # Get coordinates from steps
-        coordinates = []
+        # Get coordinates from steps for points
+        step_coordinates = []
         for step in route.get("steps", []):
             if "location" in step:
-                # Convert [lng, lat] to [lat, lng] for Leaflet
                 lng, lat = step["location"]
-                coordinates.append([lng, lat])
-
+                step_coordinates.append([lng, lat])
+                
                 # Create point feature for each step
                 point_feature = {
                     "type": "Feature",
@@ -82,6 +106,8 @@ def create_visuals(solution: dict[str, Any]) -> Asset:
                             {"key": "Vehicle", "value": f"Vehicle {vehicle_id}"},
                             {"key": "Type", "value": step.get("type", "")},
                             {"key": "Description", "value": step.get("description", "")},
+                            {"key": "ID", "value": step.get("id", "N/A")},
+                            {"key": "Distance (m)", "value": step.get("distance", 0)},
                             {"key": "Arrival (s)", "value": step.get("arrival", 0)},
                             {"key": "Duration (s)", "value": step.get("duration", 0)}
                         ],
@@ -95,33 +121,41 @@ def create_visuals(solution: dict[str, Any]) -> Asset:
                     },
                     "geometry": {
                         "type": "Point",
-                        "coordinates": [lng, lat]  # Leaflet format
+                        "coordinates": [lng, lat]  # Leaflet format [lng, lat]
                     }
                 }
                 features.append(point_feature)
 
-        # Create line feature for the route
-        line_feature = {
-            "type": "Feature",
-            "properties": {
-                "metadata": [
-                    {"key": "Vehicle", "value": f"Vehicle {vehicle_id}"},
-                    {"key": "Cost", "value": route.get("cost", 0)},
-                    {"key": "Distance (m)", "value": route.get("distance", 0)},
-                    {"key": "Duration (s)", "value": route.get("duration", 0)}
-                ],
-                "style": {
-                    "color": route_color,
-                    "weight": 3,
-                    "opacity": 0.7
+        # Create line feature for the route using the geometry field
+        if "geometry" in route:
+            # Decode the polyline geometry to get coordinates
+            route_coordinates = polyline.decode(route["geometry"])
+            # Convert [lat, lng] to [lng, lat] for Leaflet
+            route_coordinates = [[lng, lat] for lat, lng in route_coordinates]
+            
+            line_feature = {
+                "type": "Feature",
+                "properties": {
+                    "metadata": [
+                        {"key": "Vehicle", "value": f"Vehicle {vehicle_id}"},
+                        {"key": "Cost", "value": route.get("cost", 0)},
+                        {"key": "Distance (m)", "value": route.get("distance", 0)},
+                        {"key": "Duration (s)", "value": route.get("duration", 0)}
+                    ],
+                    "style": {
+                        "color": route_color,
+                        "weight": 3,
+                        "opacity": 0.7,
+                        "lineCap": "round",
+                        "lineJoin": "round"
+                    }
+                },
+                "geometry": {
+                    "type": "LineString",
+                    "coordinates": route_coordinates  # Leaflet format [lng, lat]
                 }
-            },
-            "geometry": {
-                "type": "LineString",
-                "coordinates": coordinates  # Already converted to [lat, lng]
             }
-        }
-        features.append(line_feature)
+            features.append(line_feature)
 
     # Create GeoJSON FeatureCollection
     geojson = {
@@ -133,7 +167,6 @@ def create_visuals(solution: dict[str, Any]) -> Asset:
     return Asset(
         name="Route Visualization",
         content=geojson,
-        content_type="json",
         visual={
             "schema": "geojson",
             "label": "Route Visualization",
