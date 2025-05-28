@@ -8,7 +8,7 @@ from visuals import create_visuals
 input = nextmv.load()
 
 options = nextmv.Options(
-    nextmv.Parameter(
+    nextmv.Option(
         "details", bool, True, "Print details to logs. Default true.", False
     ),
 )
