@@ -35,7 +35,7 @@ the command `Dev Containers: Reopen in Container`.
 
 ## Next steps
 
-* Open `main.py` and modify the model.
+* Open `src/main/java/com/nextmv/example/Main.java` and modify the model.
 * Visit our [docs][docs] and [blog][blog]. Need more assistance?
   [Contact][contact] us!
 

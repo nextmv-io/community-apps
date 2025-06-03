@@ -1,7 +1,7 @@
-# Nextmv Java OR-Tools Knapsack
+# Nextmv Java Gurobi Knapsack
 
 Example for running a Java `Maven` application on the Nextmv Platform using the
-OR-Tools package. We solve a knapsack Mixed Integer Programming problem.
+Gurobi solver. We solve a knapsack Mixed Integer Programming problem.
 
 1. Generate a `main.jar`.
 
@@ -35,7 +35,7 @@ the command `Dev Containers: Reopen in Container`.
 
 ## Next steps
 
-* Open `main.py` and modify the model.
+* Open `src/main/java/com/nextmv/example/Main.java` and modify the model.
 * Visit our [docs][docs] and [blog][blog]. Need more assistance?
   [Contact][contact] us!
 

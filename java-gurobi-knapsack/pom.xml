@@ -9,7 +9,7 @@
   <packaging>jar</packaging>
 
   <name>${project.groupId}:${project.artifactId}</name>
-  <description>Sample using Google OR-Tools.</description>
+  <description>Sample using Gurobi via Java.</description>
   <url>https://github.com/nextmv-io</url>
 
   <licenses>
