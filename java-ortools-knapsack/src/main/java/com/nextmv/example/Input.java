@@ -6,9 +6,11 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.google.gson.Gson;
+import com.google.gson.annotations.SerializedName;
 
 public class Input {
   private final List<Item> items;
+  @SerializedName("weight_capacity")
   private final double weightCapacity;
 
   public Input(List<Item> items, double weightCapacity) {
