@@ -8,11 +8,6 @@
           "weight": 20
         },
         {
-          "id": "dog",
-          "value": 20,
-          "weight": 45
-        },
-        {
           "id": "water",
           "value": 40,
           "weight": 2
@@ -33,19 +28,9 @@
           "weight": 1
         },
         {
-          "id": "tablet",
-          "value": 28,
-          "weight": 8
-        },
-        {
           "id": "coat",
           "value": 44,
           "weight": 9
-        },
-        {
-          "id": "laptop",
-          "value": 51,
-          "weight": 13
         },
         {
           "id": "keys",
@@ -58,7 +43,7 @@
           "weight": 4
         }
       ],
-      "value": 0
+      "value": 444
     }
   ],
   "statistics": {
@@ -69,7 +54,7 @@
         "status": "OPTIMAL",
         "variables": 11
       },
-      "value": 0
+      "value": 444
     },
     "run": {
       "duration": 0.123

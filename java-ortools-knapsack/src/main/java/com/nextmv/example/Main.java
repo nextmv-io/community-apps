@@ -58,7 +58,7 @@ public final class Main {
       }
     }
     Output output = new Output(
-        inputItems,
+        outputItems,
         solver.wallTime(),
         objective.value(),
         provider,
