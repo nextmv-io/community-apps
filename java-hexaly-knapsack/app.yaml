@@ -10,6 +10,3 @@ pre-push: mvn package
 files:
   - main.jar
   - lib/*
-
-env:
-  LD_LIBRARY_PATH: .
