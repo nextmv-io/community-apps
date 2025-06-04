@@ -41,6 +41,12 @@ apps:
     marketplace_app_id:
     marketplace_major_version:
     description: Use Java and Gurobi - knapsack.
+  - name: java-hexaly-knapsack
+    type: java
+    app_id:
+    marketplace_app_id:
+    marketplace_major_version:
+    description: Use Java and Hexaly - knapsack.
   - name: java-ortools-knapsack
     type: java
     app_id: knapsack-jortools
