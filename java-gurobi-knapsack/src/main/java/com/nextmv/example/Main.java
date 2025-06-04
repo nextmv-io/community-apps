@@ -1,13 +1,17 @@
 package com.nextmv.example;
 
+import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
-
 import com.gurobi.gurobi.*;
 
 public final class Main {
 
   public static void main(String[] args) {
+    // Redirect standard output to stderr until the solver is done.
+    PrintStream originalOut = System.out;
+    System.setOut(System.err);
+
     try {
       // Parse arguments.
       Options options = Options.fromArguments(args);
@@ -17,7 +21,7 @@ public final class Main {
 
       // Setup Gurobi environment and model.
       GRBEnv env = new GRBEnv(true);
-      env.set("OutputFlag", "0"); // Disable output
+      // env.set("OutputFlag", "0"); // Disable output if needed
       env.start();
       GRBModel model = new GRBModel(env);
 
@@ -50,6 +54,9 @@ public final class Main {
 
       // Solve.
       model.optimize();
+
+      // Restore standard output.
+      System.setOut(originalOut);
 
       // Convert solution to output.
       List<Item> outputItems = new ArrayList<>();

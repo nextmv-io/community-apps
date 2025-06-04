@@ -9,4 +9,5 @@ pre-push: mvn package
 # (e.g.: configs/*.json) is supported.
 files:
   - main.jar
-  - lib/*
+  - lib/*.so
+  - lib/*.jar

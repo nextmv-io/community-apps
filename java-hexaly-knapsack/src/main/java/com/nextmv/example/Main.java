@@ -1,13 +1,17 @@
 package com.nextmv.example;
 
+import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
-
 import com.hexaly.optimizer.*;
 
 public final class Main {
 
   public static void main(String[] args) {
+    // Redirect standard output to stderr until the solver is done.
+    PrintStream originalOut = System.out;
+    System.setOut(System.err);
+
     try (HexalyOptimizer optimizer = new HexalyOptimizer()) {
       // Parse arguments and load input as before
       Options options = Options.fromArguments(args);
@@ -41,11 +45,14 @@ public final class Main {
       // End model definition
       model.close();
 
+      // Apply duration limit
+      optimizer.getParam().setTimeLimit(options.getDuration());
+
       // Solve the model
       optimizer.solve();
 
-      // Apply duration limit
-      optimizer.getParam().setTimeLimit(options.getDuration());
+      // Restore standard output
+      System.setOut(originalOut);
 
       // Convert solution to output
       List<Item> outputItems = new ArrayList<>();
