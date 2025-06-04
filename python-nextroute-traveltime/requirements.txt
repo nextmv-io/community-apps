@@ -3,3 +3,4 @@ nextmv==0.28.0
 plotly==6.0.0
 traveltimepy== 3.10.2
 nextpipe==0.1.3
+nextroute
