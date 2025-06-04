@@ -3,6 +3,12 @@
 Example for running a Java `Maven` application on the Nextmv Platform using the
 Gurobi solver. We solve a knapsack Mixed Integer Programming problem.
 
+1. Setup license:
+    1. **Local**: Add license file `gurobi.lic` to the root of the project.
+        - If not using VS-Code's dev container, just place the `gurobi.lic` file
+          in `$HOME/gurobi.lic` (Gurobi's default path for the license).
+    1. **Platform**: Don't forget to also define the license as a [secret][secret]
+       in your Nextmv Application as well. This can be easily done via [console].
 1. Generate a `main.jar`.
 
     ```bash
@@ -35,10 +41,12 @@ the command `Dev Containers: Reopen in Container`.
 
 ## Next steps
 
-* Open `src/main/java/com/nextmv/example/Main.java` and modify the model.
-* Visit our [docs][docs] and [blog][blog]. Need more assistance?
+- Open `src/main/java/com/nextmv/example/Main.java` and modify the model.
+- Visit our [docs][docs] and [blog][blog]. Need more assistance?
   [Contact][contact] us!
 
 [docs]: https://docs.nextmv.io
+[console]: https://cloud.nextmv.io
+[secret]: https://www.nextmv.io/docs/using-nextmv/reference/secret-collections
 [blog]: https://www.nextmv.io/blog
 [contact]: https://www.nextmv.io/contact

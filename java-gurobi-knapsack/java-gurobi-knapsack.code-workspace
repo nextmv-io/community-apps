@@ -12,6 +12,9 @@
         "request": "launch",
         "mainClass": "com.nextmv.example.Main",
         "projectName": "GurobiJava",
+        "env": {
+          "GRB_LICENSE_FILE": "gurobi.lic"
+        },
         "args": ["--input", "input.json", "--output", "output.json"]
       }
     ]

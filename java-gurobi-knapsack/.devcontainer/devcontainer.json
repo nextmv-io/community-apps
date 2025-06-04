@@ -10,5 +10,10 @@
       "jdkDistro": "tem",
       "version": "21"
     }
+  },
+  "workspaceMount": "source=${localWorkspaceFolder}/.,target=/app,type=bind",
+  "workspaceFolder": "/app",
+  "containerEnv": {
+    "GRB_LICENSE_FILE": "/app/gurobi.lic"
   }
 }
