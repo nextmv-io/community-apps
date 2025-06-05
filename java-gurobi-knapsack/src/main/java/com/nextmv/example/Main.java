@@ -2,7 +2,6 @@ package com.nextmv.example;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import com.gurobi.gurobi.*;
 
 public final class Main {
@@ -17,7 +16,7 @@ public final class Main {
 
       // Setup Gurobi environment and model.
       GRBEnv env = new GRBEnv(true);
-      env.set("OutputFlag", "0"); // Disable output
+      env.set("OutputFlag", "0"); // Disable output if needed
       env.start();
       GRBModel model = new GRBModel(env);
 

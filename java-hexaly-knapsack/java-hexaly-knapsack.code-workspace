@@ -11,9 +11,10 @@
         "name": "Main",
         "request": "launch",
         "mainClass": "com.nextmv.example.Main",
-        "projectName": "GurobiJava",
+        "projectName": "HexalyJava",
         "env": {
-          "GRB_LICENSE_FILE": "gurobi.lic"
+          // Set path to the local libraries for the right arch flavor.
+          "LD_LIBRARY_PATH": "/app/local",
         },
         "args": ["--input", "input.json", "--output", "output.json"]
       }
@@ -23,6 +24,6 @@
     "recommendations": ["ms-vscode-remote.remote-containers"]
   },
   "settings": {
-    "java.configuration.updateBuildConfiguration": "interactive"
+    "java.configuration.updateBuildConfiguration": "automatic"
   }
 }
