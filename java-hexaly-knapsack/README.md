@@ -10,6 +10,10 @@ Hexaly solver. We solve a knapsack Mixed Integer Programming problem.
     1. **Platform**: Don't forget to also define the license file as a
         [secret][secret] in your Nextmv Application as well. This can be easily
         done via [console].
+        - Define a file secret with the name `license.dat` and the content of
+          your license file.
+        - Define a env variable secret with the name `LD_LIBRARY_PATH` and
+          the value `./lib` to point Hexaly to the bundled `*.so` libraries.
 1. Since there is no Hexaly Maven package, we need to setup a local one. For
     this, copy the following files into the project:
     - `hexaly.jar` -> `./lib/`
