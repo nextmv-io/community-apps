@@ -81,13 +81,14 @@ Allocation of the regions to the hubs visualized as a map:
 
 ## Next steps
 
-* Add run tracking to your own code.
-* Visit our [docs][docs] and [blog][blog]. Need more assistance?
-  [Contact][contact] us!
+- Add run tracking to your own code.
+- Visit our [general docs][docs], [workflow docs][workflow] and [blog][blog].
+  Need more assistance? [Contact][contact] us!
 
 [region-allocation]: ../python-ortools-region-allocation
 [console]: https://cloud.nextmv.io
 [docs]: https://docs.nextmv.io
+[workflow]: https://nextpipe.readthedocs.io/en/latest/
 [cli]: https://docs.nextmv.io/docs/using-nextmv/setup/install#nextmv-cli
 [blog]: https://www.nextmv.io/blog
 [contact]: https://www.nextmv.io/contact
