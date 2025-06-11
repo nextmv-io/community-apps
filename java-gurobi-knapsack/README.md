@@ -12,8 +12,8 @@ Gurobi solver. We solve a knapsack Mixed Integer Programming problem.
         done via [console].
         - Define a file secret with the name `gurobi.lic` and the content of
           your license file.
-        - Define a env variable secret with the name `GRB_LICENSE_FILE` and
-          the value `./gurobi.lic` to point Gurobi to the license file.
+        - Define an environment variable secret with the name `GRB_LICENSE_FILE`
+          and the value `./gurobi.lic` to point Gurobi to the license file.
 1. Generate a `main.jar`.
 
     ```bash
