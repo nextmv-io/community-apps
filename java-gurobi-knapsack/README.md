@@ -10,6 +10,10 @@ Gurobi solver. We solve a knapsack Mixed Integer Programming problem.
     1. **Platform**: Don't forget to also define the license file as a
         [secret][secret] in your Nextmv Application as well. This can be easily
         done via [console].
+        - Define a file secret with the name `gurobi.lic` and the content of
+          your license file.
+        - Define an environment variable secret with the name `GRB_LICENSE_FILE`
+          and the value `./gurobi.lic` to point Gurobi to the license file.
 1. Generate a `main.jar`.
 
     ```bash

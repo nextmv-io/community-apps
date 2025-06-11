@@ -1,4 +1,4 @@
-# Nextmv Tracked Runs for OR-Tools Region Allocation
+# Nextmv Workflow for generating visual assets for the Region Allocation app
 
 This example shows how to wrap the Region Allocation app in a meta-app using
 workflows in order to add additional visual assets to its runs.
