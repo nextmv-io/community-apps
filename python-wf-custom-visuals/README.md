@@ -1,6 +1,6 @@
-# Basic Workflow App
+# Basic Workflow App for Custom Visuals
 
-This example 
+This example demonstrates how to create custom visual assets via a workflow app.
 
 ## Prerequisites
 
