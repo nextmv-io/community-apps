@@ -19,7 +19,7 @@ class Flow(FlowSpec):
         instance_id="latest",  # Use "latest" for marketplace instances.
         parameters={
             "model.constraints.enable.cluster": True,  # Enable clustering of routes.
-            "solve.duration": 5,  # 5 seconds time limit for solving.
+            "solve.duration": "5s",  # 5 seconds time limit for solving.
         },
     )
     @step
