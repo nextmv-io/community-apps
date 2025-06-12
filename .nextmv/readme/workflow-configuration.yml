@@ -219,6 +219,12 @@ apps:
         silent: true
       - name: 2.sh
         skip: true
+  - name: python-wf-custom-visuals
+    scripts:
+      - name: 0.sh
+        skip: true
+      - name: 1.sh
+        skip: true
   - name: python-wf-databricks
     scripts:
       - name: 0.sh
