@@ -1,6 +1,11 @@
 # Basic Workflow App for Custom Visuals
 
 This example demonstrates how to create custom visual assets via a workflow app.
+While the Nextmv console already provides a built-in visualization for routes,
+this example shows how to create a custom visualization for rendering the routes
+as clusters. This is useful when you want to more clearly visualize the
+distribution of routes. For this, the example makes use of nextroute's (_Nextmv
+Routing_) **cluster** functionality.
 
 ## Prerequisites
 

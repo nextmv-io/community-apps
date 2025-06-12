@@ -12,6 +12,7 @@ class Flow(FlowSpec):
     @step
     def prepare(input_data: dict):
         """Prepares the input data."""
+        # Prepare/transform the input data as needed.
         return input_data
 
     @app(
@@ -22,6 +23,7 @@ class Flow(FlowSpec):
             "solve.duration": "5s",  # 5 seconds time limit for solving.
         },
     )
+    @needs(predecessors=[prepare])
     @step
     def solve():
         """Solves the routing problem using Nextroute Marketplace App."""
@@ -56,17 +58,19 @@ class Flow(FlowSpec):
                         },
                         "properties": {
                             "name": f"Route {i + 1}",
+                            # Assign a color based on the index of the polygon.
                             "style": {
                                 "color": get_color(i / len(polygons)),
                                 "fillColor": get_color(i / len(polygons)),
-                                "fillOpacity": 0.8,
+                                "fillOpacity": 0.7,
                             },
+                            # Define some metadata to show when clicking on the polygon.
                             "metadata": [
                                 {"key": "Vehicle ID", "value": vehicle_id},
                                 {"key": "#Stops", "value": len(polygon) - 1},  # Exclude the closing point
-                                {"key": "Route Duration", "value": f"{duration:.2f} seconds"},
-                                {"key": "Travel Duration", "value": f"{travel_duration:.2f} seconds"},
-                                {"key": "Travel Distance", "value": f"{travel_distance:.2f} meters"},
+                                {"key": "Route Duration", "value": f"{duration} seconds"},
+                                {"key": "Travel Duration", "value": f"{travel_duration} seconds"},
+                                {"key": "Travel Distance", "value": f"{travel_distance} meters"},
                             ],
                         },
                     }
@@ -131,7 +135,7 @@ def get_color(value: float) -> str:
     """
     Helper function to convert a percentage value to a color in hex format.
     """
-    r, g, b = colorsys.hsv_to_rgb(value, 0.8, 0.8)
+    r, g, b = colorsys.hsv_to_rgb(value, 0.7, 0.7)
     return f"#{int(r * 255):02x}{int(g * 255):02x}{int(b * 255):02x}"
 
 
