@@ -73,11 +73,11 @@ see these in [console][console] for example. Here is a sneak peek of them.
 
 Demand of the regions visualized as a choropleth map:
 
-![sneak peek demand](https://nextmv-io.github.io/community-apps/content/apps/python-wf-ortools-region-allocation/demand.png)
+![sneak peek demand](https://nextmv-io.github.io/community-apps/apps/python-wf-ortools-region-allocation/demand.png)
 
 Allocation of the regions to the hubs visualized as a map:
 
-![sneak peek allocation](https://nextmv-io.github.io/community-apps/content/apps/python-wf-ortools-region-allocation/allocation.png)
+![sneak peek allocation](https://nextmv-io.github.io/community-apps/apps/python-wf-ortools-region-allocation/allocation.png)
 
 ## Next steps
 

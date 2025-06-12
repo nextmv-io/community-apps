@@ -53,7 +53,7 @@ them.
 
 Routes plotted as clusters:
 
-![sneak peek clusters](https://nextmv-io.github.io/community-apps/content/apps/python-wf-custom-visuals/clusters.png)
+![sneak peek clusters](https://nextmv-io.github.io/community-apps/apps/python-wf-custom-visuals/clusters.png)
 
 ## Next steps
 
