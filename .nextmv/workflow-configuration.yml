@@ -209,6 +209,12 @@ apps:
     marketplace_app_id:
     marketplace_major_version:
     description: Use tracked runs in Python - region allocation.
+  - name: python-wf-custom-visuals
+    type: python
+    app_id:
+    marketplace_app_id:
+    marketplace_major_version:
+    description: Use workflows in Python - custom visuals.
   - name: python-wf-ortools-region-allocation
     type: python
     app_id:
