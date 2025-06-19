@@ -4,12 +4,17 @@ Example for running a Java `Maven` application on the Nextmv Platform using the
 Gurobi solver. We solve a knapsack Mixed Integer Programming problem.
 
 1. Setup license:
-    1. **Local**: Add license file `gurobi.lic` to the root of the project.
-        - If not using VS-Code's dev container, just place the `gurobi.lic` file
-          in `$HOME/gurobi.lic` (Gurobi's default path for the license).
+    1. **Local**:
+        - You can simply place the `gurobi.lic` file in your _home directory_
+        (like Gurobi expects it). If you are using the dev container, it will be
+        mounted inside of the container for you.
     1. **Platform**: Don't forget to also define the license file as a
         [secret][secret] in your Nextmv Application as well. This can be easily
         done via [console].
+        - Define a file secret with the name `gurobi.lic` and the content of
+          your license file.
+        - Define an environment variable secret with the name `GRB_LICENSE_FILE`
+          and the value `./gurobi.lic` to point Gurobi to the license file.
 1. Generate a `main.jar`.
 
     ```bash

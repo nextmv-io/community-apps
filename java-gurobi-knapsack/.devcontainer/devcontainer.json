@@ -13,7 +13,10 @@
   },
   "workspaceMount": "source=${localWorkspaceFolder}/.,target=/app,type=bind",
   "workspaceFolder": "/app",
+  "mounts": [
+    "source=${localEnv:HOME}${localEnv:USERPROFILE}/gurobi.lic,target=/root/gurobi.lic,type=bind,consistency=cached"
+  ],
   "containerEnv": {
-    "GRB_LICENSE_FILE": "./gurobi.lic"
+    "GRB_LICENSE_FILE": "/root/gurobi.lic"
   }
 }

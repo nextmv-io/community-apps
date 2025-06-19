@@ -29,6 +29,14 @@ public class Options {
     int duration = 30;
 
     for (int i = 0; i < args.length; ++i) {
+      // Handle platform option style with '=' separators
+      if (args[i].startsWith("-d=")) {
+        duration = Integer.parseInt(args[i].substring("-d=".length()));
+        continue;
+      } else if (args[i].startsWith("-duration=")) {
+        duration = Integer.parseInt(args[i].substring("-duration=".length()));
+        continue;
+      }
       switch (args[i]) {
         case "-i":
         case "--input":
