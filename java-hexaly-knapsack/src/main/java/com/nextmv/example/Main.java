@@ -13,6 +13,10 @@ public final class Main {
     System.setOut(System.err);
 
     try (HexalyOptimizer optimizer = new HexalyOptimizer()) {
+      // Now that stdout is redirected, we can safely activate logging
+      // (may have been deactivated by license file parameters).
+      optimizer.getParam().setVerbosity(1);
+      
       // Parse arguments and load input as before
       Options options = Options.fromArguments(args);
       Input input = Input.fromString(options.getInputPath());
