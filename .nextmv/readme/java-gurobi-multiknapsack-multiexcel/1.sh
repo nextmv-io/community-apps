@@ -1,1 +1,1 @@
-java -jar main.jar --input input.json
+java -jar main.jar
