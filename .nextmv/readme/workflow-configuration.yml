@@ -40,6 +40,17 @@ apps:
         skip: true
       - name: 3.sh
         skip: true
+  - name: java-gurobi-multiknapsack-multiexcel
+    scripts:
+      - name: 0.sh
+        silent: true
+      # We cannot run Java Gurobi without a license, so we skip these tests.
+      - name: 1.sh
+        skip: true
+      - name: 2.sh
+        skip: true
+      - name: 3.sh
+        skip: true
   - name: java-hexaly-knapsack
     scripts:
       # Without the license and no maven package, we cannot run the tests.
