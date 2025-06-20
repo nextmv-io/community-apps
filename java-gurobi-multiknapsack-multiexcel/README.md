@@ -1,7 +1,9 @@
-# Nextmv Java Gurobi Knapsack
+# Nextmv Java Gurobi Multi-Knapsack
 
 Example for running a Java `Maven` application on the Nextmv Platform using the
-Gurobi solver. We solve a knapsack Mixed Integer Programming problem.
+Gurobi solver. We solve a multi-knapsack Mixed Integer Programming problem while
+reading the input from an _Excel_ file and writing the output to an _Excel_
+file.
 
 1. Setup license:
     1. **Local**:
@@ -21,10 +23,11 @@ Gurobi solver. We solve a knapsack Mixed Integer Programming problem.
     mvn package
     ```
 
-1. Run the app.
+1. Run the app (update the input in `inputs/input.xlsx` or point to a different
+   directory via `-input` option).
 
     ```bash
-    java -jar main.jar --input input.json
+    java -jar main.jar
     ```
 
 1. If above steps were successful, you can push the app to the Nextmv Platform.
@@ -42,7 +45,7 @@ To run the application in the same Docker image as the one used on Nextmv
 Cloud, you can use the following command:
 
 ```bash
-mvn package && cat input.json | docker run -i --rm \
+mvn package | docker run -i --rm \
 -v $(pwd):/app ghcr.io/nextmv-io/runtime/java:latest \
 java -jar /app/main.jar
 ```
