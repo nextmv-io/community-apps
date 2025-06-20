@@ -3,7 +3,10 @@ package com.nextmv.example;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+
 import com.gurobi.gurobi.*;
 
 public final class Main {
@@ -104,7 +107,7 @@ public final class Main {
           unassignedItems.add(inputItems.get(itemIndex).getId());
         }
       }
-      Solution solution = new Solution(assignments, unassignedItems);
+      Solution solution = new Solution(assignments, new ArrayList<>(unassignedItems));
       // Write solution to Excel file.
       ExcelWriter outputWriter = new ExcelWriter();
       try {
