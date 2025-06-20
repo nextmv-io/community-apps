@@ -93,7 +93,7 @@ public final class Main {
 
       // Convert to solution.
       List<Assignment> assignments = new ArrayList<>();
-      List<String> unassignedItems = new ArrayList<>();
+      Set<String> unassignedItems = new HashSet<>();
       for (int i = 0; i < variables.size(); ++i) {
         int knapsackIndex = i / inputItems.size();
         int itemIndex = i % inputItems.size();
