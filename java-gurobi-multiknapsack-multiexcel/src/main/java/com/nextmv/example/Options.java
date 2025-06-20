@@ -24,8 +24,12 @@ public class Options {
   }
 
   public static Options fromArguments(String[] args) {
+    // Set the default input/output directories as used by Nextmv Platform.
+    // All input files are placed in the "inputs" directory, prior to the run.
+    // And all output files will get collected in the "solutions" directory, after
+    // the run.
     String inputPath = "inputs/";
-    String outputPath = "outputs/";
+    String outputPath = "solutions/";
     int duration = 30;
 
     for (int i = 0; i < args.length; ++i) {
