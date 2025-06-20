@@ -34,7 +34,14 @@ file.
    E.g., using the [Nextmv CLI][install-cli]:
 
     ```bash
-    nextmv push --app-id <your-app-id>
+    nextmv push -a <your-app-id>
+    ```
+
+1. You can now run the app on the Nextmv Platform by using the [Nextmv
+   Console][console] or via the [Nextmv CLI][install-cli]:
+
+    ```bash
+    nextmv run -a <your-app-id> -s <your-secret-id> -i inputs/ --content-type multi-file
     ```
 
 ## Mirror running on Nextmv Cloud locally

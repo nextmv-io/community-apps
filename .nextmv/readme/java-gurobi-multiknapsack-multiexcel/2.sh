@@ -1,1 +1,1 @@
-nextmv push --app-id <your-app-id>
+nextmv push -a <your-app-id>
