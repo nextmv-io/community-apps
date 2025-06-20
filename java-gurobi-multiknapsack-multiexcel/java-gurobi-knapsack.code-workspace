@@ -12,7 +12,7 @@
         "request": "launch",
         "mainClass": "com.nextmv.example.Main",
         "projectName": "GurobiJava",
-        "args": ["--input", "input.json", "--output", "output.json"]
+        "args": []
       }
     ]
   },
