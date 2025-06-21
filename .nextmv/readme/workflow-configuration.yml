@@ -51,6 +51,8 @@ apps:
         skip: true
       - name: 3.sh
         skip: true
+      - name: 4.sh
+        skip: true
   - name: java-hexaly-knapsack
     scripts:
       # Without the license and no maven package, we cannot run the tests.
