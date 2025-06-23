@@ -29,7 +29,7 @@ public class Options {
     // And all output files will get collected in the "solutions" directory, after
     // the run.
     String inputPath = "inputs/";
-    String outputPath = "solutions/";
+    String outputPath = "outputs/solutions/";
     int duration = 30;
 
     for (int i = 0; i < args.length; ++i) {
