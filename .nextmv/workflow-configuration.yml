@@ -41,6 +41,12 @@ apps:
     marketplace_app_id:
     marketplace_major_version:
     description: Use Java and Gurobi - knapsack.
+  - name: java-gurobi-multiknapsack-multiexcel
+    type: java
+    app_id:
+    marketplace_app_id:
+    marketplace_major_version:
+    description: Use Java and Gurobi - multi knapsack via Excel.
   - name: java-hexaly-knapsack
     type: java
     app_id:
