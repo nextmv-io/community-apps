@@ -1,0 +1,183 @@
+package com.nextmv.example;
+
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import com.gurobi.gurobi.*;
+
+public final class Main {
+
+  public static void main(String[] args) {
+    try {
+      // Parse arguments.
+      Options options = Options.fromArguments(args);
+
+      // Make sure input directory exists.
+      Path inputPath = Paths.get(options.getInputPath());
+      if (!inputPath.toFile().exists() || !inputPath.toFile().isDirectory()) {
+        System.err.println("Input directory does not exist: " + options.getInputPath());
+        System.exit(1);
+      }
+      // Create output directory if it does not exist.
+      Path outputPath = Paths.get(options.getOutputPath());
+      if (!outputPath.toFile().exists()) {
+        if (!outputPath.toFile().mkdirs()) {
+          System.err.println("Failed to create output directory: " + options.getOutputPath());
+          System.exit(1);
+        }
+      } else if (!outputPath.toFile().isDirectory()) {
+        System.err.println("Output path is not a directory: " + options.getOutputPath());
+        System.exit(1);
+      }
+
+      // Load input.
+      ExcelReader inputReader = new ExcelReader();
+      Input input;
+      try {
+        String inputFilePath = Paths.get(options.getInputPath(), "input.xlsx").toString();
+        input = inputReader.readExcelFile(inputFilePath);
+      } catch (Exception e) {
+        System.err.println("Error reading input file: " + e.getMessage());
+        System.exit(1);
+        return; // Unreachable, but added for completeness
+      }
+      if (input.getItems().isEmpty() || input.getKnapsacks().isEmpty()) {
+        System.err.println("Input file must contain at least one item and one knapsack.");
+        System.exit(1);
+      }
+
+      // Setup Gurobi environment and model.
+      GRBEnv env = new GRBEnv(true);
+      env.set("OutputFlag", "0"); // Disable output if needed
+      env.start();
+      GRBModel model = new GRBModel(env);
+
+      // Apply duration limit.
+      model.set(GRB.DoubleParam.TimeLimit, options.getDuration());
+
+      // Create assignment variable for each item in each knapsack.
+      // Variables are binary, indicating whether an item is assigned to a knapsack.
+      List<GRBVar> variables = new ArrayList<>();
+      List<Item> inputItems = input.getItems();
+      for (Knapsack knapsack : input.getKnapsacks()) {
+        for (Item item : inputItems) {
+          variables.add(model.addVar(0.0, 1.0, 0.0, GRB.BINARY, knapsack.getId() + "_" + item.getId()));
+        }
+      }
+
+      // Integrate new variables
+      model.update();
+
+      // Create capacity constraint.
+      for (int i = 0; i < input.getKnapsacks().size(); ++i) {
+        Knapsack knapsack = input.getKnapsacks().get(i);
+        GRBLinExpr knapsackExpr = new GRBLinExpr();
+        for (int j = 0; j < inputItems.size(); ++j) {
+          knapsackExpr.addTerm(inputItems.get(j).getWeight(), variables.get(i * inputItems.size() + j));
+        }
+        model.addConstr(knapsackExpr, GRB.LESS_EQUAL, knapsack.getCapacity(), "capacity_" + knapsack.getId());
+      }
+
+      // Create the objective function.
+      GRBLinExpr objectiveExpr = new GRBLinExpr();
+      for (int i = 0; i < input.getKnapsacks().size(); ++i) {
+        for (int j = 0; j < inputItems.size(); ++j) {
+          objectiveExpr.addTerm(inputItems.get(j).getValue(), variables.get(i * inputItems.size() + j));
+        }
+      }
+      model.setObjective(objectiveExpr, GRB.MAXIMIZE);
+
+      // Solve.
+      model.optimize();
+
+      // Convert to solution.
+      List<Assignment> assignments = new ArrayList<>();
+      Set<String> unassignedItems = new HashSet<>();
+      for (int i = 0; i < variables.size(); ++i) {
+        int knapsackIndex = i / inputItems.size();
+        int itemIndex = i % inputItems.size();
+        if (variables.get(i).get(GRB.DoubleAttr.X) > 0.5) {
+          assignments
+              .add(new Assignment(inputItems.get(itemIndex).getId(), input.getKnapsacks().get(knapsackIndex).getId()));
+        } else {
+          unassignedItems.add(inputItems.get(itemIndex).getId());
+        }
+      }
+      Solution solution = new Solution(assignments, new ArrayList<>(unassignedItems));
+      // Write solution to Excel file.
+      ExcelWriter outputWriter = new ExcelWriter();
+      try {
+        String outputFilePath = Paths.get(options.getOutputPath(), "output.xlsx").toString();
+        outputWriter.writeSolutionToExcel(solution, outputFilePath);
+      } catch (Exception e) {
+        System.err.println("Error writing output file: " + e.getMessage());
+        System.exit(1);
+      }
+
+      // Convert solution to output.
+      Output output = new Output(
+          model.get(GRB.DoubleAttr.Runtime),
+          model.get(GRB.DoubleAttr.ObjVal),
+          "Gurobi",
+          convertStatus(model.get(GRB.IntAttr.Status)),
+          model.get(GRB.IntAttr.NumVars),
+          model.get(GRB.IntAttr.NumConstrs));
+
+      // Write output.
+      Output.write(output);
+
+      // Dispose of model and environment.
+      model.dispose();
+      env.dispose();
+
+    } catch (GRBException e) {
+      System.out.println("Error code: " + e.getErrorCode() + ". " + e.getMessage());
+      e.printStackTrace();
+    }
+  }
+
+  public static String convertStatus(int status) {
+    switch (status) {
+      case GRB.Status.LOADED:
+        return "LOADED";
+      case GRB.Status.OPTIMAL:
+        return "OPTIMAL";
+      case GRB.Status.INFEASIBLE:
+        return "INFEASIBLE";
+      case GRB.Status.INF_OR_UNBD:
+        return "INF_OR_UNBD";
+      case GRB.Status.UNBOUNDED:
+        return "UNBOUNDED";
+      case GRB.Status.CUTOFF:
+        return "CUTOFF";
+      case GRB.Status.ITERATION_LIMIT:
+        return "ITERATION_LIMIT";
+      case GRB.Status.NODE_LIMIT:
+        return "NODE_LIMIT";
+      case GRB.Status.TIME_LIMIT:
+        return "TIME_LIMIT";
+      case GRB.Status.SOLUTION_LIMIT:
+        return "SOLUTION_LIMIT";
+      case GRB.Status.INTERRUPTED:
+        return "INTERRUPTED";
+      case GRB.Status.NUMERIC:
+        return "NUMERIC";
+      case GRB.Status.SUBOPTIMAL:
+        return "SUBOPTIMAL";
+      case GRB.Status.INPROGRESS:
+        return "INPROGRESS";
+      case GRB.Status.USER_OBJ_LIMIT:
+        return "USER_OBJ_LIMIT";
+      case GRB.Status.WORK_LIMIT:
+        return "WORK_LIMIT";
+      case GRB.Status.MEM_LIMIT:
+        return "MEM_LIMIT";
+      default:
+        return "UNKNOWN";
+    }
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "folders": [
+    {
+      "path": "."
+    }
+  ],
+  "launch": {
+    "configurations": [
+      {
+        "type": "java",
+        "name": "Main",
+        "request": "launch",
+        "mainClass": "com.nextmv.example.Main",
+        "projectName": "GurobiJava",
+        "args": []
+      }
+    ]
+  },
+  "extensions": {
+    "recommendations": ["ms-vscode-remote.remote-containers"]
+  },
+  "settings": {
+    "java.configuration.updateBuildConfiguration": "interactive"
+  }
+}
