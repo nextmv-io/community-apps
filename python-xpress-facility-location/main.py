@@ -10,12 +10,6 @@ try:
 except ImportError as exc:
     raise ImportError("is xpress available for your OS and ARCH and installed?") from exc
 
-import sys
-import os
-# Redirect stdout to stderr to suppress license warnings
-original_stdout = sys.stdout
-sys.stdout = sys.stderr
-
 # Status of the solver after optimizing.
 STATUS = {
     xp.SolStatus.FEASIBLE: "suboptimal",
@@ -50,6 +44,7 @@ def main() -> None:
     # Create a dictionary with the distances between schools and candidate sites
     dist = {(i,j): np.linalg.norm([coord_schools[i] - coord_sites[j]]) for i in SCHOOLS for j in SITES}
 
+    nextmv.redirect_stdout() # Redirect solver output to stderr
     prob = xp.problem()
 
     serves = prob.addVariables(SCHOOLS, SITES, vartype=xp.binary)
@@ -79,14 +74,13 @@ def main() -> None:
     input_charts = draw_sol(n=input.data.get('num_schools'),m=input.data.get('num_sites'), label="Input Chart", coord_schools=coord_schools, coord_sites=coord_sites, SCHOOLS=SCHOOLS, SITES=SITES)
     output_charts = draw_sol(input.data.get('num_schools'),input.data.get('num_sites'),prob,serves,build, "Output Chart", coord_schools=coord_schools, coord_sites=coord_sites, SCHOOLS=SCHOOLS, SITES=SITES)
 
-    sys.stdout = original_stdout
-
-    
-    return nextmv.Output(
+    output = nextmv.Output(
            solution={"solution": solution},
            statistics={"result": {"value": value}, "schema": "v1"},
            assets=[input_charts, output_charts]
        )
+    
+    nextmv.write(output, path=options.output)
 
 
 if __name__ == "__main__":
