@@ -22,17 +22,8 @@ public final class Main {
         System.err.println("Input directory does not exist: " + options.getInputPath());
         System.exit(1);
       }
-      // Create output directory if it does not exist.
-      Path outputPath = Paths.get(options.getOutputPath());
-      if (!outputPath.toFile().exists()) {
-        if (!outputPath.toFile().mkdirs()) {
-          System.err.println("Failed to create output directory: " + options.getOutputPath());
-          System.exit(1);
-        }
-      } else if (!outputPath.toFile().isDirectory()) {
-        System.err.println("Output path is not a directory: " + options.getOutputPath());
-        System.exit(1);
-      }
+      // Prepare output directory.
+      prepareOutputDirectory(options.getOutputPath());
 
       // Load input.
       ExcelReader inputReader = new ExcelReader();
@@ -82,6 +73,15 @@ public final class Main {
         model.addConstr(knapsackExpr, GRB.LESS_EQUAL, knapsack.getCapacity(), "capacity_" + knapsack.getId());
       }
 
+      // Ensure that each item can only be assigned once.
+      for (int j = 0; j < inputItems.size(); ++j) {
+        GRBLinExpr itemExpr = new GRBLinExpr();
+        for (int i = 0; i < input.getKnapsacks().size(); ++i) {
+          itemExpr.addTerm(1.0, variables.get(i * inputItems.size() + j));
+        }
+        model.addConstr(itemExpr, GRB.LESS_EQUAL, 1.0, "item_assignment_" + inputItems.get(j).getId());
+      }
+
       // Create the objective function.
       GRBLinExpr objectiveExpr = new GRBLinExpr();
       for (int i = 0; i < input.getKnapsacks().size(); ++i) {
@@ -111,8 +111,8 @@ public final class Main {
       // Write solution to Excel file.
       ExcelWriter outputWriter = new ExcelWriter();
       try {
-        String outputFilePath = Paths.get(options.getOutputPath(), "output.xlsx").toString();
-        outputWriter.writeSolutionToExcel(solution, outputFilePath);
+        String solutionPath = Paths.get(options.getOutputPath(), "solutions", "solution.xlsx").toString();
+        outputWriter.writeSolutionToExcel(solution, solutionPath);
       } catch (Exception e) {
         System.err.println("Error writing output file: " + e.getMessage());
         System.exit(1);
@@ -128,7 +128,7 @@ public final class Main {
           model.get(GRB.IntAttr.NumConstrs));
 
       // Write output.
-      Output.write(output);
+      Output.write(output, options.getOutputPath());
 
       // Dispose of model and environment.
       model.dispose();
@@ -137,6 +137,30 @@ public final class Main {
     } catch (GRBException e) {
       System.out.println("Error code: " + e.getErrorCode() + ". " + e.getMessage());
       e.printStackTrace();
+    }
+  }
+
+  private static void prepareOutputDirectory(String outputPath) {
+    // Prepare output directory if it does not exist.
+    Path solutionsPath = Paths.get(outputPath, "solutions");
+    Path statisticsPath = Paths.get(outputPath, "statistics");
+    if (!solutionsPath.toFile().exists()) {
+      if (!solutionsPath.toFile().mkdirs()) {
+        System.err.println("Failed to create solutions directory: " + solutionsPath.toString());
+        System.exit(1);
+      }
+    } else if (!solutionsPath.toFile().isDirectory()) {
+      System.err.println("Solutions path is not a directory: " + solutionsPath.toString());
+      System.exit(1);
+    }
+    if (!statisticsPath.toFile().exists()) {
+      if (!statisticsPath.toFile().mkdirs()) {
+        System.err.println("Failed to create statistics directory: " + statisticsPath.toString());
+        System.exit(1);
+      }
+    } else if (!statisticsPath.toFile().isDirectory()) {
+      System.err.println("Statistics path is not a directory: " + statisticsPath.toString());
+      System.exit(1);
     }
   }
 
