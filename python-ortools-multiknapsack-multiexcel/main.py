@@ -70,29 +70,29 @@ class DecisionModel(nextmv.Model):
         # Unpack the input data.
         if "items" not in input.data or "knapsacks" not in input.data:
             raise ValueError("Input data must contain items and knapsacks.")
-        items: pd.DataFrame = input.data["items"]
-        knapsacks: pd.DataFrame = input.data["knapsacks"]
+        items_df: pd.DataFrame = input.data["items"]
+        knapsacks_df: pd.DataFrame = input.data["knapsacks"]
+        items = items_df.to_dict("records")
+        knapsacks = knapsacks_df.to_dict("records")
 
         # Initialize variables.
         assignments = {}
-        for _, knapsack in knapsacks.iterrows():
-            for _, item in items.iterrows():
+        for knapsack in knapsacks:
+            for item in items:
                 # Create a binary variable for each item in each knapsack.
                 assignments[(knapsack["id"], item["id"])] = solver.IntVar(0, 1, f"{knapsack['id']}_{item['id']}")
 
         # Make sure the knapsacks' capacities are not exceeded.
-        for _, knapsack in knapsacks.iterrows():
+        for knapsack in knapsacks:
             solver.Add(
-                solver.Sum(assignments[(knapsack["id"], item["id"])] * item["weight"] for _, item in items.iterrows())
+                solver.Sum(assignments[(knapsack["id"], item["id"])] * item["weight"] for item in items)
                 <= knapsack["capacity"]
             )
 
         # Maximize the total value of the items in the knapsacks.
         solver.Maximize(
             solver.Sum(
-                assignments[(knapsack["id"], item["id"])] * item["value"]
-                for _, knapsack in knapsacks.iterrows()
-                for _, item in items.iterrows()
+                assignments[(knapsack["id"], item["id"])] * item["value"] for knapsack in knapsacks for item in items
             )
         )
 
@@ -102,8 +102,8 @@ class DecisionModel(nextmv.Model):
         # Determines which items were chosen.
         chosen_items = [
             (knapsack["id"], item["id"])
-            for _, knapsack in knapsacks.iterrows()
-            for _, item in items.iterrows()
+            for knapsack in knapsacks
+            for item in items
             if assignments[(knapsack["id"], item["id"])].solution_value() > 0.5
         ]
 
