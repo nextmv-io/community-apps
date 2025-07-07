@@ -14,10 +14,13 @@ def main() -> None:
 
     os.makedirs(options.output, exist_ok=True)
 
+    model_path = find_model(options.input, [".hxm", ".lsp"])
+    data_path = find_model(options.input, [".dat"])
+    nextmv.log(f"Using model file: {model_path}")
+    nextmv.log(f"Using data file: {data_path}")
+
     with HexalyModeler() as modeler:
         optimizer = modeler.create_optimizer()
-        model_path = find_model(options.input, [".hxm", ".lsp"])
-        data_path = find_model(options.input, [".dat"])
         module = modeler.load_module("model", model_path)
         module.run(
             optimizer,
