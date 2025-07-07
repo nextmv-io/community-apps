@@ -1,5 +1,4 @@
 import os
-import os.path
 
 import nextmv
 from hexaly.modeler import HexalyModeler
