@@ -8,17 +8,27 @@ from hexaly.modeler import HexalyModeler
 def main() -> None:
     options = nextmv.Options(
         nextmv.Option("input", str, "inputs/", "input path", False),
+        nextmv.Option("model", str, "", "model file path", False),
+        nextmv.Option("data", str, "", "data file path", False),
         nextmv.Option("output", str, "outputs/solutions/", "output path", False),
         nextmv.Option("duration", int, 30, "max runtime in seconds", False),
     )
 
     os.makedirs(options.output, exist_ok=True)
 
-    model_path = find_model(options.input, [".hxm", ".lsp"])
-    data_path = find_model(options.input, [".dat"])
+    # Determine model and data files.
+    if options.model:
+        model_path = os.path.join(options.input, options.model)
+    else:
+        model_path = find_file(options.input, [".hxm", ".lsp"])
+    if options.data:
+        data_path = os.path.join(options.input, options.data)
+    else:
+        data_path = find_file(options.input, [".dat"])
     nextmv.log(f"Using model file: {model_path}")
     nextmv.log(f"Using data file: {data_path}")
 
+    # Load and solve the model.
     with HexalyModeler() as modeler:
         optimizer = modeler.create_optimizer()
         module = modeler.load_module("model", model_path)
@@ -40,7 +50,7 @@ def main() -> None:
         )
 
 
-def find_model(path: str, extensions: list[str]) -> str:
+def find_file(path: str, extensions: list[str]) -> str:
     """
     Finds the first file with the given extension in the specified path.
     """
