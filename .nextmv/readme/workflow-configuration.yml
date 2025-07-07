@@ -166,6 +166,10 @@ apps:
         silent: true
       - name: 2.sh
         skip: true
+  - name: python-ortools-multiknapsack-multiexcel
+    scripts:
+      - name: 0.sh
+        silent: true
   - name: python-ortools-region-allocation
     scripts:
       - name: 0.sh
