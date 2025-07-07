@@ -20,6 +20,10 @@ multi knapsack Mixed Integer Programming problem.
     pip3 install -r requirements.txt
     ```
 
+1. Put your model file and input data in the `inputs/` directory. The model file
+   should have the extension `.hxm` and the input data file should have the
+   extension `.dat`. See the example files in the `inputs/` directory for
+   reference.
 1. Run the app.
 
     ```bash
