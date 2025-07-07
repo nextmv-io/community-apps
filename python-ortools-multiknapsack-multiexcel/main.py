@@ -89,6 +89,10 @@ class DecisionModel(nextmv.Model):
                 <= knapsack["capacity"]
             )
 
+        # Ensure that each item can only be assigned once.
+        for item in items:
+            solver.Add(solver.Sum(assignments[(knapsack["id"], item["id"])] for knapsack in knapsacks) <= 1)
+
         # Maximize the total value of the items in the knapsacks.
         solver.Maximize(
             solver.Sum(
@@ -118,18 +122,6 @@ class DecisionModel(nextmv.Model):
                     "constraints": solver.NumConstraints(),
                 },
             ),
-        )
-
-        df = pd.DataFrame(
-            {
-                "knapsack_id": [knapsack_id for knapsack_id, _ in chosen_items],
-                "item_id": [item_id for _, item_id in chosen_items],
-            }
-        )
-        df.to_excel(
-            f"{input.options.output}/assignments.xlsx",
-            index=False,
-            sheet_name="assignments",
         )
 
         return nextmv.Output(
