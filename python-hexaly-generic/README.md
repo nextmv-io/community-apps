@@ -24,6 +24,9 @@ multi knapsack Mixed Integer Programming problem.
    should have the extension `.hxm` and the input data file should have the
    extension `.dat`. See the example files in the `inputs/` directory for
    reference.
+   - The model automatically loads the first `.hxm` file (alternatively, the
+     first `.lsp` file) and the first `.dat` file it finds in the input
+     directory. Use the `-model` and `-data` flags to specify specific files.
 1. Run the app.
 
     ```bash
