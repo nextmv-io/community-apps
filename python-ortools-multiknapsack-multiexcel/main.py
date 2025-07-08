@@ -124,24 +124,24 @@ class DecisionModel(nextmv.Model):
             ),
         )
 
+        excel_sol_file = nextmv.SolutionFile(
+            name="assignments.xlsx",
+            data=pd.DataFrame(
+                {
+                    "knapsack_id": [knapsack_id for knapsack_id, _ in chosen_items],
+                    "item_id": [item_id for _, item_id in chosen_items],
+                }
+            ),
+            writer=lambda path, data: data.to_excel(path, index=False, sheet_name="assignments"),
+        )
+        csv_sol_file = nextmv.csv_solution_file(
+            "assignments",
+            data=[{"knapsack_id": knapsack_id, "item_id": item_id} for knapsack_id, item_id in chosen_items],
+        )
+
         return nextmv.Output(
             options=input.options,
-            solution_files=[
-                nextmv.SolutionFile(
-                    name="assignments.xlsx",
-                    data=pd.DataFrame(
-                        {
-                            "knapsack_id": [knapsack_id for knapsack_id, _ in chosen_items],
-                            "item_id": [item_id for _, item_id in chosen_items],
-                        }
-                    ),
-                    writer=lambda path, data: data.to_excel(path, index=False, sheet_name="assignments"),
-                ),
-                nextmv.csv_solution_file(
-                    "assignments",
-                    data=[{"knapsack_id": knapsack_id, "item_id": item_id} for knapsack_id, item_id in chosen_items],
-                ),
-            ],
+            solution_files=[excel_sol_file, csv_sol_file],
             statistics=statistics,
             output_format=nextmv.OutputFormat.MULTI_FILE,
         )
