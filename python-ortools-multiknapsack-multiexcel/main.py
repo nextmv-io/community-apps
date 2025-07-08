@@ -26,21 +26,21 @@ def main() -> None:
         nextmv.Option("provider", str, "SCIP", "Solver provider.", False),
     )
 
+    items_input_file = nextmv.DataFile(
+        name="input.xlsx",
+        loader=lambda path: pd.read_excel(path, sheet_name="items"),
+        input_data_key="items",
+    )
+    knapsacks_input_file = nextmv.DataFile(
+        name="input.xlsx",
+        loader=lambda path: pd.read_excel(path, sheet_name="knapsacks"),
+        input_data_key="knapsacks",
+    )
+
     input = nextmv.load(
         options=options,
         path=options.input,
-        data_files=[
-            nextmv.DataFile(
-                name="input.xlsx",
-                loader=lambda path: pd.read_excel(path, sheet_name="items"),
-                input_data_key="items",
-            ),
-            nextmv.DataFile(
-                name="input.xlsx",
-                loader=lambda path: pd.read_excel(path, sheet_name="knapsacks"),
-                input_data_key="knapsacks",
-            ),
-        ],
+        data_files=[items_input_file, knapsacks_input_file],
         input_format=nextmv.InputFormat.MULTI_FILE,
     )
 
