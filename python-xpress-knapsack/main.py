@@ -1,12 +1,7 @@
 import time
 
 import nextmv
-
-try:
-    import xpress as xp
-except ImportError as exc:
-    raise ImportError("is xpress available for your OS and ARCH and installed?") from exc
-
+import xpress as xp
 
 # Status of the solver after optimizing.
 STATUS = {
