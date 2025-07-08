@@ -129,6 +129,7 @@ func TestGolden(t *testing.T) {
 					testName,
 					golden.BashConfig{
 						DisplayStdout: !scriptConfig.Silent,
+						DisplayStderr: !scriptConfig.Silent,
 						WorkingDir:    "../../" + app,
 						OutputProcessConfig: golden.OutputProcessConfig{
 							VolatileRegexReplacements: replacements,
