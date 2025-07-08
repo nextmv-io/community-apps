@@ -1,7 +1,8 @@
 # Nextmv Python Xpress Knapsack
 
 Example for running a Python application on the Nextmv Platform using the
-Xpress solver. We solve a knapsack Mixed Integer Programming problem.
+Xpress solver and community license. We solve a knapsack Mixed Integer
+Programming problem.
 
 1. Install packages.
 
