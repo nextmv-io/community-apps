@@ -28,6 +28,7 @@ const configFile = "workflow-configuration.yml"
 type ScriptConfig struct {
 	Name   string `yaml:"name"`
 	Silent bool   `yaml:"silent"`
+	StdErr bool   `yaml:"stderr"`
 	Skip   bool   `yaml:"skip"`
 }
 
@@ -129,7 +130,7 @@ func TestGolden(t *testing.T) {
 					testName,
 					golden.BashConfig{
 						DisplayStdout: !scriptConfig.Silent,
-						DisplayStderr: !scriptConfig.Silent,
+						DisplayStderr: scriptConfig.StdErr,
 						WorkingDir:    "../../" + app,
 						OutputProcessConfig: golden.OutputProcessConfig{
 							VolatileRegexReplacements: replacements,
