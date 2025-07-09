@@ -1,9 +1,13 @@
-import plotly.graph_objects as go
 import json
-import nextmv
 
-def draw_sol(n, m, prob=None, x=None, y=None, label="Chart", coord_schools=None, coord_sites=None, SCHOOLS=None, SITES=None) -> nextmv.Asset:
-    V = [i for i in range(n + m)]
+import nextmv
+import plotly.graph_objects as go
+
+
+def draw_sol(n, m, prob=None, x=None, y=None,
+             label="Chart", coord_schools=None, coord_sites=None,
+             SCHOOLS=None, SITES=None) -> nextmv.Asset:
+    V = list(range(n + m))
     E = []
 
     # Get coordinates
@@ -18,7 +22,7 @@ def draw_sol(n, m, prob=None, x=None, y=None, label="Chart", coord_schools=None,
         E = [(i, n + j) for i in SCHOOLS for j in SITES if xsol[i, j] > 0.5]
 
     # Node colors
-    node_colS  = {i: '#5555ff' for i in SCHOOLS}
+    node_colS  = dict.fromkeys(SCHOOLS, '#5555ff')
     node_colA1 = {n + j: '#ff5555' for j in SITES if y and ysol[j] > 0.5}
     node_colA0 = {n + j: '#a0a0a0' for j in SITES if not y or ysol[j] < 0.5}
     node_col = {**node_colS, **node_colA1, **node_colA0}
@@ -28,10 +32,10 @@ def draw_sol(n, m, prob=None, x=None, y=None, label="Chart", coord_schools=None,
         x=[coord[i][0] for i in V],
         y=[coord[i][1] for i in V],
         mode='markers+text',
-        marker=dict(
-            size=10,
-            color=[node_col[i] for i in V]
-        ),
+        marker={
+            "size": 10,
+            "color": [node_col[i] for i in V]
+        },
         text=[str(i) for i in V],
         textposition="top center",
         hoverinfo='text'
@@ -46,7 +50,7 @@ def draw_sol(n, m, prob=None, x=None, y=None, label="Chart", coord_schools=None,
             x=[x0, x1],
             y=[y0, y1],
             mode='lines',
-            line=dict(width=1, color='#888'),
+            line={"width": 1, "color": '#888'},
             hoverinfo='none'
         )
         edge_traces.append(edge_trace)
@@ -61,9 +65,9 @@ def draw_sol(n, m, prob=None, x=None, y=None, label="Chart", coord_schools=None,
         title='School-Area Assignment Network',
         showlegend=False,
         hovermode='closest',
-        margin=dict(b=20, l=5, r=5, t=40),
-        xaxis=dict(showgrid=False, zeroline=False),
-        yaxis=dict(showgrid=False, zeroline=False),
+        margin={"b": 20, "l": 5, "r": 5, "t": 40},
+        xaxis={"showgrid": False, "zeroline": False},
+        yaxis={"showgrid": False, "zeroline": False},
         width=700,
         height=700
     )
