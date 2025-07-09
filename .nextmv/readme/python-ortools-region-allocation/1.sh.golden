@@ -1,0 +1,5 @@
+Solving region allocation:
+  - regions: 189
+  - hubs: 6
+  - duration: 30 seconds
+  - provider: scip

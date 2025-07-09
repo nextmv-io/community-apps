@@ -2,6 +2,8 @@ package com.nextmv.example;
 
 import java.util.List;
 import java.util.ArrayList;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 import com.google.gson.Gson;
 
@@ -49,10 +51,18 @@ public class Output {
     this.statistics.result.custom.variables = variables;
   }
 
-  public static void write(Output output) {
-    // Always write to stdout.
+  public static void write(Output output, String outputPath) {
+    // Always write to {outputPath}/statistics/statistics.json
+    // as required by convention.
     Gson gson = new Gson();
-    System.out.println(gson.toJson(output));
-    return;
+    String json = gson.toJson(output);
+    java.nio.file.Path path = Paths.get(outputPath, "statistics", "statistics.json");
+    try {
+      Files.createDirectories(path.getParent());
+      Files.writeString(path, json);
+    } catch (java.io.IOException e) {
+      System.err.println("Failed to write output: " + e.getMessage());
+      System.exit(1);
+    }
   }
 }

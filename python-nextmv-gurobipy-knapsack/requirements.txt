@@ -1,1 +1,1 @@
-nextmv-gurobipy==0.3.0
+nextmv-gurobipy==0.4.1

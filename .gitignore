@@ -176,6 +176,7 @@ main.jar
 !Output.Java
 output.json
 output/
+outputs/
 
 # Ignore app binary files
 go-highs-orderfulfillment/go-highs-orderfulfillment
