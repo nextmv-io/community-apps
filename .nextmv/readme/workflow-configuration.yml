@@ -188,6 +188,8 @@ apps:
     scripts:
       - name: 0.sh
         silent: true
+      - name: 1.sh
+        stderr: true
   - name: python-ortools-region-allocation
     scripts:
       - name: 0.sh
