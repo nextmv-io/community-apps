@@ -34,16 +34,6 @@ def main() -> None:
             *options_list,
         )
 
-    # with open(f"{options.output}/output.txt") as f:
-    #     nextmv.write(
-    #         nextmv.Output(
-    #             solution=f.read(),
-    #             options=options.to_dict(),
-    #             output_format=nextmv.OutputFormat.MULTI_FILE,
-    #         ),
-    #         path=options.output,
-    #     )
-
     nextmv.log("Done.")
 
 
