@@ -1,21 +1,32 @@
 import os
+import shutil
 import sys
 
 import nextmv
 from hexaly.modeler import HexalyModeler
+
+# Name of the option that makes the app copy all files from the `inputs/` directory to the
+# current working directory before running the model.
+OPTION_UN_NEST = "unNest"
 
 
 def main() -> None:
     """Entry point for the program."""
 
     # Parse options from command line arguments.
-    options = parse_options()
+    options, un_nest = parse_options()
     nextmv.log("Options:")
     for key, value in options.items():
         nextmv.log(f"  - {key}: {value}")
 
     # Make sure the output directory exists.
     os.makedirs(os.path.join("outputs", "solutions"), exist_ok=True)
+
+    # If the `unNest=true` option is set, copy all files from the `inputs/` directory to
+    # the current working directory.
+    if un_nest:
+        nextmv.log("Using unNest option, copying files from inputs/ to current directory.")
+        unnest_directory("inputs")
 
     # Find the model file in the specified path.
     model_path = find_file("inputs", [".hxm", ".lsp"])
@@ -37,22 +48,43 @@ def main() -> None:
     nextmv.log("Done.")
 
 
-def parse_options() -> dict[str, str]:
+def parse_options() -> tuple[dict[str, str], bool]:
     """
-    Parses all arguments so that they can be submitted to the model.
+    Parses all arguments so that they can be submitted to the model. Returns a dictionary
+    of options and a boolean indicating whether the inputs directory should be un-nested.
     """
+    un_nest = False
     options = {}
     for arg in sys.argv[1:]:
         if arg.startswith("--"):
             arg = arg[2:]
         elif arg.startswith("-"):
             arg = arg[1:]
+        if arg == OPTION_UN_NEST:
+            un_nest = True
+            continue
         if "=" in arg:
             key, value = arg.split("=", 1)
+            if key == OPTION_UN_NEST:
+                un_nest = True
+                continue
             options[key] = value
         else:
             options[arg] = True
-    return options
+    return options, un_nest
+
+
+def unnest_directory(source_directory: str) -> None:
+    """
+    Copies all files from the source directory to the current working directory.
+    """
+    # Iterate over all the items in the source directory
+    for root, _, files in os.walk(source_directory):
+        for file in files:
+            # Construct the full file path
+            source_file_path = os.path.join(root, file)
+            # Copy the file to the current directory
+            shutil.copy2(source_file_path, ".")
 
 
 def find_file(path: str, extensions: list[str]) -> str:
