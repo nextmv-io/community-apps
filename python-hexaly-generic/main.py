@@ -1,52 +1,68 @@
 import os
+import sys
 
 import nextmv
 from hexaly.modeler import HexalyModeler
 
 
 def main() -> None:
-    options = nextmv.Options(
-        nextmv.Option("input", str, "inputs/", "input path", False),
-        nextmv.Option("model", str, "", "model file path", False),
-        nextmv.Option("data", str, "", "data file path", False),
-        nextmv.Option("output", str, "outputs/solutions/", "output path", False),
-        nextmv.Option("duration", int, 30, "max runtime in seconds", False),
-    )
+    """Entry point for the program."""
 
-    os.makedirs(options.output, exist_ok=True)
+    # Parse options from command line arguments.
+    options = parse_options()
+    nextmv.log("Options:")
+    for key, value in options.items():
+        nextmv.log(f"  - {key}: {value}")
 
-    # Determine model and data files.
-    if options.model:
-        model_path = os.path.join(options.input, options.model)
-    else:
-        model_path = find_file(options.input, [".hxm", ".lsp"])
-    if options.data:
-        data_path = os.path.join(options.input, options.data)
-    else:
-        data_path = find_file(options.input, [".dat"])
-    nextmv.log(f"Using model file: {model_path}")
-    nextmv.log(f"Using data file: {data_path}")
+    # Make sure the output directory exists.
+    os.makedirs(os.path.join("outputs", "solutions"), exist_ok=True)
+
+    # Find the model file in the specified path.
+    model_path = find_file("inputs", [".hxm", ".lsp"])
+    nextmv.log(f"Model file found: {model_path}")
+
+    # Prepare options for consumption by the model.
+    options_list = [f"{key}={value}" for key, value in options.items()]
 
     # Load and solve the model.
+    nextmv.log("Loading and solving the model...")
     with HexalyModeler() as modeler:
         optimizer = modeler.create_optimizer()
         module = modeler.load_module("model", model_path)
         module.run(
             optimizer,
-            f"inFileName={data_path}",
-            f"solFileName={options.output}/output.txt",
-            f"hxTimeLimit={options.duration}",
+            *options_list,
         )
 
-    with open(f"{options.output}/output.txt") as f:
-        nextmv.write(
-            nextmv.Output(
-                solution=f.read(),
-                options=options.to_dict(),
-                output_format=nextmv.OutputFormat.MULTI_FILE,
-            ),
-            path=options.output,
-        )
+    # with open(f"{options.output}/output.txt") as f:
+    #     nextmv.write(
+    #         nextmv.Output(
+    #             solution=f.read(),
+    #             options=options.to_dict(),
+    #             output_format=nextmv.OutputFormat.MULTI_FILE,
+    #         ),
+    #         path=options.output,
+    #     )
+
+    nextmv.log("Done.")
+
+
+def parse_options() -> dict[str, str]:
+    """
+    Parses all arguments so that they can be submitted to the model.
+    """
+    options = {}
+    for arg in sys.argv[1:]:
+        if arg.startswith("--"):
+            arg = arg[2:]
+        elif arg.startswith("-"):
+            arg = arg[1:]
+        if "=" in arg:
+            key, value = arg.split("=", 1)
+            options[key] = value
+        else:
+            options[arg] = True
+    return options
 
 
 def find_file(path: str, extensions: list[str]) -> str:
