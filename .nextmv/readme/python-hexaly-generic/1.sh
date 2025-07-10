@@ -1,1 +1,1 @@
-python3 main.py -duration 30
+python3 main.py inFileName=inputs/input.dat solFileName=outputs/solutions/output.txt
