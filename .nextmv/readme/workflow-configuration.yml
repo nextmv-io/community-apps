@@ -134,6 +134,8 @@ apps:
         skip: true
       - name: 4.sh
         skip: true
+      - name: 5.sh
+        skip: true
   - name: python-highs-knapsack
     scripts:
       - name: 0.sh
