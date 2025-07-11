@@ -40,7 +40,10 @@ multi knapsack Mixed Integer Programming problem.
       can test this by running (note the path to the data file):
 
         ```bash
-        python3 main.py inFileName=input.dat solFileName=outputs/solutions/output.txt unNest=true
+        python3 main.py \
+          inFileName=input.dat \
+          solFileName=outputs/solutions/output.txt \
+          unNest=true
         ```
 
 1. If above steps were successful, you can push the app to the Nextmv Platform.
