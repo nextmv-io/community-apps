@@ -70,7 +70,7 @@ def parse_options() -> tuple[dict[str, str], bool]:
                 continue
             options[key] = value
         else:
-            options[arg] = True
+            options[arg] = "true"
     return options, un_nest
 
 
