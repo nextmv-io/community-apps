@@ -20,18 +20,31 @@ multi knapsack Mixed Integer Programming problem.
     pip3 install -r requirements.txt
     ```
 
-1. Put your model file and input data in the `inputs/` directory. The model file
-   should have the extension `.hxm` and the input data file should have the
-   extension `.dat`. See the example files in the `inputs/` directory for
-   reference.
+1. Put your model file and any other necessary files in the `inputs/` directory.
+   The _model file_ should have the extension `.hxm`. All other files need to be
+   either referenced by your model code or specified as input arguments via
+   options (e.g., `-data=<file>`). See the example files in the `inputs/`
+   directory for reference.
    - The model automatically loads the first `.hxm` file (alternatively, the
-     first `.lsp` file) and the first `.dat` file it finds in the input
-     directory. Use the `-model` and `-data` flags to specify specific files.
-1. Run the app.
+     first `.lsp` file) it finds in the input directory.
+1. Run the app locally.
 
     ```bash
-    python3 main.py -duration 30
+    python3 main.py inFileName=inputs/input.dat solFileName=outputs/solutions/output.txt
     ```
+
+    - If your app expects inputs files to be in the same directory as the model
+      file, you can use the `unNest=true` option. The app will then copy all
+      files from the `inputs/` directory to the current working directory before
+      running the model. Even though it is not necessary for this example, you
+      can test this by running (note the path to the data file):
+
+        ```bash
+        python3 main.py \
+          inFileName=input.dat \
+          solFileName=outputs/solutions/output.txt \
+          unNest=true
+        ```
 
 1. If above steps were successful, you can push the app to the Nextmv Platform.
    E.g., using the [Nextmv CLI][install-cli]:
@@ -39,6 +52,20 @@ multi knapsack Mixed Integer Programming problem.
     ```bash
     nextmv push --app-id <your-app-id>
     ```
+
+1. You can then run the app on the Nextmv Platform by using the CLI (note that
+   you need to have the license file defined as a [secret][secret] in your
+   Nextmv Application):
+
+    ```bash
+    nextmv app run --app-id <your-app-id> \
+        --input inputs/ \
+        --content-type multi-file \
+        --secret-collection-id <your-secret-collection> \
+        --options 'inFileName=inputs/input.dat,solFileName=outputs/solutions/output.txt'
+    ```
+
+   Or you can run it via the [Nextmv Console][console].
 
 ## Mirror running on Nextmv Cloud locally
 

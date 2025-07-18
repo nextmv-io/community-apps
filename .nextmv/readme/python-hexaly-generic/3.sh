@@ -1,3 +1,1 @@
-docker run -i --rm \
--v $(pwd):/app ghcr.io/nextmv-io/runtime/hexaly:latest \
-sh -c 'python3 /app/main.py'
+nextmv push --app-id <your-app-id>
