@@ -1,18 +1,28 @@
-# Nextmv Python Hello World
+# Nextmv Python TravelTime Routing
 
-Simple example for running a Python application on the Nextmv Platform.
+Example for running a Python application with TravelTime API integration on the Nextmv Platform.
 
-1. Install packages.
+## Setup
 
-    ```bash
-    pip3 install -r requirements.txt
-    ```
+1. Get TravelTime API credentials:
+   - Visit [TravelTime API documentation](https://docs.traveltime.com/api/overview/getting-keys)
+   - Sign up and get your Application ID and API Key
 
-1. Run the app.
+2. Set environment variables:
+   ```bash
+   export TT_APP_ID="your_application_id_here"
+   export TT_API_KEY="your_api_key_here"
+   ```
 
-    ```bash
-    cat input.json | python3 main.py
-    ```
+3. Install packages:
+   ```bash
+   pip3 install -r requirements.txt
+   ```
+
+4. Run the app:
+   ```bash
+   cat input.json | python3 main.py
+   ```
 
 ## Next steps
 

@@ -1,6 +1,8 @@
 import asyncio
+import os
 
 import nextmv
+import nextmv.cloud
 import nextroute.schema as nextrouteSchema
 import numpy as np
 from nextpipe import FlowSpec, app, needs, step
@@ -8,7 +10,21 @@ from traveltimepy import Coordinates, Location, Property, Transportation, Travel
 
 
 async def async_part(input_data: dict):
-    sdk = TravelTimeSdk(app_id="TT_APP_ID", api_key="TT_API_KEY")
+    import os
+    
+    # Check if API credentials are available
+    app_id = os.getenv("TT_APP_ID")
+    api_key = os.getenv("TT_API_KEY")
+    
+    if not app_id or not api_key:
+        raise ValueError(
+            "TravelTime API credentials not found. Please set the following environment variables:\n"
+            "- TT_APP_ID: Your TravelTime application ID\n"
+            "- TT_API_KEY: Your TravelTime API key\n\n"
+            "You can get these credentials from: https://docs.traveltime.com/api/overview/getting-keys"
+        )
+    
+    sdk = TravelTimeSdk(app_id=app_id, api_key=api_key)
     nextroute_input = nextrouteSchema.Input.from_dict(input_data)
     # Create locations for all stops
     locations = []
@@ -132,6 +148,10 @@ def main():
     # Load input data
     input = nextmv.load()
 
+    nextmv_api_key = os.getenv("NEXTMV_API_KEY")
+    if not nextmv_api_key:
+        raise ValueError("NEXTMV_API_KEY environment variable not found")
+    client = nextmv.cloud.Client(api_key=nextmv_api_key)
     # Run workflow
     flow = Flow("DecisionFlow", input.data)
     flow.run()
