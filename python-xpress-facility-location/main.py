@@ -26,7 +26,7 @@ def main() -> None:
         nextmv.Option("input", str, "", "Path to input file. Default is stdin.", False),
         nextmv.Option("output", str, "", "Path to output file. Default is stdout.", False),
         nextmv.Option("objective", str, "average_distance", "minimizes for average_distance, total_distance, or max_distance", False),
-        nextmv.Option("parks_override", int, 4, "number of parks to build", False),
+        nextmv.Option("parks_override", int, None, "number of parks to build (from 1 to 10)", False),
     )
 
     input = nextmv.load(options=options, path=options.input)
@@ -106,10 +106,17 @@ def main() -> None:
                              coord_sites=coord_sites,
                              SCHOOLS=SCHOOLS,
                              SITES=SITES)
+    sol = prob.getSolution(serves)
+    average_distance = sum(dist[i,j] * sol[i,j] for i in SCHOOLS for j in SITES) / input.data.get('num_schools')
+    total_distance = sum(dist[i,j] * sol[i,j] for i in SCHOOLS for j in SITES)
+    max_distance = max(dist[i,j] for i in SCHOOLS for j in SITES if sol[i,j] > 0.5)
+    nextmv.log(f"average_distance: {average_distance}")
+    nextmv.log(f"total_distance: {total_distance}")
+    nextmv.log(f"max_distance: {max_distance}")
 
     output = nextmv.Output(
            solution={"solution": solution},
-           statistics={"result": {"value": value}, "schema": "v1"},
+           statistics={"result": {"value": value, "custom": {"average_distance": average_distance, "total_distance": total_distance, "max_distance": max_distance}}, "schema": "v1"},
            assets=[input_charts, output_charts]
        )
 
