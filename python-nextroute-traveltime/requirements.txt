@@ -1,6 +1,6 @@
 # Define the packages required by your project here.
 nextmv==0.28.0
 plotly==6.0.0
-traveltimepy==3.10.2
+traveltimepy==4.1.0
 nextpipe==0.1.3
 nextroute
