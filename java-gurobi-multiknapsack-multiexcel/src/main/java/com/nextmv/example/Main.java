@@ -11,6 +11,11 @@ import com.gurobi.gurobi.*;
 
 public final class Main {
 
+  /**
+   * Main entry point for the application.
+   * 
+   * @param args Command line arguments.
+   */
   public static void main(String[] args) {
     try {
       // Parse arguments.
@@ -43,7 +48,7 @@ public final class Main {
 
       // Setup Gurobi environment and model.
       GRBEnv env = new GRBEnv(true);
-      env.set("OutputFlag", "0"); // Disable output if needed
+      // env.set("OutputFlag", "0"); // Disable output if needed
       env.start();
       GRBModel model = new GRBModel(env);
 
@@ -53,9 +58,10 @@ public final class Main {
       // Create assignment variable for each item in each knapsack.
       // Variables are binary, indicating whether an item is assigned to a knapsack.
       List<GRBVar> variables = new ArrayList<>();
-      List<Item> inputItems = input.getItems();
-      for (Knapsack knapsack : input.getKnapsacks()) {
-        for (Item item : inputItems) {
+      List<Item> items = input.getItems();
+      List<Knapsack> knapsacks = input.getKnapsacks();
+      for (Knapsack knapsack : knapsacks) {
+        for (Item item : items) {
           variables.add(model.addVar(0.0, 1.0, 0.0, GRB.BINARY, knapsack.getId() + "_" + item.getId()));
         }
       }
@@ -64,29 +70,29 @@ public final class Main {
       model.update();
 
       // Create capacity constraint.
-      for (int i = 0; i < input.getKnapsacks().size(); ++i) {
-        Knapsack knapsack = input.getKnapsacks().get(i);
+      for (int i = 0; i < knapsacks.size(); ++i) {
+        Knapsack knapsack = knapsacks.get(i);
         GRBLinExpr knapsackExpr = new GRBLinExpr();
-        for (int j = 0; j < inputItems.size(); ++j) {
-          knapsackExpr.addTerm(inputItems.get(j).getWeight(), variables.get(i * inputItems.size() + j));
+        for (int j = 0; j < items.size(); ++j) {
+          knapsackExpr.addTerm(items.get(j).getWeight(), variables.get(i * items.size() + j));
         }
         model.addConstr(knapsackExpr, GRB.LESS_EQUAL, knapsack.getCapacity(), "capacity_" + knapsack.getId());
       }
 
       // Ensure that each item can only be assigned once.
-      for (int j = 0; j < inputItems.size(); ++j) {
+      for (int j = 0; j < items.size(); ++j) {
         GRBLinExpr itemExpr = new GRBLinExpr();
-        for (int i = 0; i < input.getKnapsacks().size(); ++i) {
-          itemExpr.addTerm(1.0, variables.get(i * inputItems.size() + j));
+        for (int i = 0; i < knapsacks.size(); ++i) {
+          itemExpr.addTerm(1.0, variables.get(i * items.size() + j));
         }
-        model.addConstr(itemExpr, GRB.LESS_EQUAL, 1.0, "item_assignment_" + inputItems.get(j).getId());
+        model.addConstr(itemExpr, GRB.LESS_EQUAL, 1.0, "item_assignment_" + items.get(j).getId());
       }
 
       // Create the objective function.
       GRBLinExpr objectiveExpr = new GRBLinExpr();
-      for (int i = 0; i < input.getKnapsacks().size(); ++i) {
-        for (int j = 0; j < inputItems.size(); ++j) {
-          objectiveExpr.addTerm(inputItems.get(j).getValue(), variables.get(i * inputItems.size() + j));
+      for (int i = 0; i < knapsacks.size(); ++i) {
+        for (int j = 0; j < items.size(); ++j) {
+          objectiveExpr.addTerm(items.get(j).getValue(), variables.get(i * items.size() + j));
         }
       }
       model.setObjective(objectiveExpr, GRB.MAXIMIZE);
@@ -98,13 +104,13 @@ public final class Main {
       List<Assignment> assignments = new ArrayList<>();
       Set<String> unassignedItems = new HashSet<>();
       for (int i = 0; i < variables.size(); ++i) {
-        int knapsackIndex = i / inputItems.size();
-        int itemIndex = i % inputItems.size();
+        int knapsackIndex = i / items.size();
+        int itemIndex = i % items.size();
         if (variables.get(i).get(GRB.DoubleAttr.X) > 0.5) {
           assignments
-              .add(new Assignment(inputItems.get(itemIndex).getId(), input.getKnapsacks().get(knapsackIndex).getId()));
+              .add(new Assignment(items.get(itemIndex).getId(), knapsacks.get(knapsackIndex).getId()));
         } else {
-          unassignedItems.add(inputItems.get(itemIndex).getId());
+          unassignedItems.add(items.get(itemIndex).getId());
         }
       }
       Solution solution = new Solution(assignments, new ArrayList<>(unassignedItems));
@@ -125,7 +131,11 @@ public final class Main {
           "Gurobi",
           convertStatus(model.get(GRB.IntAttr.Status)),
           model.get(GRB.IntAttr.NumVars),
-          model.get(GRB.IntAttr.NumConstrs));
+          model.get(GRB.IntAttr.NumConstrs),
+          items.size(),
+          knapsacks.size(),
+          assignments.size(),
+          unassignedItems.size());
 
       // Write output.
       Output.write(output, options.getOutputPath());
@@ -140,6 +150,11 @@ public final class Main {
     }
   }
 
+  /**
+   * Prepares the output directory by creating necessary subdirectories.
+   * 
+   * @param outputPath The path to the output directory.
+   */
   private static void prepareOutputDirectory(String outputPath) {
     // Prepare output directory if it does not exist.
     Path solutionsPath = Paths.get(outputPath, "solutions");
@@ -164,6 +179,12 @@ public final class Main {
     }
   }
 
+  /**
+   * Converts Gurobi status codes to human-readable strings.
+   *
+   * @param status The Gurobi status code.
+   * @return A string representation of the status.
+   */
   public static String convertStatus(int status) {
     switch (status) {
       case GRB.Status.LOADED:

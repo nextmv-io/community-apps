@@ -6,8 +6,19 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.List;
 
+/**
+ * ExcelWriter class to write the solution to an Excel file.
+ * It creates two sheets: one for assignments and one for unassigned items.
+ */
 public class ExcelWriter {
 
+    /**
+     * Writes the solution to an Excel file.
+     *
+     * @param solution The solution containing assignments and unassigned items.
+     * @param filePath The path where the Excel file will be saved.
+     * @throws IOException If an I/O error occurs while writing the file.
+     */
     public void writeSolutionToExcel(Solution solution, String filePath) throws IOException {
         Workbook workbook = new XSSFWorkbook();
 
@@ -56,7 +67,10 @@ public class ExcelWriter {
     }
 }
 
-// Assuming these classes are defined as follows:
+/**
+ * Represents a solution containing assignments of items to knapsacks
+ * and a list of unassigned items.
+ */
 class Solution {
     private List<Assignment> assignments;
     private List<String> unassigned;
@@ -75,6 +89,9 @@ class Solution {
     }
 }
 
+/**
+ * Represents an assignment of an item to a knapsack.
+ */
 class Assignment {
     private String itemId;
     private String knapsackId;
