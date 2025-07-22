@@ -6,7 +6,7 @@ import java.nio.file.Paths;
 import com.google.gson.Gson;
 
 /**
- * Output class to wrapping the result of the optimization run.
+ * Output class that wraps the result of the optimization run.
  * Since this app outputs non-JSON data, the output only contains
  * the statistics of the run. The solution is written to separate
  * files in the output directory.
