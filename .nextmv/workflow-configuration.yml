@@ -161,6 +161,12 @@ apps:
     marketplace_app_id:
     marketplace_major_version:
     description: Use Python and OR-Tools - multi CSV knapsack.
+  - name: python-ortools-multiknapsack-multiexcel
+    type: python
+    app_id:
+    marketplace_app_id:
+    marketplace_major_version:
+    description: Use Python and OR-Tools - multi knapsack via Excel.
   - name: python-ortools-region-allocation
     type: python
     app_id:
