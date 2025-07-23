@@ -21,9 +21,11 @@ public class Input {
 
   public final class Vehicle {
     public String id;
+    public double speed;
 
     public Vehicle(String id) {
       this.id = id;
+      this.speed = 10.0; // Default speed if not specified.
     }
   }
 

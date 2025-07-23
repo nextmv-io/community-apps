@@ -9,6 +9,8 @@ import com.google.ortools.constraintsolver.RoutingSearchParameters;
 
 import com.google.ortools.constraintsolver.main;
 import com.google.protobuf.Duration;
+import com.nextmv.example.Output.OutputVehicle;
+import com.nextmv.example.Output.OutputVehicle.VehicleStop;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -96,21 +98,26 @@ public final class Main {
       RoutingIndexManager manager,
       Assignment solution, long solveStartTime) {
     long maxRouteDistance = 0;
-    List<Vehicle> vehicles = new ArrayList<Vehicle>();
+    List<OutputVehicle> vehicles = new ArrayList<OutputVehicle>();
     for (int i = 0; i < input.vehicles.size(); ++i) {
-      List<Integer> stops = new ArrayList<Integer>();
+      List<VehicleStop> stops = new ArrayList<VehicleStop>();
       long index = routing.start(i);
-      long routeDistance = 0;
+      long routeDuration = 0;
       while (!routing.isEnd(index)) {
-        stops.add(manager.indexToNode(index));
+        VehicleStop stop = new VehicleStop();
+        stop.id = input.stops.get(manager.indexToNode(index)).id;
+        stop.location = input.stops.get(manager.indexToNode(index)).location;
+        stops.add(stop);
         long previousIndex = index;
         index = solution.value(routing.nextVar(index));
-        routeDistance += routing.getArcCostForVehicle(previousIndex, index, i);
+        routeDuration += routing.getArcCostForVehicle(previousIndex, index, i);
       }
-      stops.add(manager.indexToNode(index));
-      Vehicle vehicle = new Vehicle(i, routeDistance, stops);
+      // Add the last stop to the route.
+
+      OutputVehicle vehicle = new OutputVehicle();
+      vehicle.id = input.vehicles.get(i).id;
       vehicles.add(vehicle);
-      maxRouteDistance = Math.max(routeDistance, maxRouteDistance);
+      maxRouteDistance = Math.max(routeDuration, maxRouteDistance);
     }
 
     // Compute solve duration.
