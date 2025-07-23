@@ -8,6 +8,11 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+/**
+ * ExcelReader class that reads the input from an Excel file.
+ * It expects two sheets: one for items ('items') and one for
+ * knapsacks ('knapsacks'). Each sheet should have a header row.
+ */
 public class ExcelReader {
 
   public Input readExcelFile(String filePath) throws IOException {
