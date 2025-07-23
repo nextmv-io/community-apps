@@ -25,20 +25,45 @@ public final class Main {
 
     Loader.loadNativeLibraries();
 
+    // Generate all vehicle start / end indices.
+    int[] startIndices = new int[input.vehicles.size()];
+    int[] endIndices = new int[input.vehicles.size()];
+    for (int i = 0; i < input.vehicles.size(); ++i) {
+      startIndices[i] = input.stops.size() + i * 2;
+      endIndices[i] = input.stops.size() + i * 2 + 1;
+    }
+
     // Create Routing Index Manager.
-    RoutingIndexManager manager = new RoutingIndexManager(input.distanceMatrix.length, input.vehicleNumber,
-        input.depot);
+    RoutingIndexManager manager = new RoutingIndexManager(
+        input.stops.size() + 2 * input.vehicles.size(),
+        input.vehicles.size(),
+        startIndices,
+        endIndices);
 
     // Create Routing Model.
     RoutingModel routing = new RoutingModel(manager);
 
     // Create and register a transit callback.
-    final int transitCallbackIndex = routing.registerTransitCallback((long fromIndex, long toIndex) -> {
-      // Convert from routing variable Index to user NodeIndex.
-      int fromNode = manager.indexToNode(fromIndex);
-      int toNode = manager.indexToNode(toIndex);
-      return input.distanceMatrix[fromNode][toNode];
-    });
+    int transitCallbackIndex;
+    if (input.durationMatrix != null) {
+      // If durationMatrix is provided, use it.
+      transitCallbackIndex = routing.registerTransitCallback((long fromIndex, long toIndex) -> {
+        int fromNode = manager.indexToNode(fromIndex);
+        int toNode = manager.indexToNode(toIndex);
+        return input.durationMatrix[fromNode][toNode];
+      });
+    } else {
+      // If durationMatrix is not provided, use haversine distance.
+      transitCallbackIndex = routing.registerTransitCallback((long fromIndex, long toIndex) -> {
+        int fromNode = manager.indexToNode(fromIndex);
+        int toNode = manager.indexToNode(toIndex);
+        return (long) haversine(
+            input.stops.get(fromNode).location.lat,
+            input.stops.get(fromNode).location.lon,
+            input.stops.get(toNode).location.lat,
+            input.stops.get(toNode).location.lon);
+      });
+    }
 
     // Define cost of each arc.
     routing.setArcCostEvaluatorOfAllVehicles(transitCallbackIndex);
@@ -72,7 +97,7 @@ public final class Main {
       Assignment solution, long solveStartTime) {
     long maxRouteDistance = 0;
     List<Vehicle> vehicles = new ArrayList<Vehicle>();
-    for (int i = 0; i < input.vehicleNumber; ++i) {
+    for (int i = 0; i < input.vehicles.size(); ++i) {
       List<Integer> stops = new ArrayList<Integer>();
       long index = routing.start(i);
       long routeDistance = 0;
@@ -105,5 +130,26 @@ public final class Main {
         vehicles,
         duration,
         runDuration);
+  }
+
+  /**
+   * Haversine formula to calculate the distance between two points on the Earth
+   * given their latitude and longitude.
+   * 
+   * @param lat1 latitude of the first point
+   * @param lon1 longitude of the first point
+   * @param lat2 latitude of the second point
+   * @param lon2 longitude of the second point
+   * @return the distance in kilometers between the two points
+   */
+  private static double haversine(double lat1, double lon1, double lat2, double lon2) {
+    final double R = 6371; // Radius of the Earth in kilometers
+    double latDistance = Math.toRadians(lat2 - lat1);
+    double lonDistance = Math.toRadians(lon2 - lon1);
+    double a = Math.sin(latDistance / 2) * Math.sin(latDistance / 2) +
+        Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2)) *
+            Math.sin(lonDistance / 2) * Math.sin(lonDistance / 2);
+    double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    return R * c;
   }
 }

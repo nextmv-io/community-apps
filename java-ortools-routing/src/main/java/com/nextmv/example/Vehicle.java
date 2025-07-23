@@ -24,5 +24,5 @@ public class Vehicle {
   public List<Integer> getStops() {
     return this.stops;
   }
-  
+
 }
