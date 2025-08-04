@@ -34,21 +34,21 @@ def main() -> None:
     """Entry point for the program."""
 
     options = nextmv.Options(
-        nextmv.Parameter("input", str, "", "Path to input file. Default is stdin.", False),
-        nextmv.Parameter("output", str, "", "Path to output file. Default is stdout.", False),
-        nextmv.Parameter("duration", int, 30, "Max runtime duration (in seconds).", False),
-        nextmv.Parameter("provider", str, "highs", "Solver provider.", False),
-        nextmv.Parameter("model", str, ".", "Path to folder containing the .mod file.", False),
+        nextmv.Option("input", str, "", "Path to input file. Default is stdin.", False),
+        nextmv.Option("output", str, "", "Path to output file. Default is stdout.", False),
+        nextmv.Option("duration", int, 30, "Max runtime duration (in seconds).", False),
+        nextmv.Option("provider", str, "highs", "Solver provider.", False),
+        nextmv.Option("model", str, ".", "Path to folder containing the .mod file.", False),
     )
 
-    input = nextmv.load_local(options=options, path=options.input)
+    input = nextmv.load(options=options, path=options.input)
 
     nextmv.log("Solving price optimization problem:")
     nextmv.log(f"  - regions: {len(input.data.get('regions', []))}")
 
     model = DecisionModel()
     output = model.solve(input)
-    nextmv.write_local(output, path=options.output)
+    nextmv.write(output, path=options.output)
 
 
 class DecisionModel(nextmv.Model):

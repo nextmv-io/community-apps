@@ -1,0 +1,3 @@
+nextpipe
+nextmv
+scipy

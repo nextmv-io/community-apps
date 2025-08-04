@@ -6,17 +6,17 @@ def main() -> None:
     """Entry point for the program."""
 
     parameters = [
-        nextmv.Parameter("input", str, "", "Path to input file. Default is stdin.", False),
-        nextmv.Parameter("output", str, "", "Path to output file. Default is stdout.", False),
+        nextmv.Option("input", str, "", "Path to input file. Default is stdin.", False),
+        nextmv.Option("output", str, "", "Path to output file. Default is stdout.", False),
     ]
 
     default_options = nextroute.Options()
     for name, default_value in default_options.to_dict().items():
-        parameters.append(nextmv.Parameter(name.lower(), type(default_value), default_value, name, False))
+        parameters.append(nextmv.Option(name.lower(), type(default_value), default_value, name, False))
 
     options = nextmv.Options(*parameters)
 
-    input = nextmv.load_local(options=options, path=options.input)
+    input = nextmv.load(options=options, path=options.input)
 
     nextmv.log("Solving vehicle routing problem:")
     nextmv.log(f"  - stops: {len(input.data.get('stops', []))}")
@@ -24,7 +24,7 @@ def main() -> None:
 
     model = DecisionModel()
     output = model.solve(input)
-    nextmv.write_local(output, path=options.output)
+    nextmv.write(output, path=options.output)
 
 
 class DecisionModel(nextmv.Model):

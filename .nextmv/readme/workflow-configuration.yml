@@ -29,6 +29,41 @@ apps:
         silent: true
       - name: 2.sh
         skip: true
+  - name: java-gurobi-knapsack
+    scripts:
+      - name: 0.sh
+        silent: true
+      # We cannot run Java Gurobi without a license, so we skip these tests.
+      - name: 1.sh
+        skip: true
+      - name: 2.sh
+        skip: true
+      - name: 3.sh
+        skip: true
+  - name: java-gurobi-multiknapsack-multiexcel
+    scripts:
+      - name: 0.sh
+        silent: true
+      # We cannot run Java Gurobi without a license, so we skip these tests.
+      - name: 1.sh
+        skip: true
+      - name: 2.sh
+        skip: true
+      - name: 3.sh
+        skip: true
+      - name: 4.sh
+        skip: true
+  - name: java-hexaly-knapsack
+    scripts:
+      # Without the license and no maven package, we cannot run the tests.
+      - name: 0.sh
+        skip: true
+      - name: 1.sh
+        skip: true
+      - name: 2.sh
+        skip: true
+      - name: 3.sh
+        skip: true
   - name: java-ortools-knapsack
     scripts:
       - name: 0.sh
@@ -83,14 +118,30 @@ apps:
     scripts:
       - name: 0.sh
         silent: true
+      - name: 1.sh
+        skip: true
       - name: 2.sh
         skip: true
+  - name: python-hexaly-generic
+    scripts:
+      - name: 0.sh
+        silent: true
       - name: 1.sh
+        skip: true
+      - name: 2.sh
+        skip: true
+      - name: 3.sh
+        skip: true
+      - name: 4.sh
+        skip: true
+      - name: 5.sh
         skip: true
   - name: python-highs-knapsack
     scripts:
       - name: 0.sh
         silent: true
+      - name: 1.sh
+        stderr: true
       - name: 2.sh
         skip: true
   - name: python-nextmv-gurobipy-knapsack
@@ -117,18 +168,24 @@ apps:
     scripts:
       - name: 0.sh
         silent: true
+      - name: 1.sh
+        stderr: true
       - name: 2.sh
         skip: true
   - name: python-ortools-demandforecasting
     scripts:
       - name: 0.sh
         silent: true
+      - name: 1.sh
+        stderr: true
       - name: 2.sh
         skip: true
   - name: python-ortools-knapsack
     scripts:
       - name: 0.sh
         silent: true
+      - name: 1.sh
+        stderr: true
       - name: 2.sh
         skip: true
   - name: python-ortools-knapsack-multicsv
@@ -139,46 +196,74 @@ apps:
         silent: true
       - name: 2.sh
         skip: true
+  - name: python-ortools-multiknapsack-multiexcel
+    scripts:
+      - name: 0.sh
+        silent: true
+      - name: 1.sh
+        stderr: true
+  - name: python-ortools-region-allocation
+    scripts:
+      - name: 0.sh
+        silent: true
+      - name: 1.sh
+        stderr: true
+      - name: 2.sh
+        skip: true
   - name: python-ortools-routing
     scripts:
       - name: 0.sh
         silent: true
+      - name: 1.sh
+        stderr: true
       - name: 2.sh
         skip: true
   - name: python-ortools-shiftassignment
     scripts:
       - name: 0.sh
         silent: true
+      - name: 1.sh
+        stderr: true
       - name: 2.sh
         skip: true
   - name: python-ortools-shiftplanning
     scripts:
       - name: 0.sh
         silent: true
+      - name: 1.sh
+        stderr: true
       - name: 2.sh
         skip: true
   - name: python-pyomo-knapsack
     scripts:
       - name: 0.sh
         silent: true
+      - name: 1.sh
+        stderr: true
       - name: 2.sh
         skip: true
   - name: python-pyomo-shiftassignment
     scripts:
       - name: 0.sh
         silent: true
+      - name: 1.sh
+        stderr: true
       - name: 2.sh
         skip: true
   - name: python-pyomo-shiftplanning
     scripts:
       - name: 0.sh
         silent: true
+      - name: 1.sh
+        stderr: true
       - name: 2.sh
         skip: true
   - name: python-pyoptinterface-knapsack
     scripts:
       - name: 0.sh
         silent: true
+      - name: 1.sh
+        stderr: true
       - name: 2.sh
         skip: true
   - name: python-pyvroom-routing
@@ -187,9 +272,55 @@ apps:
         silent: true
       - name: 2.sh
         skip: true
+  - name: python-tr-ortools-region-allocation
+    scripts:
+      - name: 0.sh
+        silent: true
+      - name: 2.sh
+        skip: true
+  - name: python-verso-routing
+    scripts:
+      - name: 0.sh
+        silent: true
+      - name: 1.sh
+        skip: true
   - name: python-xpress-knapsack
     scripts:
       - name: 0.sh
         silent: true
       - name: 2.sh
+        skip: true
+  - name: python-wf-custom-visuals
+    scripts:
+      - name: 0.sh
+        skip: true
+      - name: 1.sh
+        skip: true
+  - name: python-wf-databricks
+    scripts:
+      - name: 0.sh
+        silent: true
+      - name: 1.sh
+        skip: true
+      - name: 2.sh
+        skip: true
+  - name: python-wf-databricks-ml-gurobi-price-optimization
+    scripts:
+      - name: 0.sh
+        silent: true
+      - name: 1.sh
+        skip: true
+      - name: 2.sh
+        skip: true
+  - name: python-wf-ortools-region-allocation
+    scripts:
+      - name: 1.sh
+        skip: true
+      - name: 3.sh
+        skip: true
+      - name: 4.sh
+        skip: true
+      - name: 5.sh
+        skip: true
+      - name: 6.sh
         skip: true

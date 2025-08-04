@@ -2,11 +2,11 @@ import nextmv
 from visuals import create_visuals
 
 # Read the input from stdin.
-input = nextmv.load_local()
+input = nextmv.load()
 name = input.data["name"]
 
 options = nextmv.Options(
-    nextmv.Parameter("details", bool, True, "Print details to logs. Default true.", False),
+    nextmv.Option("details", bool, True, "Print details to logs. Default true.", False),
 )
 
 ##### Insert model here
@@ -32,4 +32,4 @@ output = nextmv.Output(
     ),
     assets=assets,
 )
-nextmv.write_local(output)
+nextmv.write(output)

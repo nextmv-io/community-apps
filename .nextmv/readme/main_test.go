@@ -1,7 +1,10 @@
 package mip
 
 import (
+	"flag"
+	"fmt"
 	"os"
+	"regexp"
 	"slices"
 	"strings"
 	"testing"
@@ -9,6 +12,11 @@ import (
 	"github.com/nextmv-io/sdk/golden"
 	"gopkg.in/yaml.v2"
 )
+
+// filter is a flag to filter the tests to run by name. Allows regex
+// matching. For example, to run all tests that start with "python-" use
+// -filter='python-.*.'.
+var filter = flag.String("filter", "", "filter tests by name")
 
 func TestMain(m *testing.M) {
 	code := m.Run()
@@ -20,6 +28,7 @@ const configFile = "workflow-configuration.yml"
 type ScriptConfig struct {
 	Name   string `yaml:"name"`
 	Silent bool   `yaml:"silent"`
+	StdErr bool   `yaml:"stderr"`
 	Skip   bool   `yaml:"skip"`
 }
 
@@ -67,6 +76,16 @@ func TestGolden(t *testing.T) {
 		{Regex: `xpress\.init\(.*\)`, Replacement: `xpress.init("path/to/xpress")`},
 	}
 
+	// Use the filter flag to filter the tests to run
+	var regex *regexp.Regexp
+	if *filter != "" {
+		regex, err = regexp.Compile(*filter)
+		if err != nil {
+			fmt.Println("Error compiling filter regex:", err)
+			return
+		}
+	}
+
 	// Run all readme tests
 	dirs, err := os.ReadDir(".")
 	if err != nil {
@@ -101,12 +120,17 @@ func TestGolden(t *testing.T) {
 			if scriptConfig.Skip {
 				continue
 			}
-			t.Run(app+"/"+script, func(t *testing.T) {
+			t.Run("readme", func(t *testing.T) {
+				testName := app + "/" + script
+				if regex != nil && !regex.MatchString(testName) {
+					t.Skipf("skipping test %s", testName)
+				}
 				golden.BashTestFile(
 					t,
-					app+"/"+script,
+					testName,
 					golden.BashConfig{
 						DisplayStdout: !scriptConfig.Silent,
+						DisplayStderr: scriptConfig.StdErr,
 						WorkingDir:    "../../" + app,
 						OutputProcessConfig: golden.OutputProcessConfig{
 							VolatileRegexReplacements: replacements,

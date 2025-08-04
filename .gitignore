@@ -169,11 +169,14 @@ go.work.sum
 
 # Java stuff
 main.jar
+*.class
+*.MF
 
 # Outputs
 !Output.Java
 output.json
 output/
+outputs/
 
 # Ignore app binary files
 go-highs-orderfulfillment/go-highs-orderfulfillment

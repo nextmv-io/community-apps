@@ -19,13 +19,13 @@ def main() -> None:
     """Entry point for the program."""
 
     options = nextmv.Options(
-        nextmv.Parameter("input", str, "", "Path to input file. Default is stdin.", False),
-        nextmv.Parameter("output", str, "", "Path to output file. Default is stdout.", False),
-        nextmv.Parameter("duration", int, 30, "Max runtime duration (in seconds).", False),
-        nextmv.Parameter("penalty", int, 3000, "A penalty added to the edges from dummy source to projects.", False),
+        nextmv.Option("input", str, "", "Path to input file. Default is stdin.", False),
+        nextmv.Option("output", str, "", "Path to output file. Default is stdout.", False),
+        nextmv.Option("duration", int, 30, "Max runtime duration (in seconds).", False),
+        nextmv.Option("penalty", int, 3000, "A penalty added to the edges from dummy source to projects.", False),
     )
 
-    input = nextmv.load_local(options=options, path=options.input)
+    input = nextmv.load(options=options, path=options.input)
 
     nextmv.log("Best value flow for project to worker assignment:")
     nextmv.log(f"  - projects: {len(input.data.get('projects', []))}")
@@ -33,7 +33,7 @@ def main() -> None:
 
     model = DecisionModel()
     output = model.solve(input)
-    nextmv.write_local(output, path=options.output)
+    nextmv.write(output, path=options.output)
 
 
 class DecisionModel(nextmv.Model):

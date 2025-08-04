@@ -35,6 +35,24 @@ apps:
     marketplace_app_id:
     marketplace_major_version:
     description: Get started with Java and Nextmv.
+  - name: java-gurobi-knapsack
+    type: java
+    app_id:
+    marketplace_app_id:
+    marketplace_major_version:
+    description: Use Java and Gurobi - knapsack.
+  - name: java-gurobi-multiknapsack-multiexcel
+    type: java
+    app_id:
+    marketplace_app_id:
+    marketplace_major_version:
+    description: Use Java and Gurobi - multi knapsack via Excel.
+  - name: java-hexaly-knapsack
+    type: java
+    app_id:
+    marketplace_app_id:
+    marketplace_major_version:
+    description: Use Java and Hexaly - knapsack.
   - name: java-ortools-knapsack
     type: java
     app_id: knapsack-jortools
@@ -77,6 +95,12 @@ apps:
     marketplace_app_id:
     marketplace_major_version:
     description: Get started with Python and Nextmv.
+  - name: python-hexaly-generic
+    type: python
+    app_id:
+    marketplace_app_id:
+    marketplace_major_version:
+    description: Use Python and Hexaly - hxm models.
   - name: python-hexaly-knapsack
     type: python
     app_id:
@@ -137,6 +161,18 @@ apps:
     marketplace_app_id:
     marketplace_major_version:
     description: Use Python and OR-Tools - multi CSV knapsack.
+  - name: python-ortools-multiknapsack-multiexcel
+    type: python
+    app_id:
+    marketplace_app_id:
+    marketplace_major_version:
+    description: Use Python and OR-Tools - multi knapsack via Excel.
+  - name: python-ortools-region-allocation
+    type: python
+    app_id:
+    marketplace_app_id:
+    marketplace_major_version:
+    description: Use Python and OR-Tools - region allocation.
   - name: python-ortools-routing
     type: python
     app_id: routing-ortools
@@ -185,6 +221,24 @@ apps:
     marketplace_app_id: routing.pyvroom
     marketplace_major_version: v1
     description: Use Python and Pyvroom - VRP.
+  - name: python-tr-ortools-region-allocation
+    type: python
+    app_id:
+    marketplace_app_id:
+    marketplace_major_version:
+    description: Use tracked runs in Python - region allocation.
+  - name: python-wf-custom-visuals
+    type: python
+    app_id:
+    marketplace_app_id:
+    marketplace_major_version:
+    description: Use workflows in Python - custom visuals.
+  - name: python-wf-ortools-region-allocation
+    type: python
+    app_id:
+    marketplace_app_id:
+    marketplace_major_version:
+    description: Use workflows in Python - region allocation.
   - name: python-xpress-knapsack
     type: python
     app_id:

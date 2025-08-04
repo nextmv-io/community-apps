@@ -19,13 +19,13 @@ def main() -> None:
     """Entry point for the program."""
 
     options = nextmv.Options(
-        nextmv.Parameter("input", str, "", "Path to input folder.", False),
-        nextmv.Parameter("output", str, "", "Path to output folder.", False),
-        nextmv.Parameter("duration", int, 30, "Max runtime duration (in seconds).", False),
-        nextmv.Parameter("provider", str, "SCIP", "Solver provider.", False),
+        nextmv.Option("input", str, "", "Path to input folder.", False),
+        nextmv.Option("output", str, "", "Path to output folder.", False),
+        nextmv.Option("duration", int, 30, "Max runtime duration (in seconds).", False),
+        nextmv.Option("provider", str, "SCIP", "Solver provider.", False),
     )
 
-    input = nextmv.load_local(
+    input = nextmv.load(
         input_format=nextmv.InputFormat.CSV_ARCHIVE,
         options=options,
         path=options.input,
@@ -37,7 +37,7 @@ def main() -> None:
 
     model = DecisionModel()
     output = model.solve(input)
-    nextmv.write_local(output, path=options.output)
+    nextmv.write(output, path=options.output)
 
 
 class DecisionModel(nextmv.Model):
