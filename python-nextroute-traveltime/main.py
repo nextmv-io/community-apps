@@ -6,7 +6,7 @@ import nextroute.schema as nextrouteSchema
 import numpy as np
 from nextpipe import FlowSpec, app, needs, step
 from traveltimepy import Client
-from traveltimepy.requests.common import Location, Coordinates, Property
+from traveltimepy.requests.common import Coordinates, Location, Property
 from traveltimepy.requests.time_filter_fast import TimeFilterFastArrivalSearches, TimeFilterFastOneToMany
 from traveltimepy.requests.transportation import TransportationFast
 
@@ -43,12 +43,7 @@ def build_locations_list(nextroute_input):
 
     # Add stops first
     for stop in nextroute_input.stops:
-        locations.append(
-            Location(
-                id=stop.id,
-                coords=Coordinates(lat=stop.location.lat, lng=stop.location.lon)
-            )
-        )
+        locations.append(Location(id=stop.id, coords=Coordinates(lat=stop.location.lat, lng=stop.location.lon)))
 
     # Add vehicle start/end locations for each vehicle
     for vehicle in nextroute_input.vehicles:
@@ -59,8 +54,8 @@ def build_locations_list(nextroute_input):
                 id=start_id,
                 coords=Coordinates(
                     lat=nextroute_input.defaults.vehicles.start_location.lat,
-                    lng=nextroute_input.defaults.vehicles.start_location.lon
-                )
+                    lng=nextroute_input.defaults.vehicles.start_location.lon,
+                ),
             )
         )
 
@@ -71,8 +66,8 @@ def build_locations_list(nextroute_input):
                 id=end_id,
                 coords=Coordinates(
                     lat=nextroute_input.defaults.vehicles.end_location.lat,
-                    lng=nextroute_input.defaults.vehicles.end_location.lon
-                )
+                    lng=nextroute_input.defaults.vehicles.end_location.lon,
+                ),
             )
         )
 
@@ -145,17 +140,14 @@ def sync_part(input_data: dict, client):
                     arrival_location_ids=destinations,
                     transportation=TransportationFast.DRIVING,
                     travel_time=7200,  # 2 hours maximum
-                    properties=[Property.TRAVEL_TIME, Property.DISTANCE]
+                    properties=[Property.TRAVEL_TIME, Property.DISTANCE],
                 )
             )
 
     # Execute the API call
     results = client.time_filter_fast(
         locations=locations,
-        arrival_searches=TimeFilterFastArrivalSearches(
-            one_to_many=one_to_many_searches,
-            many_to_one=[]
-        )
+        arrival_searches=TimeFilterFastArrivalSearches(one_to_many=one_to_many_searches, many_to_one=[]),
     )
 
     # Build travel matrices from API results
@@ -164,7 +156,7 @@ def sync_part(input_data: dict, client):
     return {
         "duration_matrix": duration_matrix.tolist(),
         "distance_matrix": distance_matrix.tolist(),
-        "location_ids": location_ids  # Include location IDs for reference
+        "location_ids": location_ids,  # Include location IDs for reference
     }
 
 
