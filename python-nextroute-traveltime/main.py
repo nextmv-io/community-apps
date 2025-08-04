@@ -1,4 +1,3 @@
-import asyncio
 import os
 
 import nextmv
@@ -6,16 +5,19 @@ import nextmv.cloud
 import nextroute.schema as nextrouteSchema
 import numpy as np
 from nextpipe import FlowSpec, app, needs, step
-from traveltimepy import Coordinates, Location, Property, Transportation, TravelTimeSdk
+from traveltimepy import Client
+from traveltimepy.requests.common import Location, Coordinates, Property
+from traveltimepy.requests.time_filter_fast import TimeFilterFastArrivalSearches, TimeFilterFastOneToMany
+from traveltimepy.requests.transportation import TransportationFast
 
 
-async def async_part(input_data: dict):
+def create_traveltime_client():
     import os
-    
+
     # Check if API credentials are available
     app_id = os.getenv("TT_APP_ID")
     api_key = os.getenv("TT_API_KEY")
-    
+
     if not app_id or not api_key:
         raise ValueError(
             "TravelTime API credentials not found. Please set the following environment variables:\n"
@@ -23,12 +25,21 @@ async def async_part(input_data: dict):
             "- TT_API_KEY: Your TravelTime API key\n\n"
             "You can get these credentials from: https://docs.traveltime.com/api/overview/getting-keys"
         )
-    
-    sdk = TravelTimeSdk(app_id=app_id, api_key=api_key)
-    nextroute_input = nextrouteSchema.Input.from_dict(input_data)
-    # Create locations for all stops
+
+    return Client(app_id=app_id, api_key=api_key)
+
+
+def build_locations_list(nextroute_input):
+    """
+    Build locations list from Nextroute input data.
+
+    Args:
+        nextroute_input: Parsed Nextroute input schema
+
+    Returns:
+        List of TravelTime Location objects
+    """
     locations = []
-    location_ids = []
 
     # Add stops first
     for stop in nextroute_input.stops:
@@ -38,7 +49,6 @@ async def async_part(input_data: dict):
                 coords=Coordinates(lat=stop.location.lat, lng=stop.location.lon)
             )
         )
-        location_ids.append(stop.id)
 
     # Add vehicle start/end locations for each vehicle
     for vehicle in nextroute_input.vehicles:
@@ -53,7 +63,6 @@ async def async_part(input_data: dict):
                 )
             )
         )
-        location_ids.append(start_id)
 
         # Add end location
         end_id = f"{vehicle.id}-end"
@@ -66,23 +75,21 @@ async def async_part(input_data: dict):
                 )
             )
         )
-        location_ids.append(end_id)
 
-    # Prepare the search_ids dictionary - each location to all other locations
-    search_ids = {}
-    for origin in location_ids:
-        # Each origin should search for all destinations except itself
-        search_ids[origin] = [dest for dest in location_ids if dest != origin]
+    return locations
 
-    # Execute the API call
-    results = await sdk.time_filter_fast_async(
-        locations=locations,
-        search_ids=search_ids,
-        transportation=Transportation(type="driving"),
-        properties=[Property("distance"), Property("travel_time")],
-        one_to_many=False,
-    )
 
+def build_travel_matrices(results, location_ids):
+    """
+    Build travel time and distance matrices from TravelTime API results.
+
+    Args:
+        results: TravelTime API response
+        location_ids: List of location IDs in matrix order
+
+    Returns:
+        Tuple of (duration_matrix, distance_matrix) as numpy arrays
+    """
     # Initialize matrices with zeros or infinity where appropriate
     n = len(location_ids)
     duration_matrix = np.full((n, n), np.inf)
@@ -93,31 +100,81 @@ async def async_part(input_data: dict):
     np.fill_diagonal(distance_matrix, 0)
 
     # Process results to fill in the matrix
-    for result in results:
-        origin_idx = location_ids.index(result.search_id)
+    for result in results.results:
+        origin_id = result.search_id
+        origin_idx = location_ids.index(origin_id)
 
-        for location in result.locations:
-            destination_idx = location_ids.index(location.id)
-            # Convert travel time to seconds if needed
-            duration_matrix[origin_idx][destination_idx] = location.properties.travel_time
-            distance_matrix[origin_idx][destination_idx] = location.properties.distance
+        for location_result in result.locations:
+            destination_idx = location_ids.index(location_result.id)
+            # Extract travel time and distance
+            props = location_result.properties
+            duration_matrix[origin_idx][destination_idx] = props.travel_time
+            distance_matrix[origin_idx][destination_idx] = props.distance
 
-    # Convert numpy arrays to lists for JSON serialization
-    duration_matrix_list = duration_matrix.tolist()
-    distance_matrix_list = distance_matrix.tolist()
+    return duration_matrix, distance_matrix
+
+
+def sync_part(input_data: dict, client):
+    """
+    Calculate travel matrices using TravelTime API client.
+
+    Args:
+        input_data: Nextroute input data dictionary
+        client: TravelTime API client instance
+
+    Returns:
+        Dictionary containing duration_matrix, distance_matrix, and location_ids
+    """
+    nextroute_input = nextrouteSchema.Input.from_dict(input_data)
+
+    # Build locations list from input data
+    locations = build_locations_list(nextroute_input)
+    location_ids = [loc.id for loc in locations]
+
+    one_to_many_searches = []
+    for origin_id in location_ids:
+        # Get all destinations except the origin itself
+        destinations = location_ids.copy()
+        destinations.remove(origin_id)
+
+        if destinations:  # Only create search if there are destinations
+            one_to_many_searches.append(
+                TimeFilterFastOneToMany(
+                    id=origin_id,
+                    departure_location_id=origin_id,
+                    arrival_location_ids=destinations,
+                    transportation=TransportationFast.DRIVING,
+                    travel_time=7200,  # 2 hours maximum
+                    properties=[Property.TRAVEL_TIME, Property.DISTANCE]
+                )
+            )
+
+    # Execute the API call
+    results = client.time_filter_fast(
+        locations=locations,
+        arrival_searches=TimeFilterFastArrivalSearches(
+            one_to_many=one_to_many_searches,
+            many_to_one=[]
+        )
+    )
+
+    # Build travel matrices from API results
+    duration_matrix, distance_matrix = build_travel_matrices(results, location_ids)
 
     return {
-        "duration_matrix": duration_matrix_list,
-        "distance_matrix": distance_matrix_list,
+        "duration_matrix": duration_matrix.tolist(),
+        "distance_matrix": distance_matrix.tolist(),
         "location_ids": location_ids  # Include location IDs for reference
     }
+
 
 # >>> Workflow definition
 class Flow(FlowSpec):
     @step
     def get_durations_distances(input: dict) -> nextrouteSchema.Input:
         """Get distances and durations from TravelTime."""
-        results = asyncio.run(async_part(input))
+        with create_traveltime_client() as client:
+            results = sync_part(input, client)
         nextroute_input = nextrouteSchema.Input.from_dict(input)
         nextroute_input.duration_matrix = results["duration_matrix"]
         nextroute_input.distance_matrix = results["distance_matrix"]
@@ -129,10 +186,10 @@ class Flow(FlowSpec):
         # Check routes from vehicle start to first few stops
         start_idx = location_ids.index("vehicle-1-start")
         for i in range(3):  # Check first 3 stops
-            stop_idx = location_ids.index(f"location-{i+1}")
+            stop_idx = location_ids.index(f"location-{i + 1}")
             duration = results["duration_matrix"][start_idx][stop_idx]
             distance = results["distance_matrix"][start_idx][stop_idx]
-            nextmv.log(f"Vehicle start to location-{i+1}: {duration} seconds, {distance} meters")
+            nextmv.log(f"Vehicle start to location-{i + 1}: {duration} seconds, {distance} meters")
 
         return nextroute_input.to_dict()
 
