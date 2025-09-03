@@ -1,0 +1,20 @@
+{
+    "ID": [
+        "Cardboard",
+        "Thermofoam",
+        "Aluminium",
+        "Steel"
+    ],
+    "demand": [
+        97,
+        610,
+        395,
+        211
+    ],
+    "width": [
+        47,
+        36,
+        31,
+        14
+    ]
+}
