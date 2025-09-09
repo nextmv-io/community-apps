@@ -1,9 +1,9 @@
 {
     "ID": [
-        "Cardboard",
-        "Thermofoam",
-        "Aluminium",
-        "Steel"
+        "Kraft",
+        "Newsprint",
+        "Coated",
+        "Lightweight"
     ],
     "demand": [
         97,
