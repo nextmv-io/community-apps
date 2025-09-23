@@ -14,3 +14,8 @@ files:
   # If you have an AMPL license, uncomment the following line and make sure to
   # store your license information in that file.
   # - ampl_license_uuid
+
+configuration:
+  # Specify the format the app reads and writes.
+  content:
+    format: "json" # Read JSON from stdin and write JSON to stdout.
