@@ -177,6 +177,8 @@ main.jar
 output.json
 output/
 outputs/
+statistics.json
+assets.json
 
 # Ignore app binary files
 go-highs-orderfulfillment/go-highs-orderfulfillment
