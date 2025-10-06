@@ -4,3 +4,6 @@ files:
   - main.py
 python:
   pip-requirements: requirements.txt
+configuration:
+  content:
+    format: "json"

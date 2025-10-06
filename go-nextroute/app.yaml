@@ -13,3 +13,8 @@ build:
 # (e.g.: configs/*.json) is supported.
 files:
   - main
+
+configuration:
+  # Specify the format the app reads and writes.
+  content:
+    format: "json" # Read JSON from stdin and write JSON to stdout.

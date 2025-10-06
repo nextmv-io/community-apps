@@ -9,3 +9,8 @@ python:
 # (e.g.: configs/*.json) is supported.
 files:
   - main.py
+
+configuration:
+  # Specify the format the app reads and writes.
+  content:
+    format: "csv-archive" # Read and write CSV files.
