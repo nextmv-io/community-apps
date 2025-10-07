@@ -9,3 +9,8 @@ pre-push: mvn package
 # (e.g.: configs/*.json) is supported.
 files:
   - main.jar
+
+configuration:
+  # Specify the format the app reads and writes.
+  content:
+    format: "multi-file" # Read and write files from disk.
