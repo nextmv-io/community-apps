@@ -124,14 +124,16 @@ def check_for_updates(packages: list[str]) -> list[PackageUpdate]:
                             latest_version=latest_version,
                         )
                     )
+    updates.sort(key=lambda x: (x.project, x.package))
     return updates
 
 
 def send_slack_notification(webhook_url: str, updates: list[PackageUpdate]):
     """Sends a Slack notification with the updates."""
-    message = "The following packages have updates available:\n"
+    comm_apps = "<https://github.com/nextmv-io/community-apps|community-apps>"
+    message = f"The following packages in {comm_apps} have updates available:\n"
     for update in updates:
-        message += f"- {update.project}/{update.package}: {update.current_version} -> {update.latest_version}\n"
+        message += f"- {update.project} / {update.package}: {update.current_version} -> {update.latest_version}\n"
 
     try:
         response = requests.post(webhook_url, json={"text": message})
