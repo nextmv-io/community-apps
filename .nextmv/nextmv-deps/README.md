@@ -8,7 +8,7 @@ This script checks if any Nextmv dependencies listed in `requirements.txt` or
 Run the script using Python:
 
 ```bash
-python check_dependencies.py
+python check.py
 ```
 
 The script will output a list of dependencies that have newer versions

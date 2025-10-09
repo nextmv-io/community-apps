@@ -19,5 +19,5 @@ jobs:
           if [ "${{ github.event_name }}" = "schedule" ]; then
             export SLACK_NOTIFY_PARAM="--slack-url ${{ secrets.SLACK_URL_DEV_SCIENCE }}"
           fi
-          python main.py $SLACK_NOTIFY_PARAM
+          python check.py $SLACK_NOTIFY_PARAM
         working-directory: ./community-apps/.nextmv/nextmv-deps
