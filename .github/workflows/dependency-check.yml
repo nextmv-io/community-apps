@@ -12,6 +12,8 @@ jobs:
   check-dependencies:
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
       - name: Check for updated dependencies
         run: |
           # Only notify slack for cron runs
@@ -20,4 +22,4 @@ jobs:
             export SLACK_NOTIFY_PARAM="--slack-url ${{ secrets.SLACK_URL_DEV_SCIENCE }}"
           fi
           python check.py $SLACK_NOTIFY_PARAM
-        working-directory: ./community-apps/.nextmv/nextmv-deps
+        working-directory: ./.nextmv/nextmv-deps
