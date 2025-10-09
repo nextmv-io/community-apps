@@ -41,7 +41,7 @@ configuration:
         ui:
           control_type: select
           display_name: Check Verbosity
-      
+
       # Format options
       - name: format.disable.progression
         option_type: bool
@@ -53,7 +53,7 @@ configuration:
           hidden_from:
             - viewer
             - operator
-      
+
       # Model constraint disable options
       - name: model.constraints.disable.attributes
         option_type: bool
@@ -153,7 +153,7 @@ configuration:
         ui:
           control_type: toggle
           display_name: Disable Vehicle Start Time
-      
+
       # Model constraint enable options
       - name: model.constraints.enable.cluster
         option_type: bool
@@ -162,7 +162,7 @@ configuration:
         ui:
           control_type: toggle
           display_name: Enable Cluster Constraint
-      
+
       # Model objectives
       - name: model.objectives.capacities
         option_type: string
@@ -229,7 +229,7 @@ configuration:
           display_name: Unplanned Penalty
       - name: model.objectives.vehicleactivationpenalty
         option_type: float
-        default: 1.0
+        default: 1.5
         description: Factor to weigh the vehicle activation objective (env MODEL_OBJECTIVES_VEHICLE_ACTIVATION_PENALTY)
         ui:
           control_type: input
@@ -241,7 +241,7 @@ configuration:
         ui:
           control_type: input
           display_name: Vehicles Duration Objective
-      
+
       # Model properties
       - name: model.properties.disable.durationgroups
         option_type: bool
@@ -273,7 +273,7 @@ configuration:
           display_name: Disable Stop Duration Multipliers
       - name: model.properties.maximumtimehorizon
         option_type: int
-        default: "15552000"
+        default: 15552000
         description: Maximum time horizon for the model in seconds (env MODEL_PROPERTIES_MAXIMUM_TIME_HORIZON)
         ui:
           control_type: input
@@ -281,7 +281,7 @@ configuration:
           hidden_from:
             - viewer
             - operator
-      
+
       # Model validation
       - name: model.validate.disable.resources
         option_type: bool
@@ -323,7 +323,7 @@ configuration:
           hidden_from:
             - viewer
             - operator
-      
+
       # Runner options
       - name: runner.input.path
         option_type: string
@@ -379,7 +379,7 @@ configuration:
           hidden_from:
             - viewer
             - operator
-      
+
       # Solve options
       - name: solve.duration
         option_type: string
