@@ -43,6 +43,7 @@ class DecisionModel(nextmv.Model):
         )
         # Maximize the total value of the knapsack.
         model.setMaximize()
+        nVars, nCons = model.getNVars(), model.getNConss()
 
         # Solve the model.
         model.setParam("limits/time", input.options.duration)
@@ -50,7 +51,7 @@ class DecisionModel(nextmv.Model):
         model.optimize()
 
         # Determine which items were chosen.
-        chosen_items = [item["id"] for i, item in enumerate(input.data["items"]) if model.getVal(x[i]) > 0.5]
+        chosen_items = [item for i, item in enumerate(input.data["items"]) if model.getVal(x[i]) > 0.5]
 
         # Prepare the output.
         input.options.version = version("pyscipopt")
@@ -60,8 +61,8 @@ class DecisionModel(nextmv.Model):
                 value=model.getObjVal(),
                 custom={
                     "status": str(model.getStatus()),
-                    "variables": model.getNVars(),
-                    "constraints": model.getNConss(),
+                    "variables": nVars,
+                    "constraints": nCons,
                 },
             ),
         )
