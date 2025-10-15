@@ -223,9 +223,9 @@ apps:
     description: Use Python and Pyvroom - VRP.
   - name: python-scip-knapsack
     type: python
-    app_id: knapsack-scip
-    marketplace_app_id: knapsack.scip
-    marketplace_major_version: v1
+    app_id:
+    marketplace_app_id:
+    marketplace_major_version:
     description: Use Python and SCIP - knapsack.
   - name: python-tr-ortools-region-allocation
     type: python
