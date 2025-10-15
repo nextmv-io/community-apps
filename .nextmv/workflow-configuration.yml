@@ -221,6 +221,12 @@ apps:
     marketplace_app_id: routing.pyvroom
     marketplace_major_version: v1
     description: Use Python and Pyvroom - VRP.
+  - name: python-scip-knapsack
+    type: python
+    app_id: knapsack-scip
+    marketplace_app_id: knapsack.scip
+    marketplace_major_version: v1
+    description: Use Python and SCIP - knapsack.
   - name: python-tr-ortools-region-allocation
     type: python
     app_id:
