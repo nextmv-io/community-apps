@@ -1,0 +1,25 @@
+name: dependency-check
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 15 * * 1" # Every Monday at 15:00 UTC
+
+permissions:
+  contents: read
+
+jobs:
+  check-dependencies:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+      - name: Check for updated dependencies
+        run: |
+          # Only notify slack for cron runs
+          export SLACK_NOTIFY_PARAM=""
+          if [ "${{ github.event_name }}" = "schedule" ]; then
+            export SLACK_NOTIFY_PARAM="--slack-url ${{ secrets.SLACK_URL_DEV_SCIENCE }}"
+          fi
+          python check.py $SLACK_NOTIFY_PARAM
+        working-directory: ./.nextmv/nextmv-deps
