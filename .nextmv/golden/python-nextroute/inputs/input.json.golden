@@ -22,6 +22,7 @@
     "model_constraints_enable_cluster": false,
     "model_objectives_capacities": "",
     "model_objectives_cluster": 0,
+    "model_objectives_distance": 0,
     "model_objectives_earlyarrivalpenalty": 1,
     "model_objectives_latearrivalpenalty": 1,
     "model_objectives_minstops": 1,
