@@ -1,4 +1,4 @@
-nextpipe==0.3.1
+nextpipe==0.3.5
 nextmv==0.32.0
 requests==2.32.4
 plotly==6.1.0
