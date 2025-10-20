@@ -1,5 +1,5 @@
 nextpipe==0.3.1
-nextmv==0.29.0
+nextmv==0.32.0
 requests==2.32.4
 plotly==6.1.0
 pandas==2.2.3
