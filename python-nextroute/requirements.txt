@@ -1,2 +1,2 @@
-nextroute==1.11.4
-nextmv==0.29.0
+nextroute==1.12.2
+nextmv==0.32.0
