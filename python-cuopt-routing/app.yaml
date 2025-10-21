@@ -1,0 +1,14 @@
+type: python
+runtime: ghcr.io/nextmv-io/runtime/cuopt:latest
+
+python:
+  pip-requirements: requirements.txt
+  arch: amd64
+  version: 3.12
+
+files:
+  - main.py
+
+configuration:
+  content:
+    format: json
