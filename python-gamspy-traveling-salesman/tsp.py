@@ -10,7 +10,7 @@ from gamspy.exceptions import GamspyException
 
 def find_subtours(sol: pd.DataFrame):
     G = nx.Graph()
-    G.add_edges_from([(i, j) for i, j in sol[["n1", "n2"]].itertuples(index=False, name=None)])
+    G.add_edges_from(list(sol[["n1", "n2"]].itertuples(index=False, name=None)))
     components = list(nx.connected_components(G))
 
     return [list(comp) for comp in components]
