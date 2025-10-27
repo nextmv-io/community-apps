@@ -128,12 +128,27 @@ def check_for_updates(packages: list[str]) -> list[PackageUpdate]:
     return updates
 
 
+def get_search_and_replace_recommendations(updates: list[PackageUpdate]) -> dict[str, str]:
+    """Generates search and replace recommendations for updating packages."""
+    recommendations = {}
+    for update in updates:
+        search = f"{update.package}=={update.current_version}"
+        replace = f"{update.package}=={update.latest_version}"
+        recommendations[search] = replace
+    return recommendations
+
+
 def send_slack_notification(webhook_url: str, updates: list[PackageUpdate]):
     """Sends a Slack notification with the updates."""
     comm_apps = "<https://github.com/nextmv-io/community-apps|community-apps>"
     message = f"The following packages in {comm_apps} have updates available:\n"
     for update in updates:
         message += f"- {update.project} / {update.package}: {update.current_version} -> {update.latest_version}\n"
+
+    recos = get_search_and_replace_recommendations(updates)
+    message += "Search & replace recommendations:\n"
+    for search, replace in recos.items():
+        message += f"`{search}` -> `{replace}`\n"
 
     try:
         response = requests.post(webhook_url, json={"text": message})
@@ -150,6 +165,10 @@ def main():
         print("The following packages have updates available:")
         for update in updates:
             print(f"- {update.project}/{update.package}: {update.current_version} -> {update.latest_version}")
+        recos = get_search_and_replace_recommendations(updates)
+        print("\nSearch & replace recommendations:")
+        for search, replace in recos.items():
+            print(f"`{search}` -> `{replace}`")
         if args.slack_url:
             send_slack_notification(args.slack_url, updates)
     else:
