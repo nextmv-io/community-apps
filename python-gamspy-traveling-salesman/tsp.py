@@ -2,21 +2,19 @@ import json
 import time
 
 import gamspy as gp
-from gamspy.exceptions import GamspyException
-
 import networkx as nx
 import numpy as np
 import pandas as pd
+from gamspy.exceptions import GamspyException
 
 
 def find_subtours(sol: pd.DataFrame):
     G = nx.Graph()
-    G.add_edges_from(
-        [(i, j) for i, j in sol[["n1", "n2"]].itertuples(index=False, name=None)]
-    )
+    G.add_edges_from([(i, j) for i, j in sol[["n1", "n2"]].itertuples(index=False, name=None)])
     components = list(nx.connected_components(G))
 
     return [list(comp) for comp in components]
+
 
 def getPath(sol: pd.DataFrame):
     path = [sol.n1.iloc[0], sol.n2.iloc[0]]
@@ -86,9 +84,7 @@ def tspModel(
 
     eq_dfj[active_cut] = (
         gp.Sum(
-            gp.Domain(i, j).where[
-                edges[i, j] & (sn[active_cut, i]) & (sn[active_cut, j])
-            ],
+            gp.Domain(i, j).where[edges[i, j] & (sn[active_cut, i]) & (sn[active_cut, j])],
             X[i, j],
         )
         <= gp.Sum(i.where[sn[active_cut, i]], 1) - 1
@@ -121,8 +117,7 @@ def tspModel(
 
         if cnt + len(subtours) > MAXCUTS:
             raise GamspyException(
-                f"Found {len(subtours)} illegal subtours, but adding them would"
-                f" exceed the cut limit of {MAXCUTS}."
+                f"Found {len(subtours)} illegal subtours, but adding them would exceed the cut limit of {MAXCUTS}."
             )
 
         for idx, tour in enumerate(subtours, start=cnt):
@@ -147,19 +142,13 @@ def main():
         dist_matrix = np.sqrt(np.sum(diff**2, axis=-1))
         return dist_matrix
 
-    with open(r"germany_cities.json", "r") as fp:
+    with open(r"germany_cities.json") as fp:
         city_data = json.load(fp)
 
     city_df = pd.json_normalize(city_data["nodes"])
-    dist_mat = euclidean_distance_matrix(
-        city_df[["row.latitude", "row.longitude"]].to_numpy()
-    )
-    dist_df = pd.DataFrame(
-        dist_mat, index=city_df["row.city"], columns=city_df["row.city"]
-    )
-    distance_df = dist_df.reset_index().melt(
-        id_vars="row.city", var_name="to_city", value_name="distance"
-    )
+    dist_mat = euclidean_distance_matrix(city_df[["row.latitude", "row.longitude"]].to_numpy())
+    dist_df = pd.DataFrame(dist_mat, index=city_df["row.city"], columns=city_df["row.city"])
+    distance_df = dist_df.reset_index().melt(id_vars="row.city", var_name="to_city", value_name="distance")
 
     sol_list, tsp = tspModel(nodes_recs=city_df, distance_recs=distance_df, maxnodes=20)
     sol, _ = sol_list

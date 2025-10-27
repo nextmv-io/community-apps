@@ -1,6 +1,6 @@
 import time
-import nextmv
 
+import nextmv
 from cutstock import cutStockModel
 
 
@@ -11,9 +11,7 @@ def main() -> None:
         nextmv.Option("input", str, "", "Path to input file. Default is stdin.", False),
         nextmv.Option("raw_width", int, 100, "Total width of a pattern", False),
         nextmv.Option("max_pattern", int, 35, "Maximum possible pattern", False),
-        nextmv.Option(
-            "output", str, "", "Path to output file. Default is stdout.", False
-        ),
+        nextmv.Option("output", str, "", "Path to output file. Default is stdout.", False),
     )
 
     input = nextmv.load(options=options, path=options.input)
@@ -32,8 +30,8 @@ class CutStockModel(nextmv.Model):
         start_time = time.time()
         nextmv.redirect_stdout()  # Solver chatter is logged to stderr.
 
-        demand = {id: d for id, d in zip(input.data["ID"], input.data["demand"])}
-        width = {id: w for id, w in zip(input.data["ID"], input.data["width"])}
+        demand = dict(zip(input.data["ID"], input.data["demand"], strict=False))
+        width = dict(zip(input.data["ID"], input.data["width"], strict=False))
 
         nextmv.log("Solving Cutting Stock Problem:")
         nextmv.log(f"-   Number of Materials: {len(demand)}")

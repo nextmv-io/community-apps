@@ -10,6 +10,7 @@ generation method is in the application program.
 
 import importlib.util
 import os
+
 from gams import GamsModifier, GamsWorkspace
 
 GAMS_MASTER_MODEL = """
@@ -137,17 +138,13 @@ def cutStockModel(
     pattern_data = cutstock_data.add_parameter("aip", 2, "pattern data")
 
     if max_pattern < len(d):
-        raise Exception(
-            f"Maximum patterns ({max_pattern}) cannot be less than number of products ({len(d)})."
-        )
+        raise Exception(f"Maximum patterns ({max_pattern}) cannot be less than number of products ({len(d)}).")
 
     # initial pattern: pattern i hold width i
     pattern_count = 0
     for k, v in w.items():
         pattern_count += 1
-        pattern_data.add_record(
-            (k, pattern.add_record(str(pattern_count)).key(0))
-        ).value = (int)(r / v)
+        pattern_data.add_record((k, pattern.add_record(str(pattern_count)).key(0))).value = (int)(r / v)
 
     cp_sub = ws.add_checkpoint()
     job_sub = ws.add_job_from_string(GAMS_SUB_MODEL)
@@ -155,9 +152,7 @@ def cutStockModel(
     mi_sub = cp_sub.add_modelinstance()
 
     # define modifier demdual
-    demand_dual = mi_sub.sync_db.add_parameter(
-        "demdual", 1, "dual of demand from master"
-    )
+    demand_dual = mi_sub.sync_db.add_parameter("demdual", 1, "dual of demand from master")
     mi_sub.instantiate("pricing min z using mip", GamsModifier(demand_dual), opt)
 
     # find new pattern
@@ -173,9 +168,7 @@ def cutStockModel(
         if mi_sub.sync_db["z"].first_record().level < -0.00001:
             if pattern_count == max_pattern:
                 patternFlag = True
-                print(
-                    f"Out of pattern. Increase max_pattern (currently {max_pattern})."
-                )
+                print(f"Out of pattern. Increase max_pattern (currently {max_pattern}).")
                 break
             else:
                 new_pattern = mi_sub.sync_db["z"].first_record().level
@@ -185,9 +178,7 @@ def cutStockModel(
                 s = pattern.add_record(str(pattern_count))
                 for y in mi_sub.sync_db["y"]:
                     if y.level > 0.5:
-                        pattern_data.add_record((y.key(0), s.key(0))).value = round(
-                            y.level
-                        )
+                        pattern_data.add_record((y.key(0), s.key(0))).value = round(y.level)
         else:
             break
 

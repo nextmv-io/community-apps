@@ -1,10 +1,9 @@
 import time
 
-import pandas as pd
-import numpy as np
 import nextmv
-
-from tsp import tspModel, getPath
+import numpy as np
+import pandas as pd
+from tsp import getPath, tspModel
 
 
 def main() -> None:
@@ -12,12 +11,8 @@ def main() -> None:
 
     options = nextmv.Options(
         nextmv.Option("input", str, "", "Path to input file. Default is stdin.", False),
-        nextmv.Option(
-            "maxnodes", int, 5, "Maximum number of nodes to solve the model with", False
-        ),
-        nextmv.Option(
-            "output", str, "", "Path to output file. Default is stdout.", False
-        ),
+        nextmv.Option("maxnodes", int, 5, "Maximum number of nodes to solve the model with", False),
+        nextmv.Option("output", str, "", "Path to output file. Default is stdout.", False),
     )
 
     input = nextmv.load(options=options, path=options.input)
@@ -47,19 +42,11 @@ class TSPModel(nextmv.Model):
             dist_matrix = np.sqrt(np.sum(diff**2, axis=-1))
             return dist_matrix
 
-        dist_mat = euclidean_distance_matrix(
-            city_df[["row.latitude", "row.longitude"]].to_numpy()
-        )
-        dist_df = pd.DataFrame(
-            dist_mat, index=city_df["row.city"], columns=city_df["row.city"]
-        )
-        distance_df = dist_df.reset_index().melt(
-            id_vars="row.city", var_name="to_city", value_name="distance"
-        )
+        dist_mat = euclidean_distance_matrix(city_df[["row.latitude", "row.longitude"]].to_numpy())
+        dist_df = pd.DataFrame(dist_mat, index=city_df["row.city"], columns=city_df["row.city"])
+        distance_df = dist_df.reset_index().melt(id_vars="row.city", var_name="to_city", value_name="distance")
 
-        [sol, tot_time], model = tspModel(
-            nodes_recs=city_df, distance_recs=distance_df, maxnodes=max_nodes
-        )
+        [sol, tot_time], model = tspModel(nodes_recs=city_df, distance_recs=distance_df, maxnodes=max_nodes)
 
         path = getPath(sol)
 
