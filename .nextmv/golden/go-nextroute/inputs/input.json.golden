@@ -34,6 +34,7 @@
       "objectives": {
         "capacities": "",
         "cluster": 0,
+        "distance": 0,
         "early_arrival_penalty": 1,
         "late_arrival_penalty": 1,
         "min_stops": 1,

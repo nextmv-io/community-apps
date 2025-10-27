@@ -9,3 +9,13 @@ python:
 # (e.g.: configs/*.json) is supported.
 files:
   - main.py
+
+configuration:
+  # Specify the format the app reads and writes.
+  content:
+    format: "multi-file" # Read and write files from disk.
+    multi-file:
+      input:
+        path: "." # Read files from the current working directory.
+      output:
+        solutions: "." # Write solution files to the current working directory.
