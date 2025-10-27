@@ -1,0 +1,4 @@
+Solving Traveling Salesman problem:
+   - Number of nodes: 100
+   - Solving for >5< nodes
+***All illegal subtours are removed. Solution found!***
