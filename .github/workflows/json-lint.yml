@@ -1,5 +1,8 @@
 name: json lint
-on: [push]
+on:
+  push:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
 jobs:
   community-apps-json-lint:
     runs-on: ubuntu-latest
