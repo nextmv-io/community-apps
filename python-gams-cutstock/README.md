@@ -1,6 +1,9 @@
 # Nextmv GAMS Cutstock Problem
 
-Example for running a Python application on the Nextmv Platform using the GAMS [control API](https://www.gams.com/latest/docs/API_PY_CONTROL.html). We solve a cutting stock problem that finds the minumum number of cuts required to satisfy the product demand.
+Example for running a Python application on the Nextmv Platform using the GAMS
+[control API](https://www.gams.com/latest/docs/API_PY_CONTROL.html). We solve a
+cutting stock problem that finds the minimum number of cuts required to satisfy
+the product demand.
 
 1. Install packages.
 

@@ -1,6 +1,9 @@
 # Nextmv GAMSPy Traveling Salesman Problem
 
-Example for running a Python application on the Nextmv Platform using [GAMSPy](https://gamspy.readthedocs.io/en/latest/) to model the problem. We solve the traveling salesman problem that minimizes the total distance travelled while visiting each city exactly once.
+Example for running a Python application on the Nextmv Platform using
+[GAMSPy](https://gamspy.readthedocs.io/en/latest/) to model the problem. We
+solve the traveling salesman problem that minimizes the total distance traveled
+while visiting each city exactly once.
 
 1. Install packages.
 
