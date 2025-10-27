@@ -146,7 +146,7 @@ def send_slack_notification(webhook_url: str, updates: list[PackageUpdate]):
         message += f"- {update.project} / {update.package}: {update.current_version} -> {update.latest_version}\n"
 
     recos = get_search_and_replace_recommendations(updates)
-    message += "Search&replace recommendations:\n"
+    message += "Search & replace recommendations:\n"
     for search, replace in recos.items():
         message += f"`{search}` -> `{replace}`\n"
 
@@ -166,7 +166,7 @@ def main():
         for update in updates:
             print(f"- {update.project}/{update.package}: {update.current_version} -> {update.latest_version}")
         recos = get_search_and_replace_recommendations(updates)
-        print("\nSearch and replace recommendations:")
+        print("\nSearch & replace recommendations:")
         for search, replace in recos.items():
             print(f"`{search}` -> `{replace}`")
         if args.slack_url:
