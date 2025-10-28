@@ -125,6 +125,18 @@ apps:
     marketplace_app_id:
     marketplace_major_version:
     description: Use the Python Nextmv & scikit-learn integration - diabetes.
+  - name: python-gams-cutstock
+    type: python
+    app_id:
+    marketplace_app_id:
+    marketplace_major_version:
+    description: Use Python and GAMS - cutstock.
+  - name: python-gamspy-traveling-salesman
+    type: python
+    app_id:
+    marketplace_app_id:
+    marketplace_major_version:
+    description: Use Python and Gamspy - traveling salesman.
   - name: python-gurobi-price-optimization
     type: python
     app_id:
