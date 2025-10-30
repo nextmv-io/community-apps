@@ -148,7 +148,7 @@ configuration:
       # Model objectives
       - name: model.objectives.capacities
         option_type: string
-        description: "Capacity objective, provide triple for each resource 'name:default;factor:1.0;offset;0.0' (env MODEL_OBJECTIVES_CAPACITIES)"
+        description: "Capacity objective, provide triple for each resource 'name:default;factor:1.0;offset:0.0' (env MODEL_OBJECTIVES_CAPACITIES)"
         ui:
           control_type: input
           display_name: Capacities Objective
