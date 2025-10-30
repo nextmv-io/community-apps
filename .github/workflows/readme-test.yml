@@ -1,6 +1,10 @@
 # The readme-test workflow runs all commands contained in the README files of the apps.
 name: readme-test
-on: [push, workflow_dispatch]
+on:
+  push:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+  workflow_dispatch:
 jobs:
   readme-test:
     runs-on: ubuntu-latest
