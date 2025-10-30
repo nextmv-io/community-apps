@@ -1,1 +1,2 @@
-nextmv==0.32.0
+haversine==2.8.1
+nextmv==0.34.0

@@ -1,50 +1,104 @@
 #!/usr/bin/env python3
 
-from cuopt import routing
+
 from datetime import datetime
+
 import cudf
 import nextmv
-
+from cuopt import routing
+from haversine import Unit, haversine
 
 SOLUTION_STATUS = {s.value: s.name for s in routing.SolutionStatus}
+
+
+def create_distance_matrix(locations):
+    nextmv.log(f"Creating {len(locations)}^2 distance matrix")
+    """Create a distance matrix from a list of [lon, lat] coordinates."""
+    matrix = []
+    for source in locations:
+        # haversine expects (lat, lon) tuples
+        row = [
+            haversine(
+                reversed(source),
+                reversed(dest),
+                unit=Unit.KILOMETERS,
+            )
+            for dest in locations
+        ]
+        matrix.append(row)
+    return matrix
 
 
 def main() -> None:
     start = datetime.now()
 
-    options = nextmv.Options(
-        nextmv.Option("time_limit", float, default=1),
-        nextmv.Option("verbose_mode", bool, default=False),
-    )
+    options = nextmv.Options(nextmv.Option("time_limit", float, default=1))
 
     data = nextmv.load().data
-    distance = cudf.DataFrame(data["distance"], dtype="float32")
-    locations = len(distance) - 1
 
-    data_model = routing.DataModel(
-        distance.shape[0],
-        data["vehicles"],
-        locations,
+    # Build all locations: vehicle starts + vehicle ends + stops
+    all_locations = []  # (lon, lat) coordinates
+    vehicle_starts = []  # location indices
+    vehicle_ends = []  # location indices
+
+    # Add vehicle start and end locations
+    for vehicle in data["vehicles"]:
+        all_locations.append(vehicle["start"])
+        vehicle_starts.append(len(all_locations) - 1)
+
+        all_locations.append(vehicle["end"])
+        vehicle_ends.append(len(all_locations) - 1)
+
+    # Add job locations
+    for job in data["jobs"]:
+        all_locations.append(job["location"])
+
+    # Create distance matrix
+    distance_matrix = cudf.DataFrame(
+        create_distance_matrix(all_locations),
+        dtype="float32",
     )
 
-    data_model.add_cost_matrix(distance)
-    data_model.add_transit_time_matrix(distance.copy(deep=True))
+    # Create routing data model
+    data_model = routing.DataModel(
+        distance_matrix.shape[0],
+        len(data["vehicles"]),
+        len(data["jobs"]),
+    )
+    data_model.add_cost_matrix(distance_matrix)
+
+    # Set vehicle origins and destinations
+    data_model.set_vehicle_locations(
+        cudf.Series(vehicle_starts, dtype="int32"),
+        cudf.Series(vehicle_ends, dtype="int32"),
+    )
+
+    # Add capacity constraints
+    job_demands = [job["delivery"][0] for job in data["jobs"]]
+    vehicle_capacities = [v["capacity"][0] for v in data["vehicles"]]
+
     data_model.add_capacity_dimension(
         "demand",
-        cudf.Series([1] * locations),
-        cudf.Series([data["capacity"]] * data["vehicles"]),
+        cudf.Series(job_demands, dtype="int32"),
+        cudf.Series(vehicle_capacities, dtype="int32"),
     )
 
     solver_settings = routing.SolverSettings()
     solver_settings.set_time_limit(options.time_limit)
-    solver_settings.set_verbose_mode(options.verbose_mode)
 
+    nextmv.log("Solving model with cuOpt")
     solution = routing.Solve(data_model, solver_settings)
+
+    # Convert solution to dict for output and visualization
+    solution_dict = solution.route.to_dict(orient="records")
+
+    # # Create visual assets
+    # assets = [create_visuals(solution_dict, jobs, vehicles)]
 
     nextmv.write(
         nextmv.Output(
             options=options,
-            solution=solution.route.to_dict(orient="records"),
+            solution=solution_dict,
             statistics=nextmv.Statistics(
                 run=nextmv.RunStatistics(
                     duration=(datetime.now() - start).total_seconds(),
@@ -57,6 +111,7 @@ def main() -> None:
                     },
                 ),
             ),
+            # assets=assets,
         ),
     )
 
