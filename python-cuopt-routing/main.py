@@ -7,6 +7,7 @@ import cudf
 import nextmv
 from cuopt import routing
 from haversine import Unit, haversine
+from visual import create_visual
 
 SOLUTION_STATUS = {s.value: s.name for s in routing.SolutionStatus}
 
@@ -92,9 +93,6 @@ def main() -> None:
     # Convert solution to dict for output and visualization
     solution_dict = solution.route.to_dict(orient="records")
 
-    # # Create visual assets
-    # assets = [create_visuals(solution_dict, jobs, vehicles)]
-
     nextmv.write(
         nextmv.Output(
             options=options,
@@ -111,7 +109,7 @@ def main() -> None:
                     },
                 ),
             ),
-            # assets=assets,
+            assets=[create_visual(data, solution_dict)],
         ),
     )
 
