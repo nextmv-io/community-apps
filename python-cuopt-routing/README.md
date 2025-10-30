@@ -4,11 +4,8 @@ Simple example for solving a routing model using NVIDIA's [cuOpt][cuopt] on
 Nextmv.
 
 To run the model locally, you must have a cuOpt-capable NVIDIA GPU. Open the
-[dev container][devcontainer] in the project and execute the following.
-
-```bash
-python ./main.py < input.json
-```
+[dev container][devcontainer] in the project and run
+`python main.py < input.json`.
 
 ## Features
 
