@@ -83,6 +83,12 @@ apps:
     marketplace_app_id:
     marketplace_major_version:
     description: Use Python and AMPL - price optimization.
+  - name: python-cuopt-routing
+    type: python
+    app_id:
+    marketplace_app_id:
+    marketplace_major_version:
+    description: Use Python and cuOpt - VRP.
   - name: python-gurobi-knapsack
     type: python
     app_id: knapsack-gurobi
