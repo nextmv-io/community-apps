@@ -42,17 +42,19 @@ def main() -> None:
     vehicle_starts = []  # location indices
     vehicle_ends = []  # location indices
 
-    # Add vehicle start and end locations
+    # Add vehicle start locations
     for vehicle in data["vehicles"]:
         all_locations.append(vehicle["start"])
         vehicle_starts.append(len(all_locations) - 1)
 
-        all_locations.append(vehicle["end"])
-        vehicle_ends.append(len(all_locations) - 1)
-
     # Add job locations
     for job in data["jobs"]:
         all_locations.append(job["location"])
+
+    # Add vehicle end locations
+    for vehicle in data["vehicles"]:
+        all_locations.append(vehicle["end"])
+        vehicle_ends.append(len(all_locations) - 1)
 
     # Create distance matrix
     distance_matrix = cudf.DataFrame(

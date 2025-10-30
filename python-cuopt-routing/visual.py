@@ -1,38 +1,5 @@
 import nextmv
-
-
-def generate_color(index: int, total: int) -> str:
-    """
-    Generates a color from a continuous color spectrum based on index and total count.
-    Uses HSL color space to ensure good color separation.
-    """
-    golden_ratio = 0.618033988749895
-    hue = (index * golden_ratio) % 1.0
-
-    def hsl_to_rgb(hue: float, saturation: float = 0.7, lightness: float = 0.5) -> str:
-        def hue_to_rgb(p: float, q: float, t: float) -> float:
-            if t < 0:
-                t += 1
-            if t > 1:
-                t -= 1
-            if t < 1 / 6:
-                return p + (q - p) * 6 * t
-            if t < 1 / 2:
-                return q
-            if t < 2 / 3:
-                return p + (q - p) * (2 / 3 - t) * 6
-            return p
-
-        q = lightness * (1 + saturation) if lightness < 0.5 else lightness + saturation - lightness * saturation
-        p = 2 * lightness - q
-
-        r = hue_to_rgb(p, q, hue + 1 / 3)
-        g = hue_to_rgb(p, q, hue)
-        b = hue_to_rgb(p, q, hue - 1 / 3)
-
-        return f"#{int(r * 255):02x}{int(g * 255):02x}{int(b * 255):02x}"
-
-    return hsl_to_rgb(hue)
+from colour import Color
 
 
 def create_visual(data, solution_routes):
@@ -75,11 +42,9 @@ def create_visual(data, solution_routes):
     # Routes are already in correct sequence order from cuOpt
     # Do NOT sort by 'route' field - that's the location index, not sequence!
 
-    total_vehicles = len(routes_by_vehicle)
-
     # Create features for each vehicle
-    for vehicle_idx, (truck_id, routes) in enumerate(sorted(routes_by_vehicle.items())):
-        color = generate_color(vehicle_idx, total_vehicles)
+    for truck_id, routes in sorted(routes_by_vehicle.items()):
+        color = Color(pick_for=truck_id).hex
 
         # Create points for each stop
         for route in routes:
