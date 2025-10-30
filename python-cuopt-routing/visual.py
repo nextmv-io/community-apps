@@ -42,9 +42,12 @@ def create_visual(data, solution_routes):
     # Routes are already in correct sequence order from cuOpt
     # Do NOT sort by 'route' field - that's the location index, not sequence!
 
+    # Generate a color range from red to blue based on number of vehicles
+    color_range = list(Color("red").range_to(Color("blue"), len(routes_by_vehicle)))
+
     # Create features for each vehicle
-    for truck_id, routes in sorted(routes_by_vehicle.items()):
-        color = Color(pick_for=truck_id).hex
+    for vehicle_idx, (truck_id, routes) in enumerate(sorted(routes_by_vehicle.items())):
+        color = color_range[vehicle_idx].hex
 
         # Create points for each stop
         for route in routes:
