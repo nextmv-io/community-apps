@@ -104,6 +104,18 @@ apps:
     scripts:
       - name: 0.sh
         skip: true
+  - name: python-gams-cutstock
+    scripts:
+      - name: 0.sh
+        silent: true
+      - name: 1.sh
+        stderr: true
+  - name: python-gamspy-traveling-salesman
+    scripts:
+      - name: 0.sh
+        silent: true
+      - name: 1.sh
+        stderr: true
   - name: python-gurobi-knapsack
     scripts:
       - name: 0.sh

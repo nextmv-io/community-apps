@@ -10,11 +10,7 @@ capabilities.
 - Python 3.x
 - Nextmv API key
 - Databricks workspace access (with DATABRICKS_HOST and DATABRICKS_TOKEN)
-- The following Python packages (specified in `requirements.txt`):
-  - nextmv==0.29.0
-  - nextpipe==0.3.1
-  - pandas==2.2.3
-  - databricks-sdk
+- The Python packages specified in `requirements.txt`
 
 ## Environment Setup
 
