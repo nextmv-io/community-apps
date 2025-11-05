@@ -168,8 +168,8 @@ def create_visuals(solution: dict[str, Any]) -> Asset:
         name="Route Visualization",
         content=geojson,
         visual={
-            "schema": "geojson",
             "label": "Route Visualization",
-            "type": "custom-tab"
+            "schema": "geojson",
+            "type": "output-visual"
         }
     )
