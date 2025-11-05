@@ -12,9 +12,9 @@ from visual import create_visual
 SOLUTION_STATUS = {s.value: s.name for s in routing.SolutionStatus}
 
 
-def create_distance_matrix(locations):
-    nextmv.log(f"Creating {len(locations)}^2 distance matrix")
+def create_distance_matrix(locations: list[list[float]]) -> list[list[float]]:
     """Create a distance matrix from a list of [lon, lat] coordinates."""
+    nextmv.log(f"Creating {len(locations)}^2 distance matrix")
     matrix = []
     for source in locations:
         # haversine expects (lat, lon) tuples

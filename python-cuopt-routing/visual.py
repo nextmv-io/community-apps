@@ -1,8 +1,10 @@
+from typing import Any
+
 import nextmv
 from colour import Color
 
 
-def create_visual(data, solution_routes):
+def create_visual(data: dict[str, Any], solution_routes: list[dict[str, Any]]) -> nextmv.Asset:
     """Creates a GeoJSON visualization from a cuOpt solution."""
     features = []
 
@@ -32,7 +34,7 @@ def create_visual(data, solution_routes):
         location_metadata[vehicle_end_start_idx + i] = {"type": "Depot", "description": f"Vehicle {v['id']} End"}
 
     # Group routes by vehicle
-    routes_by_vehicle = {}
+    routes_by_vehicle: dict[int, list[dict[str, Any]]] = {}
     for route in solution_routes:
         truck_id = route["truck_id"]
         if truck_id not in routes_by_vehicle:
