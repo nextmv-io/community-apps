@@ -88,6 +88,7 @@ def create_visual(data: dict[str, Any], solution_routes: list[dict[str, Any]]) -
         if len(route_coordinates) > 1:
             line_feature = {
                 "type": "Feature",
+                "name": f"Vehicle {truck_id} route",
                 "properties": {
                     "metadata": [
                         {"key": "Vehicle", "value": f"Vehicle {truck_id}"},
