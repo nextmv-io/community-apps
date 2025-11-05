@@ -245,6 +245,12 @@ apps:
     marketplace_app_id:
     marketplace_major_version:
     description: Use tracked runs in Python - region allocation.
+  - name: python-vroom-premium-api-routing
+    type: python
+    app_id: routing-vroom-premium-api
+    marketplace_app_id: routing.vroom-premium-api
+    marketplace_major_version: v1
+    description: Use Python and Vroom Premium API - VRP.
   - name: python-wf-custom-visuals
     type: python
     app_id:
