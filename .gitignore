@@ -196,3 +196,6 @@ gurobi.lic*
 # Hexaly Secrets
 license.dat*
 !license.dat.template
+
+# MacOS files
+.DS_Store
