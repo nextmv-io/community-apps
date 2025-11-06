@@ -292,7 +292,7 @@ apps:
         silent: true
       - name: 2.sh
         skip: true
-  - name: python-verso-routing
+  - name: python-vroom-premium-api-routing
     scripts:
       - name: 0.sh
         silent: true
