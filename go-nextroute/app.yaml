@@ -401,6 +401,141 @@ configuration:
           hidden_from:
             - viewer
             - operator
+      - name: solve.solver.plangroupsize.delta
+        option_type: int
+        description: "Delta is the initial change in value after a number of iterations without improvement (e.g.: 0). This is used to adjust the group size of the plan operator during solving."
+        ui:
+          control_type: input
+          display_name: Plan Group Size Delta
+          hidden_from:
+            - viewer
+            - operator
+      - name: solve.solver.plangroupsize.deltaafteriterations
+        option_type: int
+        description: "Number of iterations without improvement after which the value is changed (e.g.: 1000000000). This is used to adjust the group size of the plan operator during solving."
+        ui:
+          control_type: input
+          display_name: Plan Group Size Delta After Iterations
+          hidden_from:
+            - viewer
+            - operator
+      - name: solve.solver.plangroupsize.maxvalue
+        option_type: int
+        description: "Maximum value for the group size (e.g.: 2). This is used to adjust the group size of the plan operator during solving."
+        ui:
+          control_type: input
+          display_name: Plan Group Size Max Value
+          hidden_from:
+            - viewer
+            - operator
+      - name: solve.solver.plangroupsize.minvalue
+        option_type: int
+        description: "Minimum value for the group size (e.g.: 2). This is used to adjust the group size of the plan operator during solving."
+        ui:
+          control_type: input
+          display_name: Plan Group Size Min Value
+          hidden_from:
+            - viewer
+            - operator
+      - name: solve.solver.plangroupsize.snapbackafterimprovement
+        option_type: bool
+        description: "Snap back to the start value after an improvement is found. This is used to adjust the group size of the plan operator during solving."
+        ui:
+          control_type: toggle
+          display_name: Plan Group Size Snap Back After Improvement
+          hidden_from:
+            - viewer
+            - operator
+      - name: solve.solver.plangroupsize.startvalue
+        option_type: int
+        description: "Starting value for the group size (e.g.: 2). This is used to adjust the group size of the plan operator during solving."
+        ui:
+          control_type: input
+          display_name: Plan Group Size Start Value
+          hidden_from:
+            - viewer
+            - operator
+      - name: solve.solver.plangroupsize.zigzag
+        option_type: bool
+        description: "Zigzag is a flag that indicates if the value should zigzag between the min and max value. This is used to adjust the group size of the plan operator during solving."
+        ui:
+          control_type: toggle
+          display_name: Plan Group Size Zigzag
+          hidden_from:
+            - viewer
+            - operator
+      - name: solve.solver.unplanunits.delta
+        option_type: int
+        description: "Delta is the initial change in value after a number of iterations without improvement (e.g.: 2). This is used to adjust the number of units for the unplan operator during solving."
+        ui:
+          control_type: input
+          display_name: Unplan Units Delta
+          hidden_from:
+            - viewer
+            - operator
+      - name: solve.solver.unplanunits.deltaafteriterations
+        option_type: int
+        description: "Number of iterations without improvement after which the value is changed (e.g.: 125). This is used to adjust the number of units for the unplan operator during solving."
+        ui:
+          control_type: input
+          display_name: Unplan Units Delta After Iterations
+          hidden_from:
+            - viewer
+            - operator
+      - name: solve.solver.unplanunits.maxvalue
+        option_type: int
+        description: "Maximum value for the number of units (e.g.: -1). This is used to adjust the number of units for the unplan operator during solving. -1 auto-configures to a fraction of the total number of stops."
+        ui:
+          control_type: input
+          display_name: Unplan Units Max Value
+          hidden_from:
+            - viewer
+            - operator
+      - name: solve.solver.unplanunits.minvalue
+        option_type: int
+        description: "Minimum value for the number of units (e.g.: 2). This is used to adjust the number of units for the unplan operator during solving."
+        ui:
+          control_type: input
+          display_name: Unplan Units Min Value
+          hidden_from:
+            - viewer
+            - operator
+      - name: solve.solver.unplanunits.snapbackafterimprovement
+        option_type: bool
+        description: "Snap back to the start value after an improvement is found. This is used to adjust the number of units for the unplan operator during solving."
+        ui:
+          control_type: toggle
+          display_name: Unplan Units Snap Back After Improvement
+          hidden_from:
+            - viewer
+            - operator
+      - name: solve.solver.unplanunits.startvalue
+        option_type: int
+        description: "Starting value for the number of units (e.g.: 2). This is used to adjust the number of units for the unplan operator during solving."
+        ui:
+          control_type: input
+          display_name: Unplan Units Start Value
+          hidden_from:
+            - viewer
+            - operator
+      - name: solve.solver.unplanunits.zigzag
+        option_type: bool
+        description: "Zigzag is a flag that indicates if the value should zigzag between the min and max value. This is used to adjust the number of units for the unplan operator during solving."
+        ui:
+          control_type: toggle
+          display_name: Unplan Units Zigzag
+          hidden_from:
+            - viewer
+            - operator
+      - name: solve.solver.unplanweights
+        option_type: string
+        description: "Comma separated list of weights for unplanning strategies (e.g.: 'Vehicle:3,Island:1,Location:300')"
+        ui:
+          control_type: input
+          display_name: Unplan Weights
+          hidden_from:
+            - viewer
+            - operator
       - name: solve.startsolutions
         option_type: int
         description: "Number of solutions to generate on top of those passed in; one solution generated with sweep algorithm, the rest generated randomly (e.g.: 5)"
