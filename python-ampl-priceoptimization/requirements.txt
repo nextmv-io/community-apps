@@ -17,5 +17,5 @@ ampl-module-open==20250206
 ampl-module-scip==20240724
 ampl-module-xpress==20241227
 
-nextmv==0.34.1
+nextmv==0.35.1
 plotly==6.0.0
