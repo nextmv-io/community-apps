@@ -1,1 +1,1 @@
-python3 main.py inFileName=inputs/input.dat solFileName=outputs/solutions/output.txt
+python3 main.py inFileName=inputs/input.dat solFileName=output.txt
