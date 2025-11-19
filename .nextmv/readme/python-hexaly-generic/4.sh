@@ -1,5 +1,3 @@
-nextmv app run --app-id <your-app-id> \
-    --input inputs/ \
-    --content-type multi-file \
-    --secret-collection-id <your-secret-collection> \
-    --options 'inFileName=inputs/input.dat,solFileName=outputs/solutions/output.txt'
+docker run -i --rm \
+-v $(pwd):/app ghcr.io/nextmv-io/runtime/python:3.11 \
+sh -c 'pip install -r /app/requirements.txt && python3 /app/main.py inFileName=inputs/input.dat solFileName=outputs/solutions/output.txt'
