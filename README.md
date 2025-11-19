@@ -30,6 +30,8 @@ decision apps that run on the Nextmv Platform.
 * [go-nextroute]: Use Go and Nextmv’s Nextroute solver to solve a vehicle
   routing problem.
 * [python-ampl-knapsack]: Use Python and AMPL to solve a knapsack problem.
+* [python-cplex-knapsack]: Use Python and IBM ILOG CPLEX to solve a knapsack
+  problem.
 * [python-gurobi-knapsack]: Use Python and Gurobi to solve a knapsack problem.
 * [python-highs-knapsack]: Use Python and the HiGHS solver to solve a knapsack
   problem.
@@ -60,6 +62,8 @@ run on Nextmv Cloud.
   problem. Demonstrates how to use devcontainers.
 * [java-ortools-routing]: Use Java and Google OR-Tools to solve a vehicle
   routing problem. Demonstrates how to use devcontainers.
+* [python-cuopt-routing]: Use Python and NVIDIA cuOPT to solve a vehicle
+  routing problem. Demonstrates GPU acceleration.
 * [python-hexaly-knapsack]: Use Python and Hexaly to solve a knapsack problem.
   Demonstrates how to use devcontainers.
 * [python-ampl-facilitylocation]: Use Python and AMPL to solve a facility
@@ -96,6 +100,8 @@ run on Nextmv Cloud.
 [python-ampl-facilitylocation]: ./python-ampl-facilitylocation/README.md
 [python-ampl-knapsack]: ./python-ampl-knapsack/README.md
 [python-ampl-priceoptimization]: ./python-ampl-priceoptimization/README.md
+[python-cplex-knapsack]: ./python-cplex-knapsack/README.md
+[python-cuopt-routing]: ./python-cuopt-routing/README.md
 [python-gurobi-knapsack]: ./python-gurobi-knapsack/README.md
 [python-hexaly-knapsack]: ./python-hexaly-knapsack/README.md
 [python-highs-knapsack]: ./python-highs-knapsack/README.md
