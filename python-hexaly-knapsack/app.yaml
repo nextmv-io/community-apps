@@ -1,6 +1,6 @@
 # This manifest holds the information the app needs to run on the Nextmv Cloud.
 type: python
-runtime: ghcr.io/nextmv-io/runtime/hexaly:latest
+runtime: ghcr.io/nextmv-io/runtime/python:3.11
 python:
   # All listed packages will get bundled with the app.
   pip-requirements: requirements.txt
