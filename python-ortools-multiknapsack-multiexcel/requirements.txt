@@ -1,4 +1,4 @@
-nextmv==0.34.1
+nextmv==0.35.1
 ortools==9.14.6206
 openpyxl==3.1.5
 pandas==2.3.1

@@ -1,5 +1,6 @@
 import argparse
 import os
+import re
 import tomllib
 from dataclasses import dataclass
 
@@ -8,6 +9,7 @@ import requests
 # The packages to check for updates by default.
 PACKAGES = [
     "nextmv",
+    "nextmv[all]",
     "nextpipe",
     "nextroute",
     "nextmv-scikit-learn",
@@ -44,6 +46,9 @@ def parse_args():
 
 def get_latest_version(package: str) -> str:
     """Gets the latest version of a package from PyPI."""
+    # Clean any extras from the package name
+    package = package.split("[")[0]
+    # Fetch the latest version from PyPI
     try:
         response = requests.get(f"https://pypi.org/pypi/{package}/json")
         latest_version = response.json()["info"]["version"]
@@ -83,6 +88,31 @@ def get_dependencies_pyproject(path: str, packages: list[str]) -> dict:
     return {k: v for k, v in dependencies.items() if k in packages}
 
 
+def get_dependencies_notebooks(path: str, packages: list[str]) -> dict:
+    """Reads the dependencies from Jupyter notebooks."""
+    # Find all notebook files in the given path
+    notebooks = [f for f in os.listdir(path) if f.endswith(".ipynb")]
+    dependencies = {}
+    for notebook in notebooks:
+        try:
+            with open(os.path.join(path, notebook)) as f:
+                content = f.read()
+                patterns = [
+                    r"pip install (\S+)==(\S+)",
+                    r"pip install '(\S+)==(\S+)'",
+                    r'pip install \\"(\S+)==(\S+)\\"',
+                ]
+                for line in content.splitlines():
+                    for pattern in patterns:
+                        match = re.search(pattern, line)
+                        if match:
+                            package, version = match.groups()
+                            dependencies[package] = version
+        except FileNotFoundError:
+            print("Notebook file not found.")
+    return {k: v for k, v in dependencies.items() if k in packages}
+
+
 def get_projects_dependencies(packages: list[str]) -> dict:
     """Gets the dependency managing files for all projects."""
     project_dir = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), "../.."))
@@ -103,6 +133,13 @@ def get_projects_dependencies(packages: list[str]) -> dict:
             deps = get_dependencies_pyproject(pyproject_path, packages)
             if deps:
                 dependencies[project_name] = deps
+        # Consider any complementary notebook dependencies
+        notebook_deps = get_dependencies_notebooks(root, packages)
+        if notebook_deps:
+            if project_name in dependencies:
+                dependencies[project_name].update(notebook_deps)
+            else:
+                dependencies[project_name] = notebook_deps
     return dependencies
 
 

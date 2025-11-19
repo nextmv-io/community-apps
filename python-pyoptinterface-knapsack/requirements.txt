@@ -2,4 +2,4 @@
 pyoptinterface[highs]==0.4.0
 
 # Other packages.
-nextmv==0.34.1
+nextmv==0.35.1
