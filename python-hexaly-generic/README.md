@@ -74,11 +74,13 @@ Docker needs to be installed.
 To run the application in the same Docker image as the one used on Nextmv
 Cloud, you can use the following command:
 
+<!-- markdownlint-disable MD013 -->
 ```bash
 docker run -i --rm \
 -v $(pwd):/app ghcr.io/nextmv-io/runtime/python:3.11 \
 sh -c 'pip install -r /app/requirements.txt && python3 /app/main.py inFileName=inputs/input.dat solFileName=outputs/solutions/output.txt'
 ```
+<!-- markdownlint-enable MD013 -->
 
 You can also debug the application by running it in a Dev Container. This
 workspace recommends to install the Dev Container extension for VSCode. If you
