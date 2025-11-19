@@ -100,6 +100,14 @@ apps:
         silent: true
       - name: 2.sh
         skip: true
+  - name: python-cplex-knapsack
+    scripts:
+      - name: 0.sh
+        silent: true
+      - name: 1.sh
+        silent: true
+      - name: 2.sh
+        skip: true
   - name: python-cuopt-routing
     scripts:
       - name: 0.sh
