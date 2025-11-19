@@ -77,7 +77,7 @@ Cloud, you can use the following command:
 ```bash
 docker run -i --rm \
 -v $(pwd):/app ghcr.io/nextmv-io/runtime/python:3.11 \
-sh -c 'python3 /app/main.py'
+sh -c 'pip install -r /app/requirements.txt && python3 /app/main.py inFileName=inputs/input.dat solFileName=outputs/solutions/output.txt'
 ```
 
 You can also debug the application by running it in a Dev Container. This
