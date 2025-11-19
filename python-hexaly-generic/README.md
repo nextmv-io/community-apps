@@ -30,21 +30,8 @@ multi knapsack Mixed Integer Programming problem.
 1. Run the app locally.
 
     ```bash
-    python3 main.py inFileName=inputs/input.dat solFileName=outputs/solutions/output.txt
+    python3 main.py inFileName=inputs/input.dat solFileName=output.txt
     ```
-
-    - If your app expects inputs files to be in the same directory as the model
-      file, you can use the `unNest=true` option. The app will then copy all
-      files from the `inputs/` directory to the current working directory before
-      running the model. Even though it is not necessary for this example, you
-      can test this by running (note the path to the data file):
-
-        ```bash
-        python3 main.py \
-          inFileName=input.dat \
-          solFileName=output.txt \
-          unNest=true
-        ```
 
 1. If above steps were successful, you can push the app to the Nextmv Platform.
    E.g., using the [Nextmv CLI][install-cli]:
@@ -60,9 +47,8 @@ multi knapsack Mixed Integer Programming problem.
     ```bash
     nextmv app run --app-id <your-app-id> \
         --input inputs/ \
-        --content-type multi-file \
         --secret-collection-id <your-secret-collection> \
-        --options 'inFileName=inputs/input.dat,solFileName=outputs/solutions/output.txt'
+        --options 'inFileName=input.dat,solFileName=output.txt'
     ```
 
    Or you can run it via the [Nextmv Console][console].

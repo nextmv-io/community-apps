@@ -5,25 +5,15 @@ import sys
 import nextmv
 from hexaly.modeler import HexalyModeler
 
-# Name of the option that makes the app copy all files from the `inputs/` directory to the
-# current working directory before running the model. This is on by default as well.
-OPTION_UN_NEST = "unNest"
-
 
 def main() -> None:
     """Entry point for the program."""
 
     # Parse options from command line arguments.
-    options, un_nest = parse_options()
+    options = parse_options()
     nextmv.log("Options:")
     for key, value in options.items():
         nextmv.log(f"  - {key}: {value}")
-
-    # If the `unNest=true` option is set, copy all files from the `inputs/` directory to
-    # the current working directory.
-    if un_nest:
-        nextmv.log("Using unNest option, copying files from inputs/ to current directory.")
-        unnest_directory("inputs")
 
     # Find the model file in the specified path.
     model_path = find_file(".", [".hxm", ".lsp"])
@@ -45,30 +35,23 @@ def main() -> None:
     nextmv.log("Done.")
 
 
-def parse_options() -> tuple[dict[str, str], bool]:
+def parse_options() -> dict[str, str]:
     """
     Parses all arguments so that they can be submitted to the model. Returns a dictionary
     of options and a boolean indicating whether the inputs directory should be un-nested.
     """
-    un_nest = True
     options = {}
     for arg in sys.argv[1:]:
         if arg.startswith("--"):
             arg = arg[2:]
         elif arg.startswith("-"):
             arg = arg[1:]
-        if arg == OPTION_UN_NEST:
-            un_nest = True
-            continue
         if "=" in arg:
             key, value = arg.split("=", 1)
-            if key == OPTION_UN_NEST:
-                un_nest = True
-                continue
             options[key] = value
         else:
             options[arg] = "true"
-    return options, un_nest
+    return options
 
 
 def unnest_directory(source_directory: str) -> None:
@@ -86,13 +69,14 @@ def unnest_directory(source_directory: str) -> None:
 
 def find_file(path: str, extensions: list[str]) -> str:
     """
-    Finds the first file with the given extension in the specified path.
+    Finds the first file with the given extension in the specified path. Looks for files
+    recursively.
     """
     endings = [ext.lower() for ext in extensions]
-    for ending in endings:
-        for file in os.listdir(path):
-            if file.lower().endswith(ending):
-                return os.path.join(path, file)
+    for root, _, files in os.walk(path):
+        for file in files:
+            if any(file.lower().endswith(ending) for ending in endings):
+                return os.path.join(root, file)
     raise FileNotFoundError(f"No model file found in {path} with endings {endings}.")
 
 
