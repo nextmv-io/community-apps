@@ -97,19 +97,17 @@ def get_dependencies_notebooks(path: str, packages: list[str]) -> dict:
         try:
             with open(os.path.join(path, notebook)) as f:
                 content = f.read()
+                patterns = [
+                    r"pip install (\S+)==(\S+)",
+                    r"pip install '(\S+)==(\S+)'",
+                    r'pip install \\"(\S+)==(\S+)\\"',
+                ]
                 for line in content.splitlines():
-                    match = re.search(r"pip install (\S+)==(\S+)", line)
-                    if match:
-                        package, version = match.groups()
-                        dependencies[package] = version
-                    match = re.search(r"pip install '(\S+)==(\S+)'", line)
-                    if match:
-                        package, version = match.groups()
-                        dependencies[package] = version
-                    match = re.search(r'pip install \\"(\S+)==(\S+)\\"', line)
-                    if match:
-                        package, version = match.groups()
-                        dependencies[package] = version
+                    for pattern in patterns:
+                        match = re.search(pattern, line)
+                        if match:
+                            package, version = match.groups()
+                            dependencies[package] = version
         except FileNotFoundError:
             print("Notebook file not found.")
     return {k: v for k, v in dependencies.items() if k in packages}
