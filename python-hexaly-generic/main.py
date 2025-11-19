@@ -38,7 +38,7 @@ def main() -> None:
 def parse_options() -> dict[str, str]:
     """
     Parses all arguments so that they can be submitted to the model. Returns a dictionary
-    of options and a boolean indicating whether the inputs directory should be un-nested.
+    of option names to values.
     """
     options = {}
     for arg in sys.argv[1:]:
