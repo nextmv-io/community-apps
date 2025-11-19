@@ -6,7 +6,7 @@ import nextmv
 from hexaly.modeler import HexalyModeler
 
 # Name of the option that makes the app copy all files from the `inputs/` directory to the
-# current working directory before running the model.
+# current working directory before running the model. This is on by default as well.
 OPTION_UN_NEST = "unNest"
 
 
@@ -19,9 +19,6 @@ def main() -> None:
     for key, value in options.items():
         nextmv.log(f"  - {key}: {value}")
 
-    # Make sure the output directory exists.
-    os.makedirs(os.path.join("outputs", "solutions"), exist_ok=True)
-
     # If the `unNest=true` option is set, copy all files from the `inputs/` directory to
     # the current working directory.
     if un_nest:
@@ -29,7 +26,7 @@ def main() -> None:
         unnest_directory("inputs")
 
     # Find the model file in the specified path.
-    model_path = find_file("inputs", [".hxm", ".lsp"])
+    model_path = find_file(".", [".hxm", ".lsp"])
     nextmv.log(f"Model file found: {model_path}")
 
     # Prepare options for consumption by the model.
@@ -53,7 +50,7 @@ def parse_options() -> tuple[dict[str, str], bool]:
     Parses all arguments so that they can be submitted to the model. Returns a dictionary
     of options and a boolean indicating whether the inputs directory should be un-nested.
     """
-    un_nest = False
+    un_nest = True
     options = {}
     for arg in sys.argv[1:]:
         if arg.startswith("--"):

@@ -42,7 +42,7 @@ multi knapsack Mixed Integer Programming problem.
         ```bash
         python3 main.py \
           inFileName=input.dat \
-          solFileName=outputs/solutions/output.txt \
+          solFileName=output.txt \
           unNest=true
         ```
 
