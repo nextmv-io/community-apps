@@ -723,7 +723,7 @@ func format(
 			}
 		}
 
-		o.Solutions = append(o.Solutions, oflSolution)
+		o.Solutions = []any{oflSolution}
 
 		customResultStatistics := customResultStatistics{
 			DeliveryCosts: round(totalDeliveryCosts),
