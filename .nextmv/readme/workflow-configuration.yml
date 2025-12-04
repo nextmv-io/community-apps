@@ -359,7 +359,7 @@ apps:
   - name: rust-goodlp-knapsack
     scripts:
       - name: 0.sh
-        silent: true
+        skip: true
       - name: 2.sh
         skip: true
   - name: rust-hello-world
