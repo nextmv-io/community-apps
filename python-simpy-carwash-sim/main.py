@@ -130,8 +130,8 @@ def setup(env, num_machines, washtime, t_inter):
 
 # Setup and start the simulation
 nextmv.log("Carwash simulation starting...")
-# Generate random seed if not provided, otherwise use the provided value
-seed = options.RANDOM_SEED if hasattr(options, 'RANDOM_SEED') and options.RANDOM_SEED is not None else random.randint(0, 1000)
+# Generate random seed if RANDOM_SEED is -1, otherwise use the provided value
+seed = random.randint(0, 1000) if options.RANDOM_SEED == -1 else options.RANDOM_SEED
 random.seed(seed)  # This helps to reproduce the results
 nextmv.log(f"Using random seed: {seed}")
 

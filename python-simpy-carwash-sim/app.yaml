@@ -24,6 +24,7 @@ configuration:
       items:
         - name: RANDOM_SEED
           option_type: int
+          default: -1
           required: false
           ui:
             control_type: input
