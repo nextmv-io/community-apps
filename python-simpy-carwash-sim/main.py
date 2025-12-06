@@ -37,8 +37,8 @@ with open("input.json", "r") as f:
     data = json.load(f)
 
 NUM_MACHINES = data.get("NUM_MACHINES")  # Number of machines in the carwash
-WASHTIME = data.get("WASHTIME")          # Minutes it takes to wash a car
-T_INTER = data.get("T_INTER")      # Create a new car every ~7 minutes
+WASHTIME = options.WASHTIME          # Minutes it takes to wash a car
+T_INTER = options.T_INTER      # Create a new car every ~7 minutes
 
 class Carwash:
     """A carwash has a limited number of machines (``NUM_MACHINES``) to
@@ -130,7 +130,10 @@ def setup(env, num_machines, washtime, t_inter):
 
 # Setup and start the simulation
 nextmv.log("Carwash simulation starting...")
-random.seed(options.RANDOM_SEED)  # This helps to reproduce the results
+# Generate random seed if not provided, otherwise use the provided value
+seed = options.RANDOM_SEED if hasattr(options, 'RANDOM_SEED') and options.RANDOM_SEED is not None else random.randint(0, 1000)
+random.seed(seed)  # This helps to reproduce the results
+nextmv.log(f"Using random seed: {seed}")
 
 # Create an environment and start the setup process
 env = simpy.Environment()
@@ -158,15 +161,31 @@ with open(statistics_file, "w") as stats_f:
                 "average_wait_time": sum(wait_times) / len(wait_times) if wait_times else 0,
                 "average_total_time": sum(total_times) / len(total_times) if total_times else 0,
                 "simulation_time": options.SIM_TIME,
-                "num_machines": NUM_MACHINES
+                "num_machines": NUM_MACHINES,
+                "random_seed": seed
             },
         ),
     )
     stats_f.write(json.dumps({"statistics": statistics.to_dict()}))
 
-# Create output with just events
+# Restructure events by car
+cars_dict = {}
+for event in simulation_events:
+    car_name = event["car"]
+    if car_name not in cars_dict:
+        cars_dict[car_name] = {
+            "car": car_name,
+            "events": []
+        }
+    cars_dict[car_name]["events"].append({
+        "event": event["event"],
+        "time": event["time"],
+        **{k: v for k, v in event.items() if k not in ["car", "event", "time"]}
+    })
+
+# Create output structured by car
 output = {
-    "events": simulation_events
+    "cars": list(cars_dict.values())
 }
 
 # Write output to JSON file

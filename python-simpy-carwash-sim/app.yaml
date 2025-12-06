@@ -24,7 +24,6 @@ configuration:
       items:
         - name: RANDOM_SEED
           option_type: int
-          default: 42
           required: false
           ui:
             control_type: input
@@ -36,3 +35,17 @@ configuration:
           ui:
             control_type: input
             display_name: Simulation Time
+        - name: WASHTIME
+          option_type: int
+          default: 5
+          required: false
+          ui:
+            control_type: input
+            display_name: Wash Time
+        - name: T_INTER
+          option_type: int
+          default: 7
+          required: false
+          ui:
+            control_type: input
+            display_name: Car Arrival Interval
