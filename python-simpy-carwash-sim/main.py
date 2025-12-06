@@ -158,8 +158,8 @@ with open(statistics_file, "w") as stats_f:
             custom={
                 "total_cars": total_cars,
                 "completed_cars": completed_cars,
-                "average_wait_time": sum(wait_times) / len(wait_times) if wait_times else 0,
-                "average_total_time": sum(total_times) / len(total_times) if total_times else 0,
+                "average_wait_time": round(sum(wait_times) / len(wait_times), 2) if wait_times else 0,
+                "average_total_time": round(sum(total_times) / len(total_times), 2) if total_times else 0,
                 "simulation_time": options.SIM_TIME,
                 "num_machines": NUM_MACHINES,
                 "random_seed": seed
