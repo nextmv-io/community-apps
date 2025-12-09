@@ -287,6 +287,12 @@ apps:
     marketplace_app_id:
     marketplace_major_version:
     description: Get started with Rust and Nextmv.
+  - name: rust-goodlp-knapsack
+    type: rust
+    app_id:
+    marketplace_app_id:
+    marketplace_major_version:
+    description: Use Rust and GoodLP - knapsack.
 
 # Main supported language versions.
 language-support:
