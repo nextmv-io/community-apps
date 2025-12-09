@@ -1,6 +1,6 @@
-# Rust echo app
+# Nextmv Rust Hello World
 
-A simple echo app written in Rust.
+Simple example for running a Rust application on the Nextmv Platform.
 
 ## Prerequisites
 

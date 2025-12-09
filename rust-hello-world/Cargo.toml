@@ -1,5 +1,5 @@
 [package]
-name = "rust-echo"
+name = "rust-hello-world"
 version = "0.1.0"
 edition = "2021"
 

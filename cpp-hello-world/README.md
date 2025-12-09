@@ -1,6 +1,7 @@
-# C++ compute/memory load simulation app
+# Nextmv C++ Hello World
 
-This is a simple C++ application that simulates compute and memory load.
+Simple example for running a C++ application on the Nextmv Platform. The app
+simulates compute and memory load.
 
 ## Remote usage
 

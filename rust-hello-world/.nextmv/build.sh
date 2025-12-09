@@ -11,4 +11,4 @@ docker run --rm -v $(pwd):/workspace -w /workspace --platform linux/$ARCH rust:1
 "
 
 # Copy main binary to app root (preparing for nextmv app packaging)
-cp -v target/nextmv/release/rust-echo main
+cp -v target/nextmv/release/rust-hello-world main
