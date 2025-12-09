@@ -66,7 +66,7 @@ class DecisionFlow(FlowSpec):
     @app(
         app_id="avocado-price-optimizer",
         instance_id="staging",
-        parameters={"supply": options.supply},
+        options={"supply": options.supply},
     )
     @needs(predecessors=[prep])
     @step

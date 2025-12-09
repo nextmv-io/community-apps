@@ -18,7 +18,7 @@ class Flow(FlowSpec):
     @app(
         app_id="routing-nextroute",  # ID of any app on your team.
         instance_id="latest",  # Use "latest" for marketplace instances.
-        parameters={
+        options={
             "model.constraints.enable.cluster": True,  # Enable clustering of routes.
             "solve.duration": "5s",  # 5 seconds time limit for solving.
         },
