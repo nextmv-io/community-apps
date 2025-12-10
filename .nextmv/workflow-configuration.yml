@@ -1,6 +1,6 @@
 apps:
   - name: cpp-hello-world
-    type: cpp
+    type: binary
     app_id:
     marketplace_app_id:
     marketplace_major_version:
@@ -282,13 +282,13 @@ apps:
     marketplace_major_version:
     description: Use Python and Xpress - knapsack.
   - name: rust-hello-world
-    type: rust
+    type: binary
     app_id:
     marketplace_app_id:
     marketplace_major_version:
     description: Get started with Rust and Nextmv.
   - name: rust-goodlp-knapsack
-    type: rust
+    type: binary
     app_id:
     marketplace_app_id:
     marketplace_major_version:
