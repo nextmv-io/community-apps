@@ -5,12 +5,16 @@ set -euo pipefail
 # Determine architecture
 ARCH=${ARCH:-arm64}
 
-# Build Linux binary using Docker
-docker run --rm -v $(pwd):/workspace -w /workspace --platform linux/$ARCH ubuntu:22.04 bash -c "
-  apt-get update && apt-get install -y build-essential cmake && \
-  mkdir -p build/linux-$ARCH && cd build/linux-$ARCH && \
-  cmake ../.. && make
-"
+# Prepare Docker environment
+DOCKER_NAME=cpp-hello-world-builder
+docker rm -f $DOCKER_NAME || true
 
-# Copy main binary to app root (preparing for nextmv app packaging)
-cp -v build/linux-$ARCH/stress_test main
+# Build the Docker image
+docker buildx build -f .nextmv/Dockerfile -t $DOCKER_NAME --platform linux/$ARCH --load .
+
+# Extract the compiled binary from the container
+docker run --name $DOCKER_NAME --platform linux/$ARCH $DOCKER_NAME
+docker cp $DOCKER_NAME:/app/build/linux/stress_test ./main
+echo "🐰 Binary extracted to ./main"
+docker rm $DOCKER_NAME
+echo "🐰 Build completed successfully."

@@ -13,7 +13,7 @@ docker rm -f $DOCKER_NAME || true
 docker buildx build -f .nextmv/Dockerfile -t $DOCKER_NAME --platform linux/$ARCH --load .
 
 # Extract the compiled binary from the container
-docker run --name $DOCKER_NAME --platform linux/arm64 $DOCKER_NAME
+docker run --name $DOCKER_NAME --platform linux/$ARCH $DOCKER_NAME
 docker cp $DOCKER_NAME:/app/target/nextmv/release/goodlp-knapsack ./main
 echo "🐰 Binary extracted to ./main"
 docker rm $DOCKER_NAME

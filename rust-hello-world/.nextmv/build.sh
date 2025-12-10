@@ -6,14 +6,14 @@ set -euo pipefail
 ARCH=${ARCH:-arm64}
 
 # Prepare Docker environment
-DOCKER_NAME=rust-hello-world
+DOCKER_NAME=rust-hello-world-builder
 docker rm -f $DOCKER_NAME || true
 
 # Build the Docker image
 docker buildx build -f .nextmv/Dockerfile -t $DOCKER_NAME --platform linux/$ARCH --load .
 
 # Extract the compiled binary from the container
-docker run --name $DOCKER_NAME --platform linux/arm64 $DOCKER_NAME
+docker run --name $DOCKER_NAME --platform linux/$ARCH $DOCKER_NAME
 docker cp $DOCKER_NAME:/app/target/nextmv/release/rust-hello-world ./main
 echo "🐰 Binary extracted to ./main"
 docker rm $DOCKER_NAME
