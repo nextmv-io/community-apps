@@ -11,6 +11,7 @@ class AppType(str, Enum):
     GO = "go"
     PYTHON = "python"
     JAVA = "java"
+    BINARY = "binary"
 
 
 @dataclass
