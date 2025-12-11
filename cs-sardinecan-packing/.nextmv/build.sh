@@ -14,7 +14,7 @@ docker buildx build -f .nextmv/Dockerfile -t $DOCKER_NAME --load --build-arg ARC
 
 # Extract the compiled binary from the container
 docker run --name $DOCKER_NAME $DOCKER_NAME
-docker cp $DOCKER_NAME:/app/bin/Release/net8.0/linux-$ARCH/publish/sandbox ./main
+docker cp $DOCKER_NAME:/app/bin/Release/net8.0/linux-$ARCH/publish/cs-sardinecan-packing ./main
 echo "🐰 Binary extracted to ./main"
 docker rm $DOCKER_NAME
 echo "🐰 Build completed successfully."
