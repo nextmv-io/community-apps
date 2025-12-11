@@ -305,3 +305,5 @@ language-support:
     distribution: temurin
   rust:
     version: stable
+  dotnet:
+    version: 8.0.x

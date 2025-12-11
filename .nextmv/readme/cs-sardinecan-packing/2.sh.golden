@@ -1,0 +1,13 @@
+cs-sardinecan-packing 1.0.0+6fcec7ec004c0ea95b2223626b26aeb31d8c2b56
+Copyright (C) 2025 cs-sardinecan-packing
+
+  -i, --input     Input file to process
+
+  -c, --config    Path to configuration file
+
+  -o, --output    Output file to write to
+
+  --help          Display this help screen.
+
+  --version       Display version information.
+
