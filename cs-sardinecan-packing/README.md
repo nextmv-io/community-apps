@@ -25,21 +25,20 @@ First, build the app:
 ```bash
 export OS=linux
 export ARCH=x64
-cd sardine-can/SC.CLI
 dotnet publish --os $OS --arch $ARCH --self-contained
-cp -v bin/Debug/net7.0/$OS-$ARCH/publish/SC.CLI ../../sardinecan
+cp -v bin/Release/net8.0/$OS-$ARCH/publish/sandbox ./main
 ```
 
 Then, run the app:
 
 ```bash
-cat input.json | ./sardinecan
+cat input.json | ./main
 ```
 
 Get the help message:
 
 ```bash
-./sardinecan --help
+./main --help
 ```
 
 ## Push to Nextmv
