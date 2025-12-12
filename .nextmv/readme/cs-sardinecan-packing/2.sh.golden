@@ -1,4 +1,4 @@
-cs-sardinecan-packing 1.0.0+6fcec7ec004c0ea95b2223626b26aeb31d8c2b56
+cs-sardinecan-packing 1.0.0<sha>
 Copyright (C) 2025 cs-sardinecan-packing
 
   -i, --input     Input file to process

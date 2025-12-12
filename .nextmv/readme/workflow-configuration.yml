@@ -13,6 +13,8 @@ apps:
     scripts:
       - name: 0.sh
         silent: true
+      - name: 1.sh
+        silent: true
       - name: 2.sh
         stderr: true
       - name: 3.sh

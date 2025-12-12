@@ -74,6 +74,8 @@ func TestGolden(t *testing.T) {
 		// Replace xpress.init(...) with
 		// xpress.init("path/to/xpress")
 		{Regex: `xpress\.init\(.*\)`, Replacement: `xpress.init("path/to/xpress")`},
+		// Replace sha in sardinecan help message (or any other output basically)
+		{Regex: `\+([a-f0-9]{40})`, Replacement: `<sha>`},
 	}
 
 	// Use the filter flag to filter the tests to run
