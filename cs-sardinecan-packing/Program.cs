@@ -71,9 +71,9 @@ class Program
         }
 
         // >> Run calculation
-        Action<string>? logger = string.IsNullOrWhiteSpace(opts.Output) ? null : Console.Write;
+        static void logger(string msg) => Console.Error.Write(msg);
         instance.Configuration ??= new Configuration(MethodType.ExtremePointInsertion, true);
-        var result = Executor.Execute(Instance.FromJsonInstance(instance.Instance), instance.Configuration, logger);
+        var result = Executor.Execute(Instance.FromJsonInstance(instance.Instance), instance.Configuration, (Action<string>?)logger);
 
         // Output result
         if (string.IsNullOrWhiteSpace(opts.Output))
@@ -168,10 +168,9 @@ public class Executor
                 }
                 else
                 {
-                    if (toStringMethod != null)
-                        value = toStringMethod.Invoke(field.GetValue(config), new object[] { CultureInfo.InvariantCulture })?.ToString();
-                    else
-                        value = field.GetValue(config)?.ToString();
+                    value = toStringMethod != null ?
+                        toStringMethod.Invoke(field.GetValue(config), new object[] { CultureInfo.InvariantCulture })?.ToString() :
+                        field.GetValue(config)?.ToString();
                 }
             }
             // Output it
