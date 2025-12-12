@@ -1,4 +1,7 @@
 apps:
+  - name: cs-sardinecan-packing
+    language: dotnet
+    language-version: 8.0.x
   - name: go-highs-knapsack
     language: go # we always use our main version
   - name: go-highs-orderfulfillment
