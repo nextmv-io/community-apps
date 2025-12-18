@@ -1,4 +1,14 @@
 apps:
+  - name: cpp-hello-world
+    scripts:
+      - name: 0.sh
+        skip: true
+      - name: 1.sh
+        skip: true
+      - name: 2.sh
+        skip: true
+      - name: 3.sh
+        skip: true
   - name: go-highs-knapsack
     scripts:
       - name: 0.sh
@@ -345,4 +355,14 @@ apps:
       - name: 5.sh
         skip: true
       - name: 6.sh
+        skip: true
+  - name: rust-goodlp-knapsack
+    scripts:
+      - name: 0.sh
+        skip: true
+      - name: 2.sh
+        skip: true
+  - name: rust-hello-world
+    scripts:
+      - name: 1.sh
         skip: true

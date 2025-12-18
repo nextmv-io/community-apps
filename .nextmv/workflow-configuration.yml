@@ -1,4 +1,10 @@
 apps:
+  - name: cpp-hello-world
+    type: binary
+    app_id:
+    marketplace_app_id:
+    marketplace_major_version:
+    description: Get started with C++ and Nextmv.
   - name: go-hello-world
     type: go
     app_id:
@@ -275,6 +281,18 @@ apps:
     marketplace_app_id:
     marketplace_major_version:
     description: Use Python and Xpress - knapsack.
+  - name: rust-hello-world
+    type: binary
+    app_id:
+    marketplace_app_id:
+    marketplace_major_version:
+    description: Get started with Rust and Nextmv.
+  - name: rust-goodlp-knapsack
+    type: binary
+    app_id:
+    marketplace_app_id:
+    marketplace_major_version:
+    description: Use Rust and GoodLP - knapsack.
 
 # Main supported language versions.
 language-support:
@@ -285,3 +303,5 @@ language-support:
   java:
     version: 21
     distribution: temurin
+  rust:
+    version: stable

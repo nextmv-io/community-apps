@@ -1,0 +1,66 @@
+{
+  "options": {
+    "input": "",
+    "output": "",
+    "duration": 30
+  },
+  "solution": {
+    "items": [
+      {
+        "id": "cat",
+        "value": 100.0,
+        "weight": 20.0
+      },
+      {
+        "id": "water",
+        "value": 40.0,
+        "weight": 2.0
+      },
+      {
+        "id": "phone",
+        "value": 6.0,
+        "weight": 1.0
+      },
+      {
+        "id": "book",
+        "value": 63.0,
+        "weight": 10.0
+      },
+      {
+        "id": "rx",
+        "value": 81.0,
+        "weight": 1.0
+      },
+      {
+        "id": "coat",
+        "value": 44.0,
+        "weight": 9.0
+      },
+      {
+        "id": "keys",
+        "value": 92.0,
+        "weight": 1.0
+      },
+      {
+        "id": "nuts",
+        "value": 18.0,
+        "weight": 4.0
+      }
+    ]
+  },
+  "statistics": {
+    "run": {
+      "duration": 0.123
+    },
+    "result": {
+      "value": 444.0,
+      "custom": {
+        "status": "Optimal",
+        "num_items": 11,
+        "num_selected": 8
+      }
+    },
+    "schema": "v1"
+  },
+  "assets": []
+}

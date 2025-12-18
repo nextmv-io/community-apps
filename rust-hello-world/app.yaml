@@ -1,0 +1,12 @@
+type: binary
+runtime: ghcr.io/nextmv-io/runtime/default:latest
+
+build:
+  command: bash .nextmv/build.sh
+  environment:
+    ARCH: arm64 # Use amd64 for amd... execution classes
+files:
+  - main
+configuration:
+  content:
+    format: "json"
