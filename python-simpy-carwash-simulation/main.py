@@ -18,27 +18,19 @@ Scenario:
 
 import itertools
 import random
-import json
 
-import simpy
 import nextmv
-from nextmv import cloud
+import simpy
 
 # List to collect all simulation events
 simulation_events = []
 
-
-# MODIFIED - load manifest and extract options to use in the execution
-manifest = cloud.Manifest.from_yaml(".")
+# Load the input data and options.
+manifest = nextmv.Manifest.from_yaml(".")
 options = manifest.extract_options()
+input = nextmv.load(options=options, path=options.input)
+data = input.data
 
-# Load data from JSON file
-with open("input.json", "r") as f:
-    data = json.load(f)
-
-NUM_MACHINES = data.get("NUM_MACHINES")  # Number of machines in the carwash
-WASHTIME = options.WASHTIME          # Minutes it takes to wash a car
-T_INTER = options.T_INTER      # Create a new car every ~7 minutes
 
 class Carwash:
     """A carwash has a limited number of machines (``NUM_MACHINES``) to
@@ -61,12 +53,9 @@ class Carwash:
         yield self.env.timeout(self.washtime)
         pct_dirt = random.randint(50, 99)
         nextmv.log(f"Carwash removed {pct_dirt}% of {car}'s dirt.")
-        simulation_events.append({
-            "event": "wash_complete",
-            "car": car,
-            "time": self.env.now,
-            "dirt_removed_pct": pct_dirt
-        })
+        simulation_events.append(
+            {"event": "wash_complete", "car": car, "time": self.env.now, "dirt_removed_pct": pct_dirt}
+        )
 
 
 def car(env, name, cw):
@@ -79,11 +68,7 @@ def car(env, name, cw):
     """
     arrival_time = env.now
     nextmv.log(f"{name} arrives at the carwash at {arrival_time:.2f}.")
-    simulation_events.append({
-        "event": "car_arrival",
-        "car": name,
-        "time": arrival_time
-    })
+    simulation_events.append({"event": "car_arrival", "car": name, "time": arrival_time})
 
     with cw.machine.request() as request:
         yield request
@@ -91,23 +76,15 @@ def car(env, name, cw):
         start_time = env.now
         wait_time = start_time - arrival_time
         nextmv.log(f"{name} enters the carwash at {start_time:.2f}.")
-        simulation_events.append({
-            "event": "wash_start",
-            "car": name,
-            "time": start_time,
-            "wait_time": wait_time
-        })
+        simulation_events.append({"event": "wash_start", "car": name, "time": start_time, "wait_time": wait_time})
 
         yield env.process(cw.wash(name))
 
         departure_time = env.now
         nextmv.log(f"{name} leaves the carwash at {departure_time:.2f}.")
-        simulation_events.append({
-            "event": "car_departure",
-            "car": name,
-            "time": departure_time,
-            "total_time": departure_time - arrival_time
-        })
+        simulation_events.append(
+            {"event": "car_departure", "car": name, "time": departure_time, "total_time": departure_time - arrival_time}
+        )
 
 
 def setup(env, num_machines, washtime, t_inter):
@@ -120,27 +97,34 @@ def setup(env, num_machines, washtime, t_inter):
 
     # Create 4 initial cars
     for _ in range(4):
-        env.process(car(env, f'Car {next(car_count)}', carwash))
+        env.process(car(env, f"Car {next(car_count)}", carwash))
 
     # Create more cars while the simulation is running
     while True:
         yield env.timeout(random.randint(t_inter - 2, t_inter + 2))
-        env.process(car(env, f'Car {next(car_count)}', carwash))
+        env.process(car(env, f"Car {next(car_count)}", carwash))
 
 
 # Setup and start the simulation
 nextmv.log("Carwash simulation starting...")
 # Generate random seed if RANDOM_SEED is -1, otherwise use the provided value
-seed = random.randint(0, 1000) if options.RANDOM_SEED == -1 else options.RANDOM_SEED
+seed = random.randint(0, 1000) if options.random_seed == -1 else options.random_seed
 random.seed(seed)  # This helps to reproduce the results
 nextmv.log(f"Using random seed: {seed}")
 
 # Create an environment and start the setup process
 env = simpy.Environment()
-env.process(setup(env, NUM_MACHINES, WASHTIME, T_INTER))
+env.process(
+    setup(
+        env,
+        num_machines=input.data.get("NUM_MACHINES"),
+        washtime=input.data.get("WASHTIME"),
+        t_inter=input.data.get("T_INTER"),
+    )
+)
 
 # Execute!
-env.run(until=options.SIM_TIME)
+env.run(until=options.sim_time)
 nextmv.log("Carwash simulation completed.")
 
 # Calculate summary statistics
@@ -150,44 +134,37 @@ wait_times = [e["wait_time"] for e in simulation_events if e["event"] == "wash_s
 total_times = [e["total_time"] for e in simulation_events if e["event"] == "car_departure"]
 
 # Write statistics to statistics.json
-statistics_file = "statistics.json"
-with open(statistics_file, "w") as stats_f:
-    statistics = nextmv.Statistics(
-        result=nextmv.ResultStatistics(
-            value=completed_cars,  # Using completed cars as the objective value
-            custom={
-                "total_cars": total_cars,
-                "completed_cars": completed_cars,
-                "average_wait_time": round(sum(wait_times) / len(wait_times), 2) if wait_times else 0,
-                "average_total_time": round(sum(total_times) / len(total_times), 2) if total_times else 0,
-                "simulation_time": options.SIM_TIME,
-                "num_machines": NUM_MACHINES,
-                "random_seed": seed
-            },
-        ),
-    )
-    stats_f.write(json.dumps({"statistics": statistics.to_dict()}))
+statistics = nextmv.Statistics(
+    result=nextmv.ResultStatistics(
+        value=completed_cars,  # Using completed cars as the objective value
+        custom={
+            "total_cars": total_cars,
+            "completed_cars": completed_cars,
+            "average_wait_time": round(sum(wait_times) / len(wait_times), 2) if wait_times else 0,
+            "average_total_time": round(sum(total_times) / len(total_times), 2) if total_times else 0,
+            "random_seed": seed,
+        },
+    ),
+)
 
 # Restructure events by car
 cars_dict = {}
 for event in simulation_events:
     car_name = event["car"]
     if car_name not in cars_dict:
-        cars_dict[car_name] = {
-            "car": car_name,
-            "events": []
+        cars_dict[car_name] = {"car": car_name, "events": []}
+    cars_dict[car_name]["events"].append(
+        {
+            "event": event["event"],
+            "time": event["time"],
+            **{k: v for k, v in event.items() if k not in ["car", "event", "time"]},
         }
-    cars_dict[car_name]["events"].append({
-        "event": event["event"],
-        "time": event["time"],
-        **{k: v for k, v in event.items() if k not in ["car", "event", "time"]}
-    })
+    )
 
 # Create output structured by car
-output = {
-    "cars": list(cars_dict.values())
-}
-
-# Write output to JSON file
-with open("output.json", "w") as f:
-    json.dump(output, f, indent=2)
+output = nextmv.Output(
+    options=options,
+    solution={"cars": list(cars_dict.values())},
+    statistics=statistics,
+)
+nextmv.write(output, path=options.output)

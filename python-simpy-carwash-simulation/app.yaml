@@ -1,0 +1,50 @@
+# This manifest holds the information the app needs to run on the Nextmv Cloud.
+type: python
+runtime: ghcr.io/nextmv-io/runtime/python:3.11
+python:
+  # All listed packages will get bundled with the app.
+  pip-requirements: requirements.txt
+
+# List all files/directories that should be included in the app. Globbing
+# (e.g.: configs/*.json) is supported.
+files:
+  - main.py
+
+# Configuration options for the application.
+configuration:
+  content:
+    format: json
+  options:
+    items:
+      - name: random_seed
+        description: Seed for random number generator. Use -1 for a random seed.
+        option_type: int
+        default: -1
+        required: false
+        ui:
+          control_type: input
+          display_name: Random Seed
+      - name: sim_time
+        description: Total time to run the simulation (in minutes).
+        option_type: int
+        default: 20
+        required: false
+        ui:
+          control_type: input
+          display_name: Simulation Time
+      - name: input
+        description: Path to input data file, default is stdin.
+        option_type: string
+        default: ""
+        required: false
+        ui:
+          control_type: input
+          display_name: Input Path
+      - name: output
+        description: Path to output data file, default is stdout.
+        option_type: string
+        default: ""
+        required: false
+        ui:
+          control_type: input
+          display_name: Output Path
