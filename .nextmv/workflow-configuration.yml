@@ -251,6 +251,12 @@ apps:
     marketplace_app_id:
     marketplace_major_version:
     description: Use Python and SCIP - knapsack.
+  - name: python-simpy-carwash-simulation
+    type: python
+    app_id:
+    marketplace_app_id:
+    marketplace_major_version:
+    description: Use Python and Simpy - carwash simulation.
   - name: python-tr-ortools-region-allocation
     type: python
     app_id:
