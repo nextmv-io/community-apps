@@ -4,6 +4,8 @@ Example for running a Python application on the Nextmv Platform using the Simpy
 library. We simulate a carwash with limited washing machines and random car
 arrivals.
 
+<!-- markdownlint-disable MD013 -->
+
 1. Install packages.
 
     ```bash
@@ -33,6 +35,8 @@ arrivals.
     ```bash
     python3 app.py -action sync -app_id carwash-sim -app_name "Carwash Simulation"
     ```
+
+<!-- markdownlint-enable MD013 -->
 
 ## Next steps
 
