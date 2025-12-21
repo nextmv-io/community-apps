@@ -322,6 +322,18 @@ apps:
         silent: true
       - name: 1.sh
         stderr: true
+  - name: python-simpy-carwash-simulation
+    scripts:
+      - name: 0.sh
+        silent: true
+      - name: 1.sh
+        silent: true
+      - name: 2.sh
+        silent: true
+      - name: 3.sh
+        silent: true
+      - name: 4.sh
+        skip: true
   - name: python-tr-ortools-region-allocation
     scripts:
       - name: 0.sh
