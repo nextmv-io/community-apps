@@ -1,2 +1,2 @@
 simpy==4.1.1
-nextmv[all]==0.37.2
+nextmv[all]==0.38.0
