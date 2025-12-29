@@ -1,5 +1,5 @@
 # Define the packages required by your project here.
-nextmv==0.38.0
+nextmv==0.39.0
 plotly==6.0.0
 requests==2.32.4
 polyline==1.4.0
