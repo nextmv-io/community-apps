@@ -76,6 +76,8 @@ func TestGolden(t *testing.T) {
 		{Regex: `xpress\.init\(.*\)`, Replacement: `xpress.init("path/to/xpress")`},
 		// Replace sha in sardinecan help message (or any other output basically)
 		{Regex: `\+([a-f0-9]{40})`, Replacement: `<sha>`},
+		// Replace SardineCan copyright line with a placeholder
+		{Regex: `Copyright \(C\) 20\d{2} cs-sardinecan-packing`, Replacement: `Copyright (C) <year> cs-sardinecan-packing`},
 	}
 
 	// Use the filter flag to filter the tests to run

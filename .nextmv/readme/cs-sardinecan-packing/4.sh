@@ -1,1 +1,1 @@
-nextmv app run -a <app-name> -i input.json -w > output.json
+nextmv app run -a <app-name> -i data/large.json -w > output.json

@@ -1,1 +1,1 @@
-cat input.json | ./main
+cat data/large.json | ./main
