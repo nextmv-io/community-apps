@@ -1,0 +1,28 @@
+{
+  "instance": {
+    "name": "generated",
+    "containers": [
+      {
+        "id": 0,
+        "length": 3.7,
+        "width": 3.5,
+        "height": 2.8
+      }
+    ],
+    "pieces": [
+      {
+        "id": 0,
+        "cubes": [
+          {
+            "x": 0,
+            "y": 0,
+            "z": 0,
+            "length": 1.7,
+            "width": 1.3,
+            "height": 1.9
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -32,7 +32,7 @@ cp -v bin/Release/net8.0/$OS-$ARCH/publish/cs-sardinecan-packing ./main
 Then, run the app:
 
 ```bash
-cat input.json | ./main
+cat data/large.json | ./main
 ```
 
 Get the help message:
@@ -52,7 +52,7 @@ nextmv app push -a <app-name>
 Then, run the app:
 
 ```bash
-nextmv app run -a <app-name> -i input.json -w > output.json
+nextmv app run -a <app-name> -i data/large.json -w > output.json
 ```
 
 This will write the output to `output.json`.
