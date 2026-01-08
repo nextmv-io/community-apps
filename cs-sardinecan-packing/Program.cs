@@ -208,7 +208,6 @@ public class Executor
     {
         foreach (var field in config.GetType().GetProperties())
         {
-            // Is string like
             string? value = "";
             // If the field has a xmlignore attribute: ignore it here too
             if (field.GetCustomAttributes(false).Any(a => a is XmlIgnoreAttribute))
