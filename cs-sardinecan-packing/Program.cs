@@ -38,12 +38,70 @@ class Program
     }
 
     /// <summary>
+    /// Reads content from a file or stdin.
+    /// </summary>
+    private static (string?, string) ReadContent(string path)
+    {
+        try
+        {
+            return (string.IsNullOrWhiteSpace(path) ? Console.In.ReadToEnd() : File.ReadAllText(path), string.Empty);
+        }
+        catch (IOException ex)
+        {
+            if (string.IsNullOrWhiteSpace(path))
+                return (null, $"Error reading from standard input: {ex.Message}");
+            else
+                return (null, $"Error reading file '{path}': {ex.Message}");
+        }
+        catch (UnauthorizedAccessException ex)
+        {
+            if (string.IsNullOrWhiteSpace(path))
+                return (null, $"Access denied reading from standard input: {ex.Message}");
+            else
+                return (null, $"Access denied reading file '{path}': {ex.Message}");
+        }
+    }
+
+    /// <summary>
+    /// Write output to a file or stdout.
+    /// </summary>
+    private static void WriteOutput(string? path, string content)
+    {
+        try
+        {
+            if (string.IsNullOrWhiteSpace(path))
+                Console.WriteLine(content);
+            else
+                File.WriteAllText(path, content);
+        }
+        catch (IOException ex)
+        {
+            if (string.IsNullOrWhiteSpace(path))
+                Console.WriteLine($"Error writing to standard output: {ex.Message}");
+            else
+                Console.WriteLine($"Error writing file '{path}': {ex.Message}");
+        }
+        catch (UnauthorizedAccessException ex)
+        {
+            if (string.IsNullOrWhiteSpace(path))
+                Console.WriteLine($"Access denied writing to standard output: {ex.Message}");
+            else
+                Console.WriteLine($"Access denied writing file '{path}': {ex.Message}");
+        }
+    }
+
+    /// <summary>
     /// Executes the program with the given options.
     /// </summary>
     private static void Execute(Options opts)
     {
         // Read the content fully first (either from file or from stdin)
-        var content = string.IsNullOrWhiteSpace(opts.Input) ? Console.In.ReadToEnd() : File.ReadAllText(opts.Input);
+        var (content, inputErr) = ReadContent(opts.Input ?? string.Empty);
+        if (content == null)
+        {
+            Console.WriteLine(inputErr);
+            return;
+        }
 
         // Try to parse the input as a calculation
         var instance = JsonIO.From<JsonCalculation>(content);
@@ -66,20 +124,22 @@ class Program
         // Read configuration if available
         if (!string.IsNullOrWhiteSpace(opts.Configuration))
         {
-            var config = JsonIO.From<Configuration>(File.ReadAllText(opts.Configuration));
-            instance.Configuration = config;
+            var (configContent, confErr) = ReadContent(opts.Configuration);
+            if (configContent == null)
+            {
+                Console.WriteLine(confErr);
+                return;
+            }
+            instance.Configuration = JsonIO.From<Configuration>(configContent);
         }
 
         // >> Run calculation
         static void logger(string msg) => Console.Error.Write(msg);
         instance.Configuration ??= new Configuration(MethodType.ExtremePointInsertion, true);
-        var result = Executor.Execute(Instance.FromJsonInstance(instance.Instance), instance.Configuration, (Action<string>?)logger);
+        var result = Executor.Execute(Instance.FromJsonInstance(instance.Instance), instance.Configuration, logger);
 
         // Output result
-        if (string.IsNullOrWhiteSpace(opts.Output))
-            Console.WriteLine(JsonIO.To(result.Solution.ToJsonSolution()));
-        else
-            File.WriteAllText(opts.Output, JsonIO.To(result.Solution.ToJsonSolution()));
+        WriteOutput(opts.Output, JsonIO.To(result.Solution.ToJsonSolution()));
     }
 }
 
