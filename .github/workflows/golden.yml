@@ -82,6 +82,12 @@ jobs:
         with:
           toolchain: ${{ matrix.apps.language-version }}
 
+      - name: Set up .NET
+        if: ${{ matrix.apps.language == 'dotnet' && steps.changes.outputs.src == 'true' }}
+        uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: ${{ matrix.apps.language-version }}
+
       - name: Install additional dependencies
         if: steps.changes.outputs.src == 'true'
         run: |

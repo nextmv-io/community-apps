@@ -9,6 +9,24 @@ apps:
         skip: true
       - name: 3.sh
         skip: true
+  - name: cs-sardinecan-packing
+    scripts:
+      - name: 0.sh
+        silent: true
+      - name: 1.sh
+        silent: true
+      - name: 2.sh
+        stderr: true
+      - name: 3.sh
+        skip: true
+      - name: 4.sh
+        skip: true
+      - name: 5.sh
+        skip: true
+      - name: 6.sh
+        skip: true
+      - name: 7.sh
+        skip: true
   - name: go-highs-knapsack
     scripts:
       - name: 0.sh
