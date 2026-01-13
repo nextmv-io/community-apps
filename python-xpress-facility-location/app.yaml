@@ -9,25 +9,8 @@ python:
 # (e.g.: configs/*.json) is supported.
 files:
   - main.py
-  - visuals.py
 
 configuration:
-  options:
-    strict: false
-    validation:
-      enforce: none
-    items:
-      - name: objective
-        option_type: string
-        default: "average_distance"
-        required: false
-        description: "minimizes for average_distance, total_distance, or max_distance"
-        additional_attributes:
-          values:
-            - "average_distance"
-            - "total_distance"
-            - "max_distance"
-        ui:
-          control_type: select
-          hidden_from:
-            - operator
+  # Specify the format the app reads and writes.
+  content:
+    format: "json" # Read JSON from stdin and write JSON to stdout.

@@ -1,0 +1,9 @@
+[project]
+name = "python-xpress-facility-location"
+version = "0.1.0"
+requires-python = ">=3.11"
+dependencies = [
+    "nextmv>=0.40.0",
+    "plotly>=6.5.1",
+    "xpress>=9.8.0",
+]
