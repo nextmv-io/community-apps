@@ -31,10 +31,6 @@ func TestGolden(t *testing.T) {
 					Replacement: golden.StableFloat,
 				},
 				{
-					Key:         "$.solution.variable_cost",
-					Replacement: golden.StableFloat,
-				},
-				{
 					Key:         "$.options.output",
 					Replacement: "output.json",
 				},
