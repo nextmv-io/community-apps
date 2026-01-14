@@ -1,0 +1,33 @@
+{
+  "options": {
+    "input": "",
+    "output": "",
+    "duration": 30,
+    "epsilon": 1e-05,
+    "max_iterations": 100
+  },
+  "solution": {
+    "facilities": [
+      "Elm Creek",
+      "Emory"
+    ],
+    "total_cost": 2076052.9158463147,
+    "fixed_cost": 1600000.0,
+    "variable_cost": 476052.9158463148
+  },
+  "statistics": {
+    "run": {
+      "duration": 0.02388477325439453
+    },
+    "result": {
+      "duration": 0.0,
+      "value": 2076052.9158463147,
+      "custom": {
+        "status": "optimal",
+        "iterations": 4
+      }
+    },
+    "schema": "v1"
+  },
+  "assets": []
+}
