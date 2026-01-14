@@ -349,7 +349,7 @@ apps:
   - name: python-xpress-facility-location
     scripts:
       - name: 0.sh
-        skip: true
+        silent: true
   - name: python-xpress-knapsack
     scripts:
       - name: 0.sh

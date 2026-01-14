@@ -44,8 +44,11 @@ func TestGolden(t *testing.T) {
 			// the intention of the test).
 			IgnoreStdOut: true,
 			ExecutionConfig: &golden.ExecutionConfig{
-				Command:    "python3",
-				Args:       []string{"../../../python-xpress-knapsack/main.py"},
+				Command: "python3",
+				Args: []string{
+					"../../../python-xpress-facility-location/main.py",
+					"../../../python-xpress-knapsack/main.py",
+				},
 				InputFlag:  "-input",
 				OutputFlag: "-output",
 			},
