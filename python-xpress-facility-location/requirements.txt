@@ -1,3 +1,2 @@
 nextmv==0.40.0
-plotly==6.5.1
 xpress==9.8.0
