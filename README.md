@@ -82,6 +82,8 @@ run on Nextmv Cloud.
   knapsack problem. Demonstrates how to use devcontainers.
 * [python-pyvroom-routing]: Use Python and Pyvroom to solve a vehicle routing
   problem. Demonstrates how to use devcontainers.
+* [python-xpress-facility-location]: Use Python and Xpress to solve a facility
+  location problem.
 
 [subscription-apps]: https://nextmv.io/docs/platform/deploy-app/subscription-apps
 [installation]: https://nextmv.io/docs/platform/installation
@@ -116,5 +118,6 @@ run on Nextmv Cloud.
 [python-pyomo-shiftassignment]: ./python-pyomo-shiftassignment/README.md
 [python-pyomo-shiftplanning]: ./python-pyomo-shiftplanning/README.md
 [python-pyvroom-routing]: ./python-pyvroom-routing/README.md
+[python-xpress-facility-location]: ./python-xpress-facility-location/README.md
 [python-xpress-knapsack]: ./python-xpress-knapsack/README.md
 [python-pyoptinterface-knapsack]: ./python-pyoptinterface-knapsack/README.md
