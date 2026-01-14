@@ -1,9 +1,5 @@
 {
-  "FACILITIES": [
-    "Elm Creek",
-    "Emory",
-    "Sunset"
-  ],
+  "FACILITIES": ["Elm Creek", "Emory", "Sunset"],
   "CUSTOMERS": [
     "Temple",
     "Joshua",
@@ -12,13 +8,7 @@
     "Miller's Cove",
     "Guadalupe Guerra"
   ],
-  "SCENARIOS": [
-    "S1",
-    "S2",
-    "S3",
-    "S4",
-    "S5"
-  ],
+  "SCENARIOS": ["S1", "S2", "S3", "S4", "S5"],
   "prob": {
     "S1": 0.2,
     "S2": 0.2,
