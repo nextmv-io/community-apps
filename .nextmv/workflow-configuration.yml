@@ -287,6 +287,12 @@ apps:
     marketplace_app_id:
     marketplace_major_version:
     description: Use workflows in Python - region allocation.
+  - name: python-xpress-facility-location
+    type: python
+    app_id:
+    marketplace_app_id:
+    marketplace_major_version:
+    description: Use Python and Xpress - facility location.
   - name: python-xpress-knapsack
     type: python
     app_id:

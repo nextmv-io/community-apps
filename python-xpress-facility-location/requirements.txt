@@ -1,2 +1,2 @@
-nextmv==0.40.0
 xpress==9.8.0
+nextmv==0.40.0
