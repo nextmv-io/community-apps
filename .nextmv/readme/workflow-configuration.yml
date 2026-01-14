@@ -346,6 +346,10 @@ apps:
         silent: true
       - name: 1.sh
         skip: true
+  - name: python-xpress-facility-location
+    scripts:
+      - name: 0.sh
+        skip: true
   - name: python-xpress-knapsack
     scripts:
       - name: 0.sh
