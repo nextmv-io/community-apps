@@ -1,0 +1,8 @@
+main
+*.json
+*.html
+bin/
+obj/
+*.user
+*.suo
+.vs/

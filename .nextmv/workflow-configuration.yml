@@ -1,4 +1,10 @@
 apps:
+  - name: cs-sardinecan-packing
+    type: binary
+    app_id:
+    marketplace_app_id:
+    marketplace_major_version:
+    description: Use C# and SardineCan - packing.
   - name: cpp-hello-world
     type: binary
     app_id:
@@ -311,3 +317,5 @@ language-support:
     distribution: temurin
   rust:
     version: stable
+  dotnet:
+    version: 8.0.x

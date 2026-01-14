@@ -172,6 +172,13 @@ main.jar
 *.class
 *.MF
 
+# C# stuff
+bin/
+obj/
+*.user
+*.suo
+*.sln
+
 # Outputs
 !Output.Java
 output.json
