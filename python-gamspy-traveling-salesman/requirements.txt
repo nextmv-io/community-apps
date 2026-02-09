@@ -1,4 +1,4 @@
 # Define the packages required by your project here.
 gamspy==1.12.1.post1
 networkx==3.5
-nextmv==0.40.0
+nextmv==1.0.0
