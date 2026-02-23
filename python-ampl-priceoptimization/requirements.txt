@@ -18,4 +18,4 @@ ampl-module-scip==20240724
 ampl-module-xpress==20241227
 
 nextmv==1.1.2
-plotly==6.0.0
+plotly==6.0.1
