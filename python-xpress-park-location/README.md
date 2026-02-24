@@ -1,7 +1,9 @@
-# Nextmv Python Xpress Knapsack
+# Nextmv Python Xpress Park Location
 
 Example for running a Python application on the Nextmv Platform using the
-Xpress solver. We solve a knapsack Mixed Integer Programming problem.
+Xpress solver. We solve a park location Mixed Integer Programming problem: given
+a set of schools and candidate sites, find where to build parks to minimize the
+distance between schools and parks.
 
 1. Install packages.
 
@@ -12,7 +14,7 @@ Xpress solver. We solve a knapsack Mixed Integer Programming problem.
 2. Run the app.
 
     ```bash
-    python3 main.py -input input.json -output output.json -duration 30
+    python3 main.py -input input.json -output output.json -objective average_distance
     ```
 
 ## Next steps

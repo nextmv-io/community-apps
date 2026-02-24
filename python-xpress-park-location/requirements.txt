@@ -1,5 +1,4 @@
-xpress==9.4.2; platform_system != 'Darwin' or (platform_system == 'Darwin' and platform_machine != 'arm64')
-nextmv==0.26.3
-numpy
-networkx
-plotly
+nextmv==1.1.2
+numpy==2.4.2
+plotly==6.5.2
+xpress==9.8.0

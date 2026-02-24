@@ -17,11 +17,31 @@ configuration:
     validation:
       enforce: none
     items:
+      - name: input
+        option_type: string
+        default: ""
+        required: false
+        description: Path to input file. Default is stdin.
+        ui:
+          control_type: input
+          hidden_from:
+            - operator
+          display_name: Input file
+      - name: output
+        option_type: string
+        default: ""
+        required: false
+        description: Path to output file. Default is stdout.
+        ui:
+          control_type: input
+          hidden_from:
+            - operator
+          display_name: Output file
       - name: objective
         option_type: string
         default: average_distance
         required: false
-        description: minimizes for average_distance, total_distance, or max_distance
+        description: Minimizes for average_distance, total_distance, or max_distance
         additional_attributes:
           values:
             - average_distance
@@ -31,3 +51,17 @@ configuration:
           control_type: select
           hidden_from:
             - operator
+          display_name: Objective
+      - name: parks_override
+        option_type: int
+        required: false
+        description: Number of parks to build (from 1 to 10). Defaults to the value in the input.
+        additional_attributes:
+          min: 1
+          max: 10
+          step: 1
+        ui:
+          control_type: input
+          hidden_from:
+            - operator
+          display_name: Number of parks (override)
