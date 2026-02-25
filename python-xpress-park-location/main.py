@@ -74,7 +74,7 @@ def main() -> None:
     # Only parks that are built can serve schools
     prob.addConstraint(xp.Sum(serves[i, j] for i in SCHOOLS) <= input.data.get("num_schools") * build[j] for j in SITES)
 
-    prob.optimize()
+    _, status = prob.optimize()
 
     prob.write("problem.lp")
     solution = json.dumps(prob.getSolution())
@@ -123,6 +123,9 @@ def main() -> None:
             "average_distance": average_distance,
             "total_distance": total_distance,
             "max_distance": max_distance,
+            "status": STATUS.get(status, "unknown"),
+            "variables": prob.getAttrib("cols"),
+            "constraints": prob.getAttrib("rows"),
         },
     )
 
