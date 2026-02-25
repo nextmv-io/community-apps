@@ -293,6 +293,12 @@ apps:
     marketplace_app_id:
     marketplace_major_version:
     description: Use Python and Xpress - knapsack.
+  - name: python-xpress-park-location
+    type: python
+    app_id:
+    marketplace_app_id:
+    marketplace_major_version:
+    description: Use Python and Xpress - park location.
   - name: rust-hello-world
     type: binary
     app_id:
