@@ -206,3 +206,6 @@ license.dat*
 
 # MacOS files
 .DS_Store
+
+# Xpress stuff
+problem.lp

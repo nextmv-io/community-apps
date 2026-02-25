@@ -77,6 +77,9 @@ apps:
   - name: python-xpress-knapsack
     language: python
     language-version: 3.11
+  - name: python-xpress-park-location
+    language: python
+    language-version: 3.11
   - name: rust-goodlp-knapsack
     language: rust
     language-version: stable
