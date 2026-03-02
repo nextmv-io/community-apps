@@ -71,7 +71,13 @@ apps:
   - name: python-scip-knapsack
     language: python
     language-version: 3.11
+  - name: python-xpress-facility-location
+    language: python
+    language-version: 3.11
   - name: python-xpress-knapsack
+    language: python
+    language-version: 3.11
+  - name: python-xpress-park-location
     language: python
     language-version: 3.11
   - name: rust-goodlp-knapsack

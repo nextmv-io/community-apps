@@ -1,9 +1,9 @@
 {
   "assets": [],
   "options": {
+    "duration": 30,
     "input": "input.json",
     "output": "output.json",
-    "duration": 30,
     "provider": "xpress"
   },
   "solution": {
@@ -51,17 +51,17 @@
     ]
   },
   "statistics": {
+    "result": {
+      "custom": {
+        "constraints": 1,
+        "status": "optimal",
+        "variables": 11
+      },
+      "duration": 0.123,
+      "value": 444
+    },
     "run": {
       "duration": 0.123
-    },
-    "result": {
-      "duration": 0.123,
-      "value": 444.0,
-      "custom": {
-        "status": "optimal",
-        "variables": 11,
-        "constraints": 1
-      }
     },
     "schema": "v1"
   }
