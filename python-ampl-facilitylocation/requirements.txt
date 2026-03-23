@@ -17,5 +17,5 @@ ampl-module-open==20250206
 ampl-module-scip==20240724
 ampl-module-xpress==20241227
 
-nextmv==1.2.2
+nextmv==1.3.0
 pandas==2.2.2
