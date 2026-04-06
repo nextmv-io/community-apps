@@ -1,4 +1,4 @@
 # Define the packages required by your project here.
 gamsapi[control]==53.1.0
 gamspy_base==53.1.0
-nextmv==1.3.0
+nextmv==1.4.0
