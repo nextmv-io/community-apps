@@ -290,21 +290,11 @@ configuration:
       - name: runner.input.path
         option_type: string
         description: The input file path
-        ui:
-          control_type: input
-          display_name: Input Path
-          hidden_from:
-            - viewer
-            - operator
+        local_only: true
       - name: runner.output.path
         option_type: string
         description: The output file path
-        ui:
-          control_type: input
-          display_name: Output Path
-          hidden_from:
-            - viewer
-            - operator
+        local_only: true
       - name: runner.output.solutions
         option_type: string
         description: "{all, last} specifies whether to output all solutions or only the last one"
@@ -321,21 +311,11 @@ configuration:
       - name: runner.profile.cpu
         option_type: string
         description: The CPU profile file path
-        ui:
-          control_type: input
-          display_name: CPU Profile Path
-          hidden_from:
-            - viewer
-            - operator
+        local_only: true
       - name: runner.profile.memory
         option_type: string
         description: The memory profile file path
-        ui:
-          control_type: input
-          display_name: Memory Profile Path
-          hidden_from:
-            - viewer
-            - operator
+        local_only: true
 
       # Solve options
       - name: solve.duration

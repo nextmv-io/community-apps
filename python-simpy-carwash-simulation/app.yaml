@@ -36,15 +36,9 @@ configuration:
         description: Path to input data file, default is stdin.
         option_type: string
         default: ""
-        required: false
-        ui:
-          control_type: input
-          display_name: Input Path
+        local_only: true
       - name: output
         description: Path to output data file, default is stdout.
         option_type: string
         default: ""
-        required: false
-        ui:
-          control_type: input
-          display_name: Output Path
+        local_only: true
