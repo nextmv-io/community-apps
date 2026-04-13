@@ -1,4 +1,4 @@
-nextmv==1.4.0
+nextmv==1.6.2
 numpy==2.4.2
 plotly==6.5.2
 xpress==9.8.0

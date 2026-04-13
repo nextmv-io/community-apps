@@ -1,4 +1,4 @@
-nextmv==1.4.0
-nextpipe==0.6.1
+nextmv==1.6.2
+nextpipe==0.7.0
 pandas==2.2.3
 databricks-sdk
