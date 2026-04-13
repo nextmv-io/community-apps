@@ -29,12 +29,12 @@ def main() -> None:
     nextmv.log(f"  - stops: {len(input.data.get('stops', []))}")
 
     model = DecisionModel()
-    output = model.solve(input)
+    output = model.solve(input, options.duration)
     nextmv.write(output, path=options.output)
 
 
 class DecisionModel(nextmv.Model):
-    def solve(self, input: nextmv.Input) -> nextmv.Output:
+    def solve(self, input: nextmv.Input, duration: int) -> nextmv.Output:
         """Solves the given problem and returns the solution."""
 
         start_time = time.time()
@@ -51,6 +51,7 @@ class DecisionModel(nextmv.Model):
         service_durations = [int(round(s["duration"])) if "duration" in s else 0 for s in stops]
         max_duration_big_m = 365 * 24 * 60 * 60  # 1 year
         max_durations = [v["max_duration"] if "max_duration" in v else max_duration_big_m for v in vehicles]
+        speeds = [v["speed"] if "speed" in v else 1 for v in vehicles]
 
         # Determine which matrix to use for travel costs.
         # Input matrix layout: [stop_0, ..., stop_{n-1}, v0_start, v0_end, v1_start, v1_end, ...]
@@ -58,11 +59,9 @@ class DecisionModel(nextmv.Model):
         # We need to map between these two orderings.
         use_duration_matrix = "duration_matrix" in input.data
         if use_duration_matrix:
-            travel_matrix = input.data["duration_matrix"]
+            distance_matrix = input.data["duration_matrix"]  # use as both distance and duration
         else:
-            travel_matrix = input.data["distance_matrix"]
-            # Build duration matrix from distance matrix using per-vehicle speed.
-            # We'll use one matrix (distance) and rely on distance cost only.
+            distance_matrix = input.data["distance_matrix"]
 
         # Map: pyvrp location index -> input matrix index
         # PyVRP depot indices (in add order): v_i_start = 2*i, v_i_end = 2*i+1
@@ -85,7 +84,7 @@ class DecisionModel(nextmv.Model):
         # Add depots (start and end location for each vehicle).
         # We use dummy (0,0) coordinates since we provide an explicit matrix.
         depots = []
-        for i, vehicle in enumerate(vehicles):
+        for vehicle in vehicles:
             start_depot = m.add_depot(x=0, y=0, name=f"{vehicle['id']}_start")
             end_depot = m.add_depot(x=0, y=0, name=f"{vehicle['id']}_end")
             depots.append((start_depot, end_depot))
@@ -102,17 +101,27 @@ class DecisionModel(nextmv.Model):
             )
             clients.append(client)
 
+        # When using a distance matrix + speed, we need per-vehicle routing profiles
+        # so that edge durations = distance / speed can differ per vehicle.
+        # When using a duration matrix, one profile with duration=travel time suffices.
+        if use_duration_matrix:
+            profiles = [None]  # single default profile
+        else:
+            profiles = [m.add_profile(name=vehicle["id"]) for vehicle in vehicles]
+
         # Add vehicle types (one per vehicle, num_available=1).
         for i, vehicle in enumerate(vehicles):
             start_depot, end_depot = depots[i]
+            profile = profiles[0] if use_duration_matrix else profiles[i]
             m.add_vehicle_type(
                 num_available=1,
                 capacity=capacities[i],
                 start_depot=start_depot,
                 end_depot=end_depot,
                 shift_duration=max_durations[i],
-                unit_distance_cost=0 if use_duration_matrix else 1,
-                unit_duration_cost=1 if use_duration_matrix else 0,
+                unit_distance_cost=0,
+                unit_duration_cost=1,
+                profile=profile,
                 name=vehicle["id"],
             )
 
@@ -125,29 +134,31 @@ class DecisionModel(nextmv.Model):
             from_mat_idx = pyvrp_to_matrix_idx(from_pyvrp_idx)
             for to_pyvrp_idx in range(n_locations):
                 to_mat_idx = pyvrp_to_matrix_idx(to_pyvrp_idx)
-                travel = int(travel_matrix[from_mat_idx][to_mat_idx])
+                dist = int(distance_matrix[from_mat_idx][to_mat_idx])
                 if use_duration_matrix:
+                    # duration matrix: distance and duration are both the travel time value
                     m.add_edge(
                         all_locations[from_pyvrp_idx],
                         all_locations[to_pyvrp_idx],
-                        distance=travel,
-                        duration=travel,
+                        distance=dist,
+                        duration=dist,
                     )
                 else:
-                    # For per-vehicle speed, we'd need per-vehicle edges.
-                    # Since speeds can differ per vehicle, use distance matrix
-                    # and compute durations per vehicle via separate profiles.
-                    # For simplicity (and parity with pyvroom/ortools), use distance only.
-                    m.add_edge(
-                        all_locations[from_pyvrp_idx],
-                        all_locations[to_pyvrp_idx],
-                        distance=travel,
-                        duration=0,
-                    )
+                    # distance matrix + per-vehicle speed: add one edge per profile
+                    # with duration = distance / speed (integer)
+                    for i, speed in enumerate(speeds):
+                        dur = int(dist / speed)
+                        m.add_edge(
+                            all_locations[from_pyvrp_idx],
+                            all_locations[to_pyvrp_idx],
+                            distance=dist,
+                            duration=dur,
+                            profile=profiles[i],
+                        )
 
         # Solve the problem.
         start_time = time.time()
-        result = m.solve(stop=MaxRuntime(input.options.duration), display=False)
+        result = m.solve(stop=MaxRuntime(duration), display=False)
         end_time = time.time()
 
         routes = []
@@ -155,8 +166,6 @@ class DecisionModel(nextmv.Model):
             best = result.best
 
             # Build a map from vehicle type index to vehicle data.
-            vehicle_types = m.vehicle_types  # in add order = same as vehicles list
-
             max_route_duration = 0
             max_stops_in_vehicle = 0
             min_stops_in_vehicle = n_stops
@@ -172,8 +181,6 @@ class DecisionModel(nextmv.Model):
                 vt_idx = route.vehicle_type()
                 vehicle = vehicles[vt_idx]
                 vehicle_id = vehicle["id"]
-                start_depot_obj, end_depot_obj = depots[vt_idx]
-
                 vehicle_route = []
 
                 # Add start location if vehicle has one.

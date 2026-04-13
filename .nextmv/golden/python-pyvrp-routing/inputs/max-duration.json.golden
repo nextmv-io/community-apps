@@ -1,0 +1,23 @@
+{
+  "assets": [],
+  "options": {
+    "duration": 2,
+    "input": "input.json",
+    "output": "output.json"
+  },
+  "solution": {
+    "unplanned": [],
+    "vehicles": []
+  },
+  "statistics": {
+    "result": {
+      "custom": {
+        "solution_found": false
+      }
+    },
+    "run": {
+      "duration": 0.123
+    },
+    "schema": "v1"
+  }
+}
