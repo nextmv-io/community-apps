@@ -317,6 +317,12 @@ apps:
         silent: true
       - name: 2.sh
         skip: true
+  - name: python-pyvrp-routing
+    scripts:
+      - name: 0.sh
+        silent: true
+      - name: 1.sh
+        stderr: true
   - name: python-scip-knapsack
     scripts:
       - name: 0.sh
