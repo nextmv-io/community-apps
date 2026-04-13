@@ -85,7 +85,7 @@ class DecisionModel(nextmv.Model):
                 vroom.Job(
                     id=i,
                     location=i,
-                    service=durations[i],
+                    service_per_type={str(i): durations[i] for i in range(len(durations))},
                     delivery=[-quantities[i]],
                     pickup=[quantities[i]],
                 )
