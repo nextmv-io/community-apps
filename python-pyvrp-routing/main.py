@@ -54,8 +54,10 @@ class DecisionModel(nextmv.Model):
         speeds = [v["speed"] if "speed" in v else 1 for v in vehicles]
 
         # Determine which matrix to use for travel costs.
-        # Input matrix layout: [stop_0, ..., stop_{n-1}, v0_start, v0_end, v1_start, v1_end, ...]
-        # PyVRP location layout: [v0_start_depot, v0_end_depot, v1_start_depot, v1_end_depot, ..., client_0, ..., client_{n-1}]
+        # Input matrix layout:
+        # [stop_0, ..., stop_{n-1}, v0_start, v0_end, v1_start, v1_end, ...]
+        # PyVRP location layout:
+        # [v0_start_depot, v0_end_depot, v1_start_depot, v1_end_depot, ..., client_0, ..., client_{n-1}]
         # We need to map between these two orderings.
         use_duration_matrix = "duration_matrix" in input.data
         if use_duration_matrix:
