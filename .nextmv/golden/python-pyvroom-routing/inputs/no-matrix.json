@@ -1,4 +1,9 @@
 {
+  "defaults": {
+    "stops": {
+      "duration": 300
+    }
+  },
   "vehicles": [
     {
       "id": "vehicle-1",

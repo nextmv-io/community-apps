@@ -33,9 +33,10 @@
           {
             "arrival": 1112,
             "duration": 1112,
-            "service": 0,
+            "service": 300,
             "setup": 0,
             "stop": {
+              "duration": 300,
               "id": "stop-1",
               "location": {
                 "lat": 51.9622,
@@ -47,11 +48,12 @@
             "waiting_time": 0
           },
           {
-            "arrival": 2224,
+            "arrival": 2524,
             "duration": 2224,
-            "service": 0,
+            "service": 300,
             "setup": 0,
             "stop": {
+              "duration": 300,
               "id": "stop-2",
               "location": {
                 "lat": 51.9722,
@@ -63,11 +65,12 @@
             "waiting_time": 0
           },
           {
-            "arrival": 3336,
+            "arrival": 3936,
             "duration": 3336,
-            "service": 0,
+            "service": 300,
             "setup": 0,
             "stop": {
+              "duration": 300,
               "id": "stop-3",
               "location": {
                 "lat": 51.9822,
@@ -79,7 +82,7 @@
             "waiting_time": 0
           },
           {
-            "arrival": 4448,
+            "arrival": 5348,
             "duration": 4448,
             "service": 0,
             "setup": 0,
