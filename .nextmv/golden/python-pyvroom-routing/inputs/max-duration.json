@@ -3,11 +3,11 @@
     {
       "id": "vehicle-1",
       "start_location": {
-        "lon": 7.6250,
+        "lon": 7.625,
         "lat": 51.9422
       },
       "end_location": {
-        "lon": 7.6250,
+        "lon": 7.625,
         "lat": 51.9972
       },
       "capacity": 3,
@@ -19,7 +19,7 @@
     {
       "id": "stop-1",
       "location": {
-        "lon": 7.6250,
+        "lon": 7.625,
         "lat": 51.9522
       },
       "quantity": 1
@@ -27,7 +27,7 @@
     {
       "id": "stop-2",
       "location": {
-        "lon": 7.6250,
+        "lon": 7.625,
         "lat": 51.9922
       },
       "quantity": 1
@@ -35,7 +35,7 @@
     {
       "id": "stop-3",
       "location": {
-        "lon": 7.6750,
+        "lon": 7.675,
         "lat": 51.9622
       },
       "quantity": 1
