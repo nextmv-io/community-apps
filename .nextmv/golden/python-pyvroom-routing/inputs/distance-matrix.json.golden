@@ -16,10 +16,12 @@
         "id": "vehicle-1",
         "route": [
           {
-            "arrival": 0,
+            "arrival_time": 0,
+            "cumulative_travel_duration": 0,
             "duration": 0,
-            "service": 0,
+            "end_time": 0,
             "setup": 0,
+            "start_time": 0,
             "stop": {
               "id": "vehicle-1_start",
               "location": {
@@ -27,14 +29,17 @@
                 "lon": 7.625
               }
             },
+            "travel_duration": 0,
             "type": "start",
             "waiting_time": 0
           },
           {
-            "arrival": 1112,
-            "duration": 1112,
-            "service": 0,
+            "arrival_time": 1112,
+            "cumulative_travel_duration": 1112,
+            "duration": 0,
+            "end_time": 1112,
             "setup": 0,
+            "start_time": 1112,
             "stop": {
               "id": "stop-1",
               "location": {
@@ -43,14 +48,17 @@
               },
               "quantity": 1
             },
+            "travel_duration": 1112,
             "type": "stop",
             "waiting_time": 0
           },
           {
-            "arrival": 4714,
-            "duration": 4714,
-            "service": 0,
+            "arrival_time": 4714,
+            "cumulative_travel_duration": 4714,
+            "duration": 0,
+            "end_time": 4714,
             "setup": 0,
+            "start_time": 4714,
             "stop": {
               "id": "stop-3",
               "location": {
@@ -59,14 +67,17 @@
               },
               "quantity": 1
             },
+            "travel_duration": 3602,
             "type": "stop",
             "waiting_time": 0
           },
           {
-            "arrival": 9495,
-            "duration": 9495,
-            "service": 0,
+            "arrival_time": 9495,
+            "cumulative_travel_duration": 9495,
+            "duration": 0,
+            "end_time": 9495,
             "setup": 0,
+            "start_time": 9495,
             "stop": {
               "id": "stop-2",
               "location": {
@@ -75,14 +86,17 @@
               },
               "quantity": 1
             },
+            "travel_duration": 4781,
             "type": "stop",
             "waiting_time": 0
           },
           {
-            "arrival": 10051,
-            "duration": 10051,
-            "service": 0,
+            "arrival_time": 10051,
+            "cumulative_travel_duration": 10051,
+            "duration": 0,
+            "end_time": 10051,
             "setup": 0,
+            "start_time": 10051,
             "stop": {
               "id": "vehicle-1_end",
               "location": {
@@ -90,10 +104,13 @@
                 "lon": 7.625
               }
             },
+            "travel_duration": 556,
             "type": "end",
             "waiting_time": 0
           }
         ],
+        "route_duration": 10051,
+        "route_stops_duration": 0,
         "route_travel_duration": 10051
       }
     ]
@@ -102,9 +119,12 @@
     "result": {
       "custom": {
         "activated_vehicles": 1,
-        "max_route_duration": 10051,
+        "max_duration": 10051,
         "max_stops_in_vehicle": 3,
+        "max_travel_duration": 10051,
+        "min_duration": 10051,
         "min_stops_in_vehicle": 3,
+        "min_travel_duration": 10051,
         "solution_found": true
       },
       "duration": 0.123,

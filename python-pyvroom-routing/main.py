@@ -95,13 +95,16 @@ class DecisionModel(nextmv.Model):
         solution = problem_instance.solve(
             exploration_level=input.options.exploration_level, nb_threads=input.options.threads
         )
-        end_time = time.time()
+        solve_end_time = time.time()
 
         # Translate the solution into the output format.
         vehicles_by_idx = dict(enumerate(input.data["vehicles"]))
         stops_by_idx = dict(enumerate(input.data["stops"]))
         unplanned_stops = []
-        max_route_duration = 0
+        max_travel_duration = 0
+        max_duration = 0
+        min_travel_duration = None
+        min_duration = None
         max_stops_in_vehicle = 0
         min_stops_in_vehicle = len(input.data["stops"])
         activated_vehicles = 0
@@ -112,70 +115,105 @@ class DecisionModel(nextmv.Model):
             vehicle_routes = {}
             planned_stops = set()
 
-            def convert_stop(t: str, stop: dict[str, Any], row: dict[str, Any]):
-                return {
+            def convert_stop(t: str, stop: dict[str, Any], row: dict[str, Any], prev_cumulative_travel: int):
+                arrival_time = int(row["arrival"])
+                waiting_time = int(row["waiting_time"])
+                setup = int(row["setup"])
+                service = int(row["service"])
+                cumulative_travel_duration = int(row["duration"])
+                travel_duration = cumulative_travel_duration - prev_cumulative_travel
+                start_time = arrival_time + waiting_time
+                end_time = start_time + setup + service
+                step = {
                     "stop": stop,
                     "type": t,
-                    "arrival": row["arrival"],
-                    "duration": row["duration"],
-                    "setup": row["setup"],
-                    "service": row["service"],
-                    "waiting_time": row["waiting_time"],
+                    "travel_duration": travel_duration,
+                    "cumulative_travel_duration": cumulative_travel_duration,
+                    "arrival_time": arrival_time,
+                    "start_time": start_time,
+                    "end_time": end_time,
+                    "setup": setup,
+                    "duration": service,
+                    "waiting_time": waiting_time,
                 }
+                return step, cumulative_travel_duration
 
             # Iterate dataframe to translate the routes into output format.
+            prev_cumulative_travel_by_vehicle: dict[str, int] = {}
             for _, row in solution.routes.iterrows():
                 vehicle = vehicles_by_idx[row["vehicle_id"]]
+                vid = vehicle["id"]
 
-                if vehicle["id"] not in vehicle_routes:
-                    vehicle_routes[vehicle["id"]] = []
+                if vid not in vehicle_routes:
+                    vehicle_routes[vid] = []
+                    prev_cumulative_travel_by_vehicle[vid] = 0
 
-                vehicle_route = vehicle_routes[vehicle["id"]]
+                vehicle_route = vehicle_routes[vid]
+                prev_cumulative_travel = prev_cumulative_travel_by_vehicle[vid]
 
                 match row["type"]:
                     case "start":
                         if "start_location" in vehicle:
-                            vehicle_route.append(
-                                convert_stop(
-                                    "start",
-                                    {
-                                        "id": f"{vehicle['id']}_start",
-                                        "location": vehicle["start_location"],
-                                    },
-                                    row,
-                                )
+                            step, prev = convert_stop(
+                                "start",
+                                {
+                                    "id": f"{vid}_start",
+                                    "location": vehicle["start_location"],
+                                },
+                                row,
+                                prev_cumulative_travel,
                             )
+                            vehicle_route.append(step)
+                            prev_cumulative_travel_by_vehicle[vid] = prev
                     case "end":
                         if "end_location" in vehicle:
-                            vehicle_route.append(
-                                convert_stop(
-                                    "end",
-                                    {
-                                        "id": f"{vehicle['id']}_end",
-                                        "location": vehicle["end_location"],
-                                    },
-                                    row,
-                                )
+                            step, prev = convert_stop(
+                                "end",
+                                {
+                                    "id": f"{vid}_end",
+                                    "location": vehicle["end_location"],
+                                },
+                                row,
+                                prev_cumulative_travel,
                             )
+                            vehicle_route.append(step)
+                            prev_cumulative_travel_by_vehicle[vid] = prev
                     case "job":
                         stop = stops_by_idx[row["location_index"]]
                         planned_stops.add(stop["id"])
-                        vehicle_route.append(convert_stop("stop", stop, row))
+                        step, prev = convert_stop("stop", stop, row, prev_cumulative_travel)
+                        vehicle_route.append(step)
+                        prev_cumulative_travel_by_vehicle[vid] = prev
                     case _:
                         raise ValueError(f"Unknown route type {row['type']}.")
 
             # Fully assemble routes.
             for vehicle in input.data["vehicles"]:
                 vehicle_route = vehicle_routes.get(vehicle["id"], [])
+                route_travel_duration = vehicle_route[-1]["cumulative_travel_duration"] if vehicle_route else 0
+                route_stops_duration = sum(
+                    step["setup"] + step["duration"] for step in vehicle_route if step["type"] == "stop"
+                )
+                route_duration = route_travel_duration + route_stops_duration
                 route = {
                     "id": vehicle["id"],
-                    "route_travel_duration": vehicle_route[-1]["duration"] if vehicle_route else 0,
+                    "route_travel_duration": route_travel_duration,
+                    "route_stops_duration": route_stops_duration,
+                    "route_duration": route_duration,
                     "route": vehicle_route,
                 }
                 routes.append(route)
-                max_route_duration = max(max_route_duration, route["route_travel_duration"])
-                stop_count = sum(1 for stop in vehicle_route if stop["type"] == "stop")
+                stop_count = sum(1 for step in vehicle_route if step["type"] == "stop")
                 activated_vehicles += 1 if stop_count > 0 else 0
+                if stop_count > 0:
+                    max_travel_duration = max(max_travel_duration, route_travel_duration)
+                    max_duration = max(max_duration, route_duration)
+                    min_travel_duration = (
+                        route_travel_duration
+                        if min_travel_duration is None
+                        else min(min_travel_duration, route_travel_duration)
+                    )
+                    min_duration = route_duration if min_duration is None else min(min_duration, route_duration)
                 max_stops_in_vehicle = max(max_stops_in_vehicle, stop_count)
                 min_stops_in_vehicle = min(min_stops_in_vehicle, stop_count)
 
@@ -185,14 +223,17 @@ class DecisionModel(nextmv.Model):
                     unplanned_stops.append({"id": stop["id"], "location": stop["location"]})
 
             statistics = nextmv.Statistics(
-                run=nextmv.RunStatistics(duration=end_time - start_time),
+                run=nextmv.RunStatistics(duration=solve_end_time - start_time),
                 result=nextmv.ResultStatistics(
-                    duration=end_time - start_time,
+                    duration=solve_end_time - start_time,
                     value=solution.summary.cost,
                     custom={
                         "solution_found": True,
                         "activated_vehicles": activated_vehicles,
-                        "max_route_duration": max_route_duration,
+                        "max_travel_duration": max_travel_duration,
+                        "max_duration": max_duration,
+                        "min_travel_duration": min_travel_duration if min_travel_duration is not None else 0,
+                        "min_duration": min_duration if min_duration is not None else 0,
                         "max_stops_in_vehicle": max_stops_in_vehicle,
                         "min_stops_in_vehicle": min_stops_in_vehicle,
                     },
@@ -201,9 +242,9 @@ class DecisionModel(nextmv.Model):
 
         else:
             statistics = nextmv.Statistics(
-                run=nextmv.RunStatistics(duration=end_time - start_time),
+                run=nextmv.RunStatistics(duration=solve_end_time - start_time),
                 result=nextmv.ResultStatistics(
-                    duration=end_time - start_time,
+                    duration=solve_end_time - start_time,
                     value=None,
                 ),
             )
