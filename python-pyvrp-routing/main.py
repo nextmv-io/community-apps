@@ -37,7 +37,6 @@ class DecisionModel(nextmv.Model):
     def solve(self, input: nextmv.Input, duration: int) -> nextmv.Output:
         """Solves the given problem and returns the solution."""
 
-        start_time = time.time()
         nextmv.redirect_stdout()  # Solver chatter is logged to stderr.
 
         vehicles = input.data["vehicles"]
@@ -149,7 +148,7 @@ class DecisionModel(nextmv.Model):
                     # distance matrix + per-vehicle speed: add one edge per profile
                     # with duration = distance / speed (integer)
                     for i, speed in enumerate(speeds):
-                        dur = int(dist / speed)
+                        dur = int(round(dist / speed))
                         m.add_edge(
                             all_locations[from_pyvrp_idx],
                             all_locations[to_pyvrp_idx],
@@ -205,8 +204,7 @@ class DecisionModel(nextmv.Model):
                 # Get scheduled visits for the route.
                 # schedule() includes depot visits: [start_depot, client_0, ..., client_n, end_depot]
                 schedule = route.schedule()
-
-                # visits() returns client indices into m.clients (0-based among clients only).
+                # visits() only includes client visits: [client_0, ..., client_n]
                 visits = route.visits()
 
                 for k, location_idx in enumerate(visits):
@@ -318,7 +316,7 @@ def apply_defaults(input_data: dict[str, Any]) -> None:
     (if they are given and not already set on them directly).
     """
     if "defaults" not in input_data:
-        return input_data
+        return
     defaults = input_data["defaults"]
     if "vehicles" in defaults:
         for vehicle in input_data["vehicles"]:
