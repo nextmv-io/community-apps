@@ -1,2 +1,2 @@
-pyomo==6.9.5
+pyomo==6.10.0
 nextmv==1.6.2
