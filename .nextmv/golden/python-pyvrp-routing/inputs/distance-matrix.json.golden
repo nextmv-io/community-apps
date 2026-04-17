@@ -12,120 +12,133 @@
         "id": "vehicle-1",
         "route": [
           {
-            "arrival": 0,
-            "duration": 0,
-            "service": 0,
-            "setup": 0,
+            "arrival_time": "2024-03-19T11:00:00+00:00",
+            "cumulative_travel_distance": 0,
+            "cumulative_travel_duration": 0,
+            "end_time": "2024-03-19T11:00:00+00:00",
+            "start_time": "2024-03-19T11:00:00+00:00",
             "stop": {
-              "id": "vehicle-1_start",
+              "id": "vehicle-1-start",
               "location": {
                 "lat": 51.9622,
                 "lon": 7.625
               }
             },
-            "type": "start",
-            "waiting_time": 0
+            "travel_distance": 0,
+            "travel_duration": 0
           },
           {
-            "arrival": 84,
-            "duration": 84,
-            "service": 0,
-            "setup": 0,
+            "arrival_time": "2024-03-19T11:01:24+00:00",
+            "cumulative_travel_distance": 842,
+            "cumulative_travel_duration": 84,
+            "duration": 0,
+            "end_time": "2024-03-19T11:01:24+00:00",
+            "start_time": "2024-03-19T11:01:24+00:00",
             "stop": {
               "id": "location-1",
               "location": {
                 "lat": 51.9624,
                 "lon": 7.6228
-              },
-              "quantity": 1
+              }
             },
-            "type": "stop",
-            "waiting_time": 0
+            "travel_distance": 842,
+            "travel_duration": 84
           },
           {
-            "arrival": 128,
-            "duration": 128,
-            "service": 0,
-            "setup": 0,
+            "arrival_time": "2024-03-19T11:02:08+00:00",
+            "cumulative_travel_distance": 1284,
+            "cumulative_travel_duration": 128,
+            "end_time": "2024-03-19T11:02:08+00:00",
+            "start_time": "2024-03-19T11:02:08+00:00",
             "stop": {
-              "id": "vehicle-1_end",
+              "id": "vehicle-1-end",
               "location": {
                 "lat": 51.9622,
                 "lon": 7.625
               }
             },
-            "type": "end",
-            "waiting_time": 0
+            "travel_distance": 442,
+            "travel_duration": 44
           }
         ],
+        "route_duration": 128,
+        "route_stops_duration": 0,
+        "route_travel_distance": 1284,
         "route_travel_duration": 128
       },
       {
         "id": "vehicle-2",
         "route": [
           {
-            "arrival": 0,
-            "duration": 0,
-            "service": 0,
-            "setup": 0,
+            "arrival_time": "2024-03-19T11:00:00+00:00",
+            "cumulative_travel_distance": 0,
+            "cumulative_travel_duration": 0,
+            "end_time": "2024-03-19T11:00:00+00:00",
+            "start_time": "2024-03-19T11:00:00+00:00",
             "stop": {
-              "id": "vehicle-2_start",
+              "id": "vehicle-2-start",
               "location": {
                 "lat": 51.9622,
                 "lon": 7.625
               }
             },
-            "type": "start",
-            "waiting_time": 0
+            "travel_distance": 0,
+            "travel_duration": 0
           },
           {
-            "arrival": 29,
-            "duration": 29,
-            "service": 0,
-            "setup": 0,
+            "arrival_time": "2024-03-19T11:00:29+00:00",
+            "cumulative_travel_distance": 291,
+            "cumulative_travel_duration": 29,
+            "duration": 0,
+            "end_time": "2024-03-19T11:00:29+00:00",
+            "start_time": "2024-03-19T11:00:29+00:00",
             "stop": {
               "id": "location-3",
               "location": {
                 "lat": 51.9638,
                 "lon": 7.6233
-              },
-              "quantity": 1
+              }
             },
-            "type": "stop",
-            "waiting_time": 0
+            "travel_distance": 291,
+            "travel_duration": 29
           },
           {
-            "arrival": 175,
-            "duration": 175,
-            "service": 0,
-            "setup": 0,
+            "arrival_time": "2024-03-19T11:02:55+00:00",
+            "cumulative_travel_distance": 1755,
+            "cumulative_travel_duration": 175,
+            "duration": 0,
+            "end_time": "2024-03-19T11:02:55+00:00",
+            "start_time": "2024-03-19T11:02:55+00:00",
             "stop": {
               "id": "location-2",
               "location": {
                 "lat": 51.9584,
                 "lon": 7.6353
-              },
-              "quantity": 1
+              }
             },
-            "type": "stop",
-            "waiting_time": 0
+            "travel_distance": 1464,
+            "travel_duration": 146
           },
           {
-            "arrival": 319,
-            "duration": 319,
-            "service": 0,
-            "setup": 0,
+            "arrival_time": "2024-03-19T11:05:19+00:00",
+            "cumulative_travel_distance": 3198,
+            "cumulative_travel_duration": 319,
+            "end_time": "2024-03-19T11:05:19+00:00",
+            "start_time": "2024-03-19T11:05:19+00:00",
             "stop": {
-              "id": "vehicle-2_end",
+              "id": "vehicle-2-end",
               "location": {
                 "lat": 51.9622,
                 "lon": 7.625
               }
             },
-            "type": "end",
-            "waiting_time": 0
+            "travel_distance": 1443,
+            "travel_duration": 144
           }
         ],
+        "route_duration": 319,
+        "route_stops_duration": 0,
+        "route_travel_distance": 3198,
         "route_travel_duration": 319
       }
     ]
@@ -134,9 +147,12 @@
     "result": {
       "custom": {
         "activated_vehicles": 2,
-        "max_route_duration": 319,
+        "max_duration": 319,
         "max_stops_in_vehicle": 2,
+        "max_travel_duration": 319,
+        "min_duration": 128,
         "min_stops_in_vehicle": 1,
+        "min_travel_duration": 128,
         "solution_found": true
       },
       "value": 447
