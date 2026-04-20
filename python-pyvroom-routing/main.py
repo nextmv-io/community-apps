@@ -46,9 +46,15 @@ class DecisionModel(nextmv.Model):
         nextmv.redirect_stdout()  # Solver chatter is logged to stderr.
         input.options.solver = "vroom"
         input.options.version = version("pyvroom")
-
-        # TODO: use duration to limit the runtime of the solver
-        _ = input.options.duration
+        if input.options.duration is not None and isinstance(input.options.duration, numbers.Number):
+            if input.options.duration <= 0:
+                timeout = None  # No timeout if duration is 0 or negative.
+            else:
+                timeout = timedelta(seconds=input.options.duration)
+        elif input.options.duration is None:
+            timeout = None
+        else:
+            raise ValueError(f"Invalid duration option {input.options.duration}.")
 
         # Prepare data.
         speed_factors = [v["speed_factor"] if "speed_factor" in v else 1 for v in input.data["vehicles"]]
@@ -97,7 +103,9 @@ class DecisionModel(nextmv.Model):
 
         # Solve the problem.
         solution = problem_instance.solve(
-            exploration_level=input.options.exploration_level, nb_threads=input.options.threads
+            exploration_level=input.options.exploration_level,
+            nb_threads=input.options.threads,
+            timeout=timeout,
         )
         solve_end_time = time.time()
 

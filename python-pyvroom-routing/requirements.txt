@@ -1,2 +1,2 @@
-pyvroom==1.15.0
+pyvroom==1.15.1
 nextmv==1.6.2
