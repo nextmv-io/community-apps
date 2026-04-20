@@ -12,8 +12,7 @@ Pyvroom package. We solve a vehicle routing problem.
 1. Run the app.
 
     ```bash
-    python3 main.py -input input.json -output output.json \
-        -duration 30 -exploration_level 4 -threads 6
+    cat input.json | python3 main.py > output.json
     ```
 
 ## Mirror running on Nextmv Cloud locally

@@ -11,6 +11,49 @@ python:
   pip-requirements: requirements.txt
 
 configuration:
-  # Specify the format the app reads and writes.
   content:
-    format: "json" # Read JSON from stdin and write JSON to stdout.
+    format: "json"
+  options:
+    items:
+      - name: duration
+        option_type: int
+        default: 30
+        description: "Max runtime duration (in seconds)."
+        ui:
+          control_type: input
+          display_name: "Max Runtime (seconds)"
+      - name: exploration_level
+        option_type: int
+        default: 4
+        description: "Exploration level for the solver."
+        ui:
+          control_type: input
+          display_name: "Exploration Level"
+      - name: threads
+        option_type: int
+        default: 6
+        description: "Number of threads to use."
+        ui:
+          control_type: input
+          display_name: "Threads"
+      - name: default_duration
+        option_type: int
+        default: null
+        description: "Default service duration (in seconds) for all stops. Stop-level duration values take precedence."
+        ui:
+          control_type: input
+          display_name: "Stop Service Duration Default (seconds)"
+      - name: default_lat
+        option_type: float
+        default: null
+        description: "Latitude of the default start and end location for all vehicles. Vehicle-level start_location and end_location take precedence. If unset, the input data must supply the vehicle locations."
+        ui:
+          control_type: input
+          display_name: "Vehicle Start Latitude (Default)"
+      - name: default_lon
+        option_type: float
+        default: null
+        description: "Longitude of the default start and end location for all vehicles. Vehicle-level start_location and end_location take precedence. If unset, the input data must supply the vehicle locations."
+        ui:
+          control_type: input
+          display_name: "Vehicle Start Longitude (Default)"

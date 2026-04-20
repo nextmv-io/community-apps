@@ -1,5 +1,6 @@
 import numbers
 import time
+from datetime import datetime, timedelta, timezone
 from importlib.metadata import version
 from typing import Any
 
@@ -11,15 +12,18 @@ import vroom
 def main() -> None:
     """Entry point for the program."""
 
-    options = nextmv.Options(
-        nextmv.Option("input", str, "", "Path to input file. Default is stdin.", False),
-        nextmv.Option("output", str, "", "Path to output file. Default is stdout.", False),
-        nextmv.Option("duration", int, 30, "Max runtime duration (in seconds).", False),
-        nextmv.Option("exploration_level", int, 4, "Exploration level for the solver.", False),
-        nextmv.Option("threads", int, 6, "Number of threads to use.", False),
-    )
+    manifest = nextmv.Manifest.from_yaml(".")
+    options = manifest.extract_options()
 
-    input = nextmv.load(options=options, path=options.input)
+    input = nextmv.load(options=options)
+    if options.default_duration is not None:
+        input.data.setdefault("defaults", {}).setdefault("stops", {})
+        input.data["defaults"]["stops"].setdefault("duration", options.default_duration)
+    if options.default_lat is not None and options.default_lon is not None:
+        depot = {"lat": options.default_lat, "lon": options.default_lon}
+        input.data.setdefault("defaults", {}).setdefault("vehicles", {})
+        input.data["defaults"]["vehicles"].setdefault("start_location", depot)
+        input.data["defaults"]["vehicles"].setdefault("end_location", depot)
     apply_defaults(input.data)
     validate_input(input.data)
     process_duration_matrix(input.data)
@@ -30,7 +34,7 @@ def main() -> None:
 
     model = DecisionModel()
     output = model.solve(input)
-    nextmv.write(output, path=options.output)
+    nextmv.write(output)
 
 
 class DecisionModel(nextmv.Model):
@@ -115,7 +119,13 @@ class DecisionModel(nextmv.Model):
             vehicle_routes = {}
             planned_stops = set()
 
-            def convert_stop(t: str, stop: dict[str, Any], row: dict[str, Any], prev_cumulative_travel: int):
+            def convert_stop(
+                t: str,
+                stop: dict[str, Any],
+                row: dict[str, Any],
+                prev_cumulative_travel: int,
+                base_time: datetime,
+            ):
                 arrival_time = int(row["arrival"])
                 waiting_time = int(row["waiting_time"])
                 setup = int(row["setup"])
@@ -129,9 +139,9 @@ class DecisionModel(nextmv.Model):
                     "type": t,
                     "travel_duration": travel_duration,
                     "cumulative_travel_duration": cumulative_travel_duration,
-                    "arrival_time": arrival_time,
-                    "start_time": start_time,
-                    "end_time": end_time,
+                    "arrival_time": (base_time + timedelta(seconds=arrival_time)).isoformat(),
+                    "start_time": (base_time + timedelta(seconds=start_time)).isoformat(),
+                    "end_time": (base_time + timedelta(seconds=end_time)).isoformat(),
                     "setup": setup,
                     "duration": service,
                     "waiting_time": waiting_time,
@@ -140,6 +150,7 @@ class DecisionModel(nextmv.Model):
 
             # Iterate dataframe to translate the routes into output format.
             prev_cumulative_travel_by_vehicle: dict[str, int] = {}
+            base_time_by_vehicle: dict[str, datetime] = {}
             for _, row in solution.routes.iterrows():
                 vehicle = vehicles_by_idx[row["vehicle_id"]]
                 vid = vehicle["id"]
@@ -147,9 +158,15 @@ class DecisionModel(nextmv.Model):
                 if vid not in vehicle_routes:
                     vehicle_routes[vid] = []
                     prev_cumulative_travel_by_vehicle[vid] = 0
+                    raw_start = vehicle.get("start_time")
+                    if raw_start:
+                        base_time_by_vehicle[vid] = datetime.fromisoformat(raw_start)
+                    else:
+                        base_time_by_vehicle[vid] = datetime.fromtimestamp(0, tz=timezone.utc)
 
                 vehicle_route = vehicle_routes[vid]
                 prev_cumulative_travel = prev_cumulative_travel_by_vehicle[vid]
+                base_time = base_time_by_vehicle[vid]
 
                 match row["type"]:
                     case "start":
@@ -162,6 +179,7 @@ class DecisionModel(nextmv.Model):
                                 },
                                 row,
                                 prev_cumulative_travel,
+                                base_time,
                             )
                             vehicle_route.append(step)
                             prev_cumulative_travel_by_vehicle[vid] = prev
@@ -175,13 +193,14 @@ class DecisionModel(nextmv.Model):
                                 },
                                 row,
                                 prev_cumulative_travel,
+                                base_time,
                             )
                             vehicle_route.append(step)
                             prev_cumulative_travel_by_vehicle[vid] = prev
                     case "job":
                         stop = stops_by_idx[row["location_index"]]
                         planned_stops.add(stop["id"])
-                        step, prev = convert_stop("stop", stop, row, prev_cumulative_travel)
+                        step, prev = convert_stop("stop", stop, row, prev_cumulative_travel, base_time)
                         vehicle_route.append(step)
                         prev_cumulative_travel_by_vehicle[vid] = prev
                     case _:
@@ -414,16 +433,21 @@ def calculate_distance_matrix(input_data: dict[str, Any]) -> np.ndarray:
         lons_destination=lons_destination,
     )
 
+    # Reshape to 2D before inserting rows/columns for missing vehicle locations.
+    n_init = len(input_data["stops"]) + len(has_start) + len(has_end)
+    distances = distances.reshape(n_init, n_init)
+
     # Add 0 distances for missing start and end locations (to make a full matrix).
     for vehicle in input_data["vehicles"]:
         if vehicle["id"] not in has_start:
-            distances = np.insert(distances, len(distances), 0, axis=0)
-            distances = np.insert(distances, len(distances), 0, axis=1)
+            n = len(distances)
+            distances = np.insert(distances, n, 0, axis=0)
+            distances = np.insert(distances, n, 0, axis=1)
         if vehicle["id"] not in has_end:
-            distances = np.insert(distances, len(distances), 0, axis=0)
-            distances = np.insert(distances, len(distances), 0, axis=1)
+            n = len(distances)
+            distances = np.insert(distances, n, 0, axis=0)
+            distances = np.insert(distances, n, 0, axis=1)
 
-    # Convert the distances to a square matrix.
     num_locations = len(input_data["stops"]) + 2 * len(input_data["vehicles"])
     matrix = distances.reshape(num_locations, num_locations)
 
