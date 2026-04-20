@@ -158,7 +158,7 @@ class DecisionModel(nextmv.Model):
 
             # Iterate dataframe to translate the routes into output format.
             prev_cumulative_travel_by_vehicle: dict[str, int] = {}
-            base_time_by_vehicle: dict[str, datetime] = {}
+            base_time_by_vehicle: dict[str, datetime | None] = {}
             for _, row in solution.routes.iterrows():
                 vehicle = vehicles_by_idx[row["vehicle_id"]]
                 vid = vehicle["id"]
