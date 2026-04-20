@@ -135,9 +135,9 @@ class DecisionModel(nextmv.Model):
                 start_time = arrival_time + waiting_time
                 end_time = start_time + setup + service
                 if base_time is not None:
-                    fmt_arrival = (base_time + timedelta(seconds=arrival_time)).isoformat()
-                    fmt_start = (base_time + timedelta(seconds=start_time)).isoformat()
-                    fmt_end = (base_time + timedelta(seconds=end_time)).isoformat()
+                    fmt_arrival = format_rfc3339(base_time + timedelta(seconds=arrival_time))
+                    fmt_start = format_rfc3339(base_time + timedelta(seconds=start_time))
+                    fmt_end = format_rfc3339(base_time + timedelta(seconds=end_time))
                 else:
                     fmt_arrival = arrival_time
                     fmt_start = start_time
@@ -167,7 +167,7 @@ class DecisionModel(nextmv.Model):
                     vehicle_routes[vid] = []
                     prev_cumulative_travel_by_vehicle[vid] = 0
                     raw_start = vehicle.get("start_time")
-                    base_time_by_vehicle[vid] = datetime.fromisoformat(raw_start) if raw_start else None
+                    base_time_by_vehicle[vid] = parse_rfc3339(raw_start) if raw_start else None
 
                 vehicle_route = vehicle_routes[vid]
                 prev_cumulative_travel = prev_cumulative_travel_by_vehicle[vid]
@@ -442,23 +442,26 @@ def calculate_distance_matrix(input_data: dict[str, Any]) -> np.ndarray:
     n_init = len(input_data["stops"]) + len(has_start) + len(has_end)
     distances = distances.reshape(n_init, n_init)
 
-    # Add 0 distances for missing start and end locations (to make a full matrix).
-    for vehicle in input_data["vehicles"]:
+    # Insert 0 rows/columns at the correct positions for missing start/end locations.
+    # The final layout is: [stops..., v0_start, v0_end, v1_start, v1_end, ...]
+    # We track an insertion offset as we insert rows/cols, shifting subsequent indices.
+    n_stops = len(input_data["stops"])
+    insert_offset = 0
+    for i, vehicle in enumerate(input_data["vehicles"]):
+        start_idx = n_stops + 2 * i + insert_offset
         if vehicle["id"] not in has_start:
-            n = len(distances)
-            distances = np.insert(distances, n, 0, axis=0)
-            distances = np.insert(distances, n, 0, axis=1)
+            distances = np.insert(distances, start_idx, 0, axis=0)
+            distances = np.insert(distances, start_idx, 0, axis=1)
+            insert_offset += 1
+        end_idx = n_stops + 2 * i + 1 + insert_offset
         if vehicle["id"] not in has_end:
-            n = len(distances)
-            distances = np.insert(distances, n, 0, axis=0)
-            distances = np.insert(distances, n, 0, axis=1)
-
-    num_locations = len(input_data["stops"]) + 2 * len(input_data["vehicles"])
-    matrix = distances.reshape(num_locations, num_locations)
+            distances = np.insert(distances, end_idx, 0, axis=0)
+            distances = np.insert(distances, end_idx, 0, axis=1)
+            insert_offset += 1
 
     end = time.time()
     nextmv.log(f"Distance matrix calculation took {round(end - start, 2)} seconds.")
-    return matrix
+    return distances
 
 
 def process_duration_matrix(input_data: dict[str, Any]) -> None:
@@ -498,6 +501,21 @@ def haversine(
     earth_radius = 6371000
 
     return earth_radius * c
+
+
+def format_rfc3339(value: datetime) -> str:
+    """Formats a datetime as an RFC3339 string, using Z instead of +00:00 for UTC."""
+    s = value.isoformat()
+    if s.endswith("+00:00"):
+        s = s[:-6] + "Z"
+    return s
+
+
+def parse_rfc3339(value: str) -> datetime:
+    """Parses an RFC3339 string into a datetime, handling Z as UTC offset."""
+    if value.endswith("Z"):
+        value = value[:-1] + "+00:00"
+    return datetime.fromisoformat(value)
 
 
 if __name__ == "__main__":
