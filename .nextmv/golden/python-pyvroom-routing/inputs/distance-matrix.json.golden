@@ -1,10 +1,11 @@
 {
   "assets": [],
   "options": {
+    "default_duration": null,
+    "default_lat": null,
+    "default_lon": null,
     "duration": 30,
     "exploration_level": 4,
-    "input": "input.json",
-    "output": "output.json",
     "solver": "vroom",
     "threads": 6,
     "version": "1.15.0"
