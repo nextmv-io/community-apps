@@ -1,6 +1,7 @@
 import numbers
+import os
 import time
-from datetime import UTC, datetime, timedelta
+from datetime import datetime, timedelta
 from importlib.metadata import version
 from typing import Any
 
@@ -9,10 +10,11 @@ import numpy as np
 import vroom
 
 
+
 def main() -> None:
     """Entry point for the program."""
 
-    manifest = nextmv.Manifest.from_yaml(".")
+    manifest = nextmv.Manifest.from_yaml(os.path.dirname(os.path.abspath(__file__)))
     options = manifest.extract_options()
 
     input = nextmv.load(options=options)
@@ -85,15 +87,14 @@ class DecisionModel(nextmv.Model):
 
         # Add the stops.
         for i in range(len(input.data["stops"])):
-            problem_instance.add_job(
-                vroom.Job(
-                    id=i,
-                    location=i,
-                    default_service=durations[i],
-                    delivery=[-quantities[i]],
-                    pickup=[quantities[i]],
-                )
+            job = vroom.Job(
+                id=i,
+                location=i,
+                default_service=durations[i],
+                delivery=[-quantities[i]],
+                pickup=[quantities[i]],
             )
+            problem_instance.add_job(job)
 
         # Solve the problem.
         solution = problem_instance.solve(
@@ -124,7 +125,7 @@ class DecisionModel(nextmv.Model):
                 stop: dict[str, Any],
                 row: dict[str, Any],
                 prev_cumulative_travel: int,
-                base_time: datetime,
+                base_time: datetime | None,
             ):
                 arrival_time = int(row["arrival"])
                 waiting_time = int(row["waiting_time"])
@@ -134,14 +135,22 @@ class DecisionModel(nextmv.Model):
                 travel_duration = cumulative_travel_duration - prev_cumulative_travel
                 start_time = arrival_time + waiting_time
                 end_time = start_time + setup + service
+                if base_time is not None:
+                    fmt_arrival = (base_time + timedelta(seconds=arrival_time)).isoformat()
+                    fmt_start = (base_time + timedelta(seconds=start_time)).isoformat()
+                    fmt_end = (base_time + timedelta(seconds=end_time)).isoformat()
+                else:
+                    fmt_arrival = arrival_time
+                    fmt_start = start_time
+                    fmt_end = end_time
                 step = {
                     "stop": stop,
                     "type": t,
                     "travel_duration": travel_duration,
                     "cumulative_travel_duration": cumulative_travel_duration,
-                    "arrival_time": (base_time + timedelta(seconds=arrival_time)).isoformat(),
-                    "start_time": (base_time + timedelta(seconds=start_time)).isoformat(),
-                    "end_time": (base_time + timedelta(seconds=end_time)).isoformat(),
+                    "arrival_time": fmt_arrival,
+                    "start_time": fmt_start,
+                    "end_time": fmt_end,
                     "setup": setup,
                     "duration": service,
                     "waiting_time": waiting_time,
@@ -159,10 +168,7 @@ class DecisionModel(nextmv.Model):
                     vehicle_routes[vid] = []
                     prev_cumulative_travel_by_vehicle[vid] = 0
                     raw_start = vehicle.get("start_time")
-                    if raw_start:
-                        base_time_by_vehicle[vid] = datetime.fromisoformat(raw_start)
-                    else:
-                        base_time_by_vehicle[vid] = datetime.fromtimestamp(0, tz=UTC)
+                    base_time_by_vehicle[vid] = datetime.fromisoformat(raw_start) if raw_start else None
 
                 vehicle_route = vehicle_routes[vid]
                 prev_cumulative_travel = prev_cumulative_travel_by_vehicle[vid]

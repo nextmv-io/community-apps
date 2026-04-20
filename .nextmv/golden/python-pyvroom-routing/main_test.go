@@ -30,20 +30,12 @@ func TestGolden(t *testing.T) {
 					Key:         "$.statistics.run.duration",
 					Replacement: golden.StableFloat,
 				},
-				{
-					Key:         "$.options.output",
-					Replacement: "output.json",
-				},
-				{
-					Key:         "$.options.input",
-					Replacement: "input.json",
-				},
 			},
+			UseStdIn:  true,
+			UseStdOut: true,
 			ExecutionConfig: &golden.ExecutionConfig{
-				Command:    "python3",
-				Args:       []string{"../../../python-pyvroom-routing/main.py"},
-				InputFlag:  "-input",
-				OutputFlag: "-output",
+				Command: "python3",
+				Args:    []string{"../../../python-pyvroom-routing/main.py"},
 			},
 		},
 	)
