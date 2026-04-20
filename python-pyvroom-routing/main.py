@@ -10,7 +10,6 @@ import numpy as np
 import vroom
 
 
-
 def main() -> None:
     """Entry point for the program."""
 
