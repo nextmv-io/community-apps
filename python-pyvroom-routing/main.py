@@ -1,6 +1,6 @@
 import numbers
 import time
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from importlib.metadata import version
 from typing import Any
 
@@ -162,7 +162,7 @@ class DecisionModel(nextmv.Model):
                     if raw_start:
                         base_time_by_vehicle[vid] = datetime.fromisoformat(raw_start)
                     else:
-                        base_time_by_vehicle[vid] = datetime.fromtimestamp(0, tz=timezone.utc)
+                        base_time_by_vehicle[vid] = datetime.fromtimestamp(0, tz=UTC)
 
                 vehicle_route = vehicle_routes[vid]
                 prev_cumulative_travel = prev_cumulative_travel_by_vehicle[vid]
