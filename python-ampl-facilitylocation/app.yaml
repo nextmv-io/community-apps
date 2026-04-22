@@ -18,4 +18,44 @@ files:
 configuration:
   # Specify the format the app reads and writes.
   content:
-    format: "json" # Read JSON from stdin and write JSON to stdout.
+    format: json # Read JSON from stdin and write JSON to stdout.
+  # Define the options (parameters) of the app.
+  options:
+    strict: false
+    items:
+      - name: duration
+        option_type: int
+        default: 30
+        description: Max runtime duration (in seconds).
+        required: false
+        additional_attributes:
+          min: 1
+          max: 3600
+          step: 10
+        ui:
+          control_type: slider
+          display_name: Duration
+      - name: provider
+        option_type: string
+        default: highs
+        description: Solver provider.
+        required: false
+        ui:
+          control_type: text
+          display_name: Provider
+      - name: runpath
+        option_type: string
+        default: .
+        description: Path to the directory with the run file.
+        required: false
+        ui:
+          control_type: text
+          display_name: Run Path
+      - name: modelpath
+        option_type: string
+        default: .
+        description: Path to the directory with the model file.
+        required: false
+        ui:
+          control_type: text
+          display_name: Model Path
