@@ -27,7 +27,7 @@ def main() -> None:
         input.data["defaults"]["vehicles"].setdefault("end_location", depot)
     apply_defaults(input.data)
     validate_input(input.data)
-    process_duration_matrix(input.data)
+    process_duration_matrix(input.data, options.avg_speed_kmh)
 
     nextmv.log("Solving routing problem:")
     nextmv.log(f"  - vehicles: {len(input.data.get('vehicles', []))}")
@@ -400,7 +400,7 @@ def expand_missing_start_end(matrix: np.ndarray, input_data: dict[str, Any]) -> 
     return expanded_matrix
 
 
-def calculate_distance_matrix(input_data: dict[str, Any]) -> np.ndarray:
+def calculate_distance_matrix(input_data: dict[str, Any], avg_speed_kmh: float) -> np.ndarray:
     """
     Calculates the distance matrix for the input data. Takes into account whether the
     input data contains vehicle start and end locations.
@@ -436,6 +436,7 @@ def calculate_distance_matrix(input_data: dict[str, Any]) -> np.ndarray:
         lons_origin=lons_origin,
         lats_destination=lats_destination,
         lons_destination=lons_destination,
+        avg_speed_kmh=avg_speed_kmh,
     )
 
     # Reshape to 2D before inserting rows/columns for missing vehicle locations.
@@ -464,7 +465,7 @@ def calculate_distance_matrix(input_data: dict[str, Any]) -> np.ndarray:
     return distances
 
 
-def process_duration_matrix(input_data: dict[str, Any]) -> None:
+def process_duration_matrix(input_data: dict[str, Any], avg_speed_kmh: float) -> None:
     """Prepares the duration matrix of the input data, if given."""
 
     # If the input data already contains a duration matrix, return it.
@@ -473,7 +474,7 @@ def process_duration_matrix(input_data: dict[str, Any]) -> None:
         input_data["duration_matrix"] = expand_missing_start_end(np_matrix, input_data)
     else:
         # Calculate the distance matrix if no duration matrix is given.
-        input_data["duration_matrix"] = calculate_distance_matrix(input_data)
+        input_data["duration_matrix"] = calculate_distance_matrix(input_data, avg_speed_kmh)
 
     # Make sure the matrix is integer (round the values).
     if "duration_matrix" in input_data:
@@ -485,8 +486,9 @@ def haversine(
     lons_origin: np.ndarray | float,
     lats_destination: np.ndarray | float,
     lons_destination: np.ndarray | float,
+    avg_speed_kmh: float,
 ) -> np.ndarray | float:
-    """Calculates the haversine distance between arrays of coordinates."""
+    """Calculates the haversine distance between arrays of coordinates, returned as travel seconds."""
 
     lons_destination, lats_destination, lons_origin, lats_origin = map(
         np.radians,
@@ -499,8 +501,9 @@ def haversine(
     a = term1 + term2
     c = 2 * np.arcsin(np.sqrt(a))
     earth_radius = 6371000
+    avg_speed_m_per_s = avg_speed_kmh * 1000 / 3600
 
-    return earth_radius * c
+    return (earth_radius * c) / avg_speed_m_per_s
 
 
 def format_rfc3339(value: datetime) -> str:

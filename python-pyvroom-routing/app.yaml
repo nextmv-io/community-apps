@@ -57,3 +57,10 @@ configuration:
         ui:
           control_type: input
           display_name: "Vehicle Start Longitude (Default)"
+      - name: avg_speed_kmh
+        option_type: float
+        default: 30
+        description: "Average travel speed in km/h used to convert haversine distances to travel time when no duration matrix is provided."
+        ui:
+          control_type: input
+          display_name: "Average Travel Speed (km/h)"
