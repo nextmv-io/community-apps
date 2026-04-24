@@ -16,4 +16,44 @@ files:
 configuration:
   # Specify the format the app reads and writes.
   content:
-    format: "json" # Read JSON from stdin and write JSON to stdout.
+    format: json # Read JSON from stdin and write JSON to stdout.
+  # Define the options (parameters) of the app.
+  options:
+    strict: false
+    items:
+      - name: TimeLimit
+        option_type: float
+        default: 30.0
+        description: Maximum time in seconds to spend solving
+        required: false
+        additional_attributes:
+          min: 1.0
+          max: 3600.0
+          step: 1.0
+        ui:
+          control_type: slider
+          display_name: Time Limit
+      - name: MIPGap
+        option_type: float
+        default: 0.0001
+        description: Relative MIP optimality gap
+        required: false
+        additional_attributes:
+          min: 0.0
+          max: 1.0
+          step: 0.0001
+        ui:
+          control_type: slider
+          display_name: MIP Gap
+      - name: LogToConsole
+        option_type: int
+        default: 1
+        description: Control console logging (0=off, 1=on)
+        required: false
+        additional_attributes:
+          min: 0
+          max: 1
+          step: 1
+        ui:
+          control_type: slider
+          display_name: Log To Console
