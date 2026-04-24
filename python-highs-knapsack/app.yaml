@@ -13,4 +13,20 @@ files:
 configuration:
   # Specify the format the app reads and writes.
   content:
-    format: "json" # Read JSON from stdin and write JSON to stdout.
+    format: json # Read JSON from stdin and write JSON to stdout.
+  # Define the options (parameters) of the app.
+  options:
+    strict: false
+    items:
+      - name: duration
+        option_type: int
+        default: 30
+        description: Max runtime duration in seconds
+        required: false
+        additional_attributes:
+          min: 1
+          max: 300
+          step: 10
+        ui:
+          control_type: slider
+          display_name: Duration
