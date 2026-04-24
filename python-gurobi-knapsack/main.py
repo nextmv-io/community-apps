@@ -1,5 +1,6 @@
 import os
 import time
+from typing import Any
 
 import gurobipy as gp
 import nextmv
@@ -17,86 +18,73 @@ STATUS = {
 def main() -> None:
     """Entry point for the program."""
 
-    options = nextmv.Options(
-        nextmv.Option("input", str, "", "Path to input file. Default is stdin.", False),
-        nextmv.Option("output", str, "", "Path to output file. Default is stdout.", False),
-        nextmv.Option("duration", int, 30, "Max runtime duration (in seconds).", False),
-    )
-
-    input = nextmv.load(options=options, path=options.input)
+    loaded_input = nextmv.load()
+    options = loaded_input.options
 
     nextmv.log("Solving knapsack problem:")
-    nextmv.log(f"  - items: {len(input.data.get('items', []))}")
-    nextmv.log(f"  - capacity: {input.data.get('weight_capacity', 0)}")
+    nextmv.log(f"  - items: {len(loaded_input.data.get('items', []))}")
+    nextmv.log(f"  - capacity: {loaded_input.data.get('weight_capacity', 0)}")
 
-    model = DecisionModel()
-    output = model.solve(input)
-    nextmv.write(output, path=options.output)
+    solution, metrics = solve(loaded_input)
+    nextmv.write(solution=solution, metrics=metrics, options=options)
 
 
-class DecisionModel(nextmv.Model):
-    def solve(self, input: nextmv.Input) -> nextmv.Output:
-        """Solves the given problem and returns the solution."""
+def solve(loaded_input: nextmv.Input) -> tuple[dict[str, Any], dict[str, Any]]:
+    """Solves the given problem and returns the solution and metrics."""
 
-        start_time = time.time()
-        nextmv.redirect_stdout()  # Solver chatter is logged to stderr.
+    start_time = time.time()
+    nextmv.redirect_stdout()  # Solver chatter is logged to stderr.
 
-        # Creates the environment.
-        env = gp.Env(empty=True)
+    # Creates the environment.
+    env = gp.Env(empty=True)
 
-        # Read the license file, if available.
-        if os.path.isfile("gurobi.lic"):
-            env.readParams("gurobi.lic")
+    # Read the license file, if available.
+    if os.path.isfile("gurobi.lic"):
+        env.readParams("gurobi.lic")
 
-        # Creates the model.
-        env.start()
-        model = gp.Model(env=env)
-        model.Params.TimeLimit = input.options.duration
+    # Creates the model.
+    env.start()
+    model = gp.Model(env=env)
+    model.Params.TimeLimit = loaded_input.options.duration
 
-        # Initializes the linear sums.
-        weights = 0.0
-        values = 0.0
+    # Initializes the linear sums.
+    weights = 0.0
+    values = 0.0
 
-        # Creates the decision variables and adds them to the linear sums.
-        items = []
-        for item in input.data["items"]:
-            item_variable = model.addVar(vtype=GRB.BINARY, name=item["id"])
-            items.append({"item": item, "variable": item_variable})
-            weights += item_variable * item["weight"]
-            values += item_variable * item["value"]
+    # Creates the decision variables and adds them to the linear sums.
+    items = []
+    for item in loaded_input.data["items"]:
+        item_variable = model.addVar(vtype=GRB.BINARY, name=item["id"])
+        items.append({"item": item, "variable": item_variable})
+        weights += item_variable * item["weight"]
+        values += item_variable * item["value"]
 
-        # This constraint ensures the weight capacity of the knapsack will not be
-        # exceeded.
-        model.addConstr(weights <= input.data["weight_capacity"])
+    # This constraint ensures the weight capacity of the knapsack will not be
+    # exceeded.
+    model.addConstr(weights <= loaded_input.data["weight_capacity"])
 
-        # Sets the objective function: maximize the value of the chosen items.
-        model.setObjective(expr=values, sense=GRB.MAXIMIZE)
+    # Sets the objective function: maximize the value of the chosen items.
+    model.setObjective(expr=values, sense=GRB.MAXIMIZE)
 
-        # Solves the problem.
-        model.optimize()
+    # Solves the problem.
+    model.optimize()
 
-        # Determines which items were chosen.
-        chosen_items = [item["item"] for item in items if item["variable"].X > 0.9]
+    # Determines which items were chosen.
+    chosen_items = [item["item"] for item in items if item["variable"].X > 0.9]
 
-        input.options.provider = "gurobi"
-        statistics = nextmv.Statistics(
-            run=nextmv.RunStatistics(duration=time.time() - start_time),
-            result=nextmv.ResultStatistics(
-                duration=model.Runtime,
-                value=model.ObjVal,
-                custom={
-                    "status": STATUS.get(model.Status, "unknown"),
-                    "variables": model.NumVars,
-                    "constraints": model.NumConstrs,
-                },
-            ),
-        )
+    solution = {"items": chosen_items}
 
-        return nextmv.Output(
-            options=input.options,
-            solution={"items": chosen_items},
-            statistics=statistics,
-        )
+    metrics = {
+        "run_duration": time.time() - start_time,
+        "result_duration": model.Runtime,
+        "result_value": model.ObjVal,
+        "status": STATUS.get(model.Status, "unknown"),
+        "variables": model.NumVars,
+        "constraints": model.NumConstrs,
+        "provider": "gurobi",
+    }
+
+    return solution, metrics
 
 
 if __name__ == "__main__":
