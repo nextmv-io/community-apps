@@ -36,6 +36,12 @@ the files list.
       cat input.json | uv run main.py
       ```
 
+      Or with custom options:
+
+      ```bash
+      cat input.json | uv run main.py -duration 30 -provider highs
+      ```
+
 ## Next steps
 
 * Open `main.py` and modify the model.

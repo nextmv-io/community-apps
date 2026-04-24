@@ -34,11 +34,11 @@ To run the model locally, you must have a cuOpt-capable NVIDIA GPU. Open the
       cat input.json | uv run main.py
       ```
 
-   Or with custom options:
+      Or with custom options:
 
-    ```bash
-    cat input.json | uv run main.py -time_limit 5
-    ```
+      ```bash
+      cat input.json | uv run main.py -time_limit 5
+      ```
 
 ## Features
 

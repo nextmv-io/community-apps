@@ -49,11 +49,11 @@ the files list.
       cat input.json | uv run main.py
       ```
 
-   Or with custom options:
+      Or with custom options:
 
-    ```bash
-    cat input.json | uv run main.py -duration 30 -provider highs -modelpath . -runpath .
-    ```
+      ```bash
+      cat input.json | uv run main.py -duration 30 -provider highs -modelpath . -runpath .
+      ```
 
 ## Mirror running on Nextmv Cloud locally
 

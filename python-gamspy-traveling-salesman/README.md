@@ -33,11 +33,11 @@ while visiting each city exactly once.
       cat data.json | uv run main.py
       ```
 
-   Or with custom options:
+      Or with custom options:
 
-    ```bash
-    cat data.json | uv run main.py -maxnodes 10
-    ```
+      ```bash
+      cat data.json | uv run main.py -maxnodes 10
+      ```
 
 ## Next steps
 

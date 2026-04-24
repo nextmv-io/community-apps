@@ -35,11 +35,11 @@ key. Modify the `app.yaml` file to include the `gurobi.lic` in the files list.
       cat input.json | uv run main.py
       ```
 
-   Or with custom options:
+      Or with custom options:
 
-    ```bash
-    cat input.json | uv run main.py -duration 30
-    ```
+      ```bash
+      cat input.json | uv run main.py -duration 30
+      ```
 
 Alternatively, you may reference the `main.ipynb` Jupyter notebook which, in
 addition to running locally, showcases how to push the app and run it remotely.

@@ -31,11 +31,11 @@ CPLEX solver. We solve a knapsack Mixed Integer Programming problem.
       cat input.json | uv run main.py
       ```
 
-   Or with custom options:
+      Or with custom options:
 
-    ```bash
-    cat input.json | uv run main.py -duration 30
-    ```
+      ```bash
+      cat input.json | uv run main.py -duration 30
+      ```
 
 ## Next steps
 

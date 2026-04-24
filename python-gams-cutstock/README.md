@@ -33,11 +33,11 @@ the product demand.
       cat data.json | uv run main.py
       ```
 
-   Or with custom options:
+      Or with custom options:
 
-    ```bash
-    cat data.json | uv run main.py -raw_width 100 -max_pattern 35
-    ```
+      ```bash
+      cat data.json | uv run main.py -raw_width 100 -max_pattern 35
+      ```
 
 ## Next steps
 
