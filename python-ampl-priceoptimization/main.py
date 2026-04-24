@@ -1,10 +1,10 @@
 import os
 import time
 from platform import uname
+from typing import Any
 
 import nextmv
 from amplpy import AMPL, modules
-from visuals import create_visuals
 
 # Duration parameter for the solver.
 SUPPORTED_PROVIDER_DURATIONS = {
@@ -33,141 +33,124 @@ STATUS = [
 def main() -> None:
     """Entry point for the program."""
 
-    options = nextmv.Options(
-        nextmv.Option("input", str, "", "Path to input file. Default is stdin.", False),
-        nextmv.Option("output", str, "", "Path to output file. Default is stdout.", False),
-        nextmv.Option("duration", int, 30, "Max runtime duration (in seconds).", False),
-        nextmv.Option("provider", str, "highs", "Solver provider.", False),
-        nextmv.Option("model", str, ".", "Path to folder containing the .mod file.", False),
-    )
-
-    input = nextmv.load(options=options, path=options.input)
+    loaded_input = nextmv.load()
+    options = loaded_input.options
 
     nextmv.log("Solving price optimization problem:")
-    nextmv.log(f"  - regions: {len(input.data.get('regions', []))}")
+    nextmv.log(f"  - regions: {len(loaded_input.data.get('regions', []))}")
 
-    model = DecisionModel()
-    output = model.solve(input)
-    nextmv.write(output, path=options.output)
+    solution, metrics = solve(loaded_input)
+    nextmv.write(solution=solution, metrics=metrics, options=options)
 
 
-class DecisionModel(nextmv.Model):
-    def solve(self, input: nextmv.Input) -> nextmv.Output:
-        """Solves the given problem and returns the solution."""
+def solve(loaded_input: nextmv.Input) -> tuple[dict[str, Any], dict[str, Any]]:
+    """Solves the given problem and returns the solution and metrics."""
 
-        start_time = time.time()
-        nextmv.redirect_stdout()  # Solver chatter is logged to stderr.
+    start_time = time.time()
+    nextmv.redirect_stdout()  # Solver chatter is logged to stderr.
 
-        # Activate license.
-        license_used = activate_license()
-        input.options.license_used = license_used
+    options = loaded_input.options
 
-        # Defines the model.
-        ampl = AMPL()
-        ampl.reset()
-        ampl.read(f"{input.options.model}/ampl_model.mod")
+    # Activate license.
+    license_used = activate_license()
 
-        # Sets the solver and options.
-        provider = input.options.provider
-        ampl.option["solver"] = provider
-        if provider in SUPPORTED_PROVIDER_DURATIONS.keys():
-            ampl.option[f"{provider}_options"] = f"{SUPPORTED_PROVIDER_DURATIONS[provider]}={input.options.duration}"
+    # Defines the model.
+    ampl = AMPL()
+    ampl.reset()
+    ampl.read(f"{options.model}/ampl_model.mod")
 
-        # Set the data on the model.
-        ampl.set["R"] = input.data["regions"]
-        ampl.param["cost_waste"] = input.data["cost_per_wasted_product"]
-        ampl.param["cost_transport"] = {
-            r: input.data["transport_costs"][i] for i, r in enumerate(input.data["regions"])
+    # Sets the solver and options.
+    provider = options.provider
+    ampl.option["solver"] = provider
+    if provider in SUPPORTED_PROVIDER_DURATIONS.keys():
+        ampl.option[f"{provider}_options"] = f"{SUPPORTED_PROVIDER_DURATIONS[provider]}={options.duration}"
+
+    # Set the data on the model.
+    ampl.set["R"] = loaded_input.data["regions"]
+    ampl.param["cost_waste"] = loaded_input.data["cost_per_wasted_product"]
+    ampl.param["cost_transport"] = {
+        r: loaded_input.data["transport_costs"][i] for i, r in enumerate(loaded_input.data["regions"])
+    }
+    ampl.param["price_min"] = loaded_input.data["minimum_product_price"]
+    ampl.param["price_max"] = loaded_input.data["maximum_product_price"]
+    ampl.param["quantity_min"] = {
+        r: loaded_input.data["minimum_product_allocations"][i] for i, r in enumerate(loaded_input.data["regions"])
+    }
+    ampl.param["quantity_max"] = {
+        r: loaded_input.data["maximum_product_allocations"][i] for i, r in enumerate(loaded_input.data["regions"])
+    }
+    ampl.param["total_amount_of_supply"] = loaded_input.data["total_amount_of_supply"]
+    ampl.param["coefficients_intercept"] = loaded_input.data["coefficients"]["intercept"]
+    ampl.param["coefficients_region"] = {
+        r: loaded_input.data["coefficients"]["region"][i] for i, r in enumerate(loaded_input.data["regions"])
+    }
+    ampl.param["coefficients_price"] = loaded_input.data["coefficients"]["price"]
+    ampl.param["coefficients_year_index"] = loaded_input.data["coefficients"]["year_index"]
+    ampl.param["coefficients_peak"] = loaded_input.data["coefficients"]["peak"]
+    ampl.param["data_year"] = loaded_input.data["year"]
+    ampl.param["data_peak"] = loaded_input.data["peak"]
+
+    # Solves the problem. Verbose mode is turned off to avoid printing to
+    # stdout. Only the output should be printed to stdout.
+    ampl.solve(verbose=False)
+
+    # Convert to solution format.
+    objective_val = ampl.get_objective("obj")
+    solution = {}
+    if objective_val:
+        solution = {
+            "regions": loaded_input.data["regions"],
+            "price": {r: round(ampl.get_variable("price")[r].value(), 2) for r in ampl.get_set("R")},
+            "quantity": {r: round(ampl.get_variable("quantity")[r].value(), 8) for r in ampl.get_set("R")},
         }
-        ampl.param["price_min"] = input.data["minimum_product_price"]
-        ampl.param["price_max"] = input.data["maximum_product_price"]
-        ampl.param["quantity_min"] = {
-            r: input.data["minimum_product_allocations"][i] for i, r in enumerate(input.data["regions"])
-        }
-        ampl.param["quantity_max"] = {
-            r: input.data["maximum_product_allocations"][i] for i, r in enumerate(input.data["regions"])
-        }
-        ampl.param["total_amount_of_supply"] = input.data["total_amount_of_supply"]
-        ampl.param["coefficients_intercept"] = input.data["coefficients"]["intercept"]
-        ampl.param["coefficients_region"] = {
-            r: input.data["coefficients"]["region"][i] for i, r in enumerate(input.data["regions"])
-        }
-        ampl.param["coefficients_price"] = input.data["coefficients"]["price"]
-        ampl.param["coefficients_year_index"] = input.data["coefficients"]["year_index"]
-        ampl.param["coefficients_peak"] = input.data["coefficients"]["peak"]
-        ampl.param["data_year"] = input.data["year"]
-        ampl.param["data_peak"] = input.data["peak"]
 
-        # Solves the problem. Verbose mode is turned off to avoid printing to
-        # stdout. Only the output should be printed to stdout.
-        ampl.solve(verbose=False)
+    solve_result = ampl.solve_result_num
+    status = "unknown"
+    for s in STATUS:
+        lb = s.get("lb")
+        ub = s.get("ub")
+        if lb is not None and ub is not None and lb <= solve_result <= ub:
+            status = s.get("status")
+            break
 
-        # Convert to solution format.
-        objective_val = ampl.get_objective("obj")
-        solution = {}
-        if objective_val:
-            solution = {
-                "regions": input.data["regions"],
-                "price": {r: round(ampl.get_variable("price")[r].value(), 2) for r in ampl.get_set("R")},
-                "quantity": {r: round(ampl.get_variable("quantity")[r].value(), 8) for r in ampl.get_set("R")},
-            }
+    # calculate expected demand for each region
+    price_solution = ampl.getVariable("price").getValues().toList()
+    coefficients = loaded_input.data["coefficients"]
+    expected_demand = {}
 
-        solve_result = ampl.solve_result_num
-        status = "unknown"
-        for s in STATUS:
-            lb = s.get("lb")
-            ub = s.get("ub")
-            if lb is not None and ub is not None and lb <= solve_result <= ub:
-                status = s.get("status")
-                break
-
-        # calculate expected demand for each region
-        price_solution = ampl.getVariable("price").getValues().toList()
-        coefficients = input.data["coefficients"]
-        expected_demand = {}
-
-        for r in range(len(input.data["regions"])):
-            expected_demand[input.data["regions"][r]] = round(
-                (
-                    coefficients["intercept"]
-                    + coefficients["price"] * price_solution[r][1]
-                    + coefficients["region"][r]
-                    + coefficients["year_index"] * (input.data["year"] - 2015)
-                    + coefficients["peak"] * input.data["peak"]
-                ),
-                8,
-            )
-        expected_sales = {r: round(ampl.get_variable("sales")[r].value(), 8) for r in ampl.get_set("R")}
-        expected_waste = {r: round(ampl.get_variable("waste")[r].value(), 8) for r in ampl.get_set("R")}
-
-        # Convert -0.0 to 0.0
-        expected_sales = {r: 0.0 if v == -0.0 else v for r, v in expected_sales.items()}
-        expected_waste = {r: 0.0 if v == -0.0 else v for r, v in expected_waste.items()}
-
-        statistics = nextmv.Statistics(
-            run=nextmv.RunStatistics(duration=time.time() - start_time),
-            result=nextmv.ResultStatistics(
-                duration=ampl.get_value("_total_solve_time"),
-                value=objective_val.value(),
-                custom={
-                    "status": status,
-                    "variables": ampl.get_value("_nvars"),
-                    "constraints": ampl.get_value("_ncons"),
-                    "expected_demand": expected_demand,
-                    "expected_sales": expected_sales,
-                    "expected_waste": expected_waste,
-                },
+    for r in range(len(loaded_input.data["regions"])):
+        expected_demand[loaded_input.data["regions"][r]] = round(
+            (
+                coefficients["intercept"]
+                + coefficients["price"] * price_solution[r][1]
+                + coefficients["region"][r]
+                + coefficients["year_index"] * (loaded_input.data["year"] - 2015)
+                + coefficients["peak"] * loaded_input.data["peak"]
             ),
+            8,
         )
+    expected_sales = {r: round(ampl.get_variable("sales")[r].value(), 8) for r in ampl.get_set("R")}
+    expected_waste = {r: round(ampl.get_variable("waste")[r].value(), 8) for r in ampl.get_set("R")}
 
-        assets = create_visuals(solution, statistics)
+    # Convert -0.0 to 0.0
+    expected_sales = {r: 0.0 if v == -0.0 else v for r, v in expected_sales.items()}
+    expected_waste = {r: 0.0 if v == -0.0 else v for r, v in expected_waste.items()}
 
-        return nextmv.Output(
-            options=input.options,
-            solution=solution,
-            statistics=statistics,
-            assets=assets,
-        )
+    # Create metrics dictionary
+    metrics: dict[str, Any] = {
+        "run_duration": time.time() - start_time,
+        "solve_duration": ampl.get_value("_total_solve_time"),
+        "objective_value": objective_val.value(),
+        "status": status,
+        "variables": ampl.get_value("_nvars"),
+        "constraints": ampl.get_value("_ncons"),
+        "expected_demand": expected_demand,
+        "expected_sales": expected_sales,
+        "expected_waste": expected_waste,
+        "license_used": license_used,
+    }
+
+    return solution, metrics
 
 
 def activate_license() -> str:
