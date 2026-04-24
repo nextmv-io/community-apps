@@ -1,0 +1,9 @@
+[project]
+name = "python-gamspy-traveling-salesman"
+version = "0.1.0"
+requires-python = ">=3.11"
+dependencies = [
+    "gamspy==1.20.0",
+    "networkx==3.5",
+    "nextmv==1.7.2",
+]

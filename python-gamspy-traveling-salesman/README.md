@@ -7,15 +7,36 @@ while visiting each city exactly once.
 
 1. Install packages.
 
-    ```bash
-    pip3 install -r requirements.txt
-    ```
+   * With `pip`
 
-1. Run the app.
+      ```bash
+      pip install .
+      ```
+
+   * With `uv`
+  
+      ```bash
+      uv sync
+      ```
+
+2. Run the app.
+
+   * With `python`
+
+      ```bash
+      cat data.json | python main.py
+      ```
+
+   * With `uv`
+
+      ```bash
+      cat data.json | uv run main.py
+      ```
+
+   Or with custom options:
 
     ```bash
-    python3 main.py -input data.json -output output.json \
-      -maxnodes 5
+    cat data.json | uv run main.py -maxnodes 10
     ```
 
 ## Next steps

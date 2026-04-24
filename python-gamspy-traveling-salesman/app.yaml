@@ -9,3 +9,25 @@ python:
 files:
   - main.py
   - tsp.py
+
+# Application configurations.
+configuration:
+  # Define the content format of the app, one of: json, multi-file.
+  content:
+    format: json
+  # Define the options (parameters) of the app.
+  options:
+    strict: false
+    items:
+      - name: maxnodes
+        option_type: int
+        default: 5
+        description: Maximum number of nodes to solve the model with
+        required: false
+        additional_attributes:
+          min: 1
+          max: 100
+          step: 1
+        ui:
+          control_type: slider
+          display_name: Maximum Nodes
