@@ -62,6 +62,9 @@ class DecisionModel(nextmv.Model):
         # Creates the solver.
         solver = pyo.SolverFactory(provider)
         solver.options[SUPPORTED_PROVIDER_DURATIONS[provider]] = input.options.duration
+        # Sometimes solver needs more time to reply with its version, we cut it some slack
+        if hasattr(solver, "_version_timeout"):
+            solver._version_timeout = 10
 
         # Initializes the linear sums.
         weights = 0.0
