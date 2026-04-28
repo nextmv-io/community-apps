@@ -1,4 +1,4 @@
-# This manifest holds the information the app needs to run on the Nextmv Cloud.
+# This manifest holds the information the app needs to run on Nextmv.
 type: python
 runtime: ghcr.io/nextmv-io/runtime/python:3.11
 python:
@@ -13,4 +13,13 @@ files:
 configuration:
   # Specify the format the app reads and writes.
   content:
-    format: "json" # Read JSON from stdin and write JSON to stdout.
+    format: json # Read JSON from stdin and write JSON to stdout.
+  # Define the options (parameters) of the app.
+  options:
+    strict: false
+    items:
+      - name: duration
+        option_type: int
+        default: 30
+        description: Max solver runtime in seconds
+        required: false
