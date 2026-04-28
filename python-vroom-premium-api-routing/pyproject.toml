@@ -1,0 +1,10 @@
+[project]
+name = "python-vroom-premium-api-routing"
+version = "0.1.0"
+requires-python = ">=3.10"
+dependencies = [
+    "nextmv==1.7.2",
+    "plotly==6.0.1",
+    "polyline==1.4.0",
+    "requests==2.32.4",
+]
