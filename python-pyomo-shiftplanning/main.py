@@ -24,180 +24,162 @@ STATUS = {
 def main() -> None:
     """Entry point for the program."""
 
-    options = nextmv.Options(
-        nextmv.Option("input", str, "", "Path to input file. Default is stdin.", False),
-        nextmv.Option("output", str, "", "Path to output file. Default is stdout.", False),
-        nextmv.Option("duration", int, 30, "Max runtime duration (in seconds).", False),
-        nextmv.Option("provider", str, "cbc", "Solver provider.", False),
-    )
-
-    input = nextmv.load(options=options, path=options.input)
+    loaded_input = nextmv.load()
+    options = loaded_input.options
 
     nextmv.log("Solving shift-planning:")
-    nextmv.log(f"  - shifts-templates: {len(input.data.get('shifts', []))}")
-    nextmv.log(f"  - demands: {len(input.data.get('demands', []))}")
+    nextmv.log(f"  - shifts-templates: {len(loaded_input.data.get('shifts', []))}")
+    nextmv.log(f"  - demands: {len(loaded_input.data.get('demands', []))}")
 
-    model = DecisionModel()
-    output = model.solve(input)
-    nextmv.write(output, path=options.output)
+    solution, metrics = solve(loaded_input)
+    nextmv.write(solution=solution, metrics=metrics, options=options)
 
 
-class DecisionModel(nextmv.Model):
-    def solve(self, input: nextmv.Input) -> nextmv.Output:
-        """Solves the given problem and returns the solution."""
+def solve(loaded_input: nextmv.Input) -> tuple[dict[str, Any], dict[str, Any]]:
+    """Solves the given problem and returns the solution and metrics."""
 
-        start_time = time.time()
-        nextmv.redirect_stdout()  # Solver chatter is logged to stderr.
+    start_time = time.time()
+    nextmv.redirect_stdout()  # Solver chatter is logged to stderr.
 
-        # Make sure the provider is supported.
-        provider = input.options.provider
-        if provider not in SUPPORTED_PROVIDER_DURATIONS:
-            raise ValueError(
-                f"Unsupported provider: {provider}. The supported providers are: "
-                f"{', '.join(SUPPORTED_PROVIDER_DURATIONS.keys())}"
-            )
-
-        # Create the Pyomo model
-        model = pyo.ConcreteModel()
-
-        # Prepare data
-        shifts, demands = convert_data(input.data)
-        input_options = input.data.get("options", {})
-
-        # Generate concrete shifts from shift templates.
-        concrete_shifts = get_concrete_shifts(shifts)
-
-        # Determine all unique time periods in which demands occur and the shifts covering them.
-        periods = get_demand_coverage_periods(concrete_shifts, demands)
-
-        # Determine the time we need to cover.
-        required_hours = sum((p.end_time - p.start_time).seconds for p in periods) / 3600
-
-        # Create integer variables indicating how many times a shift is planned.
-        model.x_assign = pyo.Var([(s["id"],) for s in concrete_shifts], within=pyo.NonNegativeIntegers)
-
-        # Bound assignment variables by the minimum and maximum number of workers.
-        for s in concrete_shifts:
-            model.x_assign[s["id"]].setlb(s["min_workers"])
-            if s["max_workers"] >= 0:
-                model.x_assign[s["id"]].setub(s["max_workers"])
-
-        # Create variables for tracking various costs.
-        if "under_supply_cost" in input_options:
-            model.x_under = pyo.Var([(p,) for p in periods], within=pyo.NonNegativeIntegers)
-            model.underSupply = pyo.Var(within=pyo.NonNegativeIntegers)
-        if "over_supply_cost" in input_options:
-            model.overSupply = pyo.Var(within=pyo.NonNegativeIntegers)
-        model.shift_cost = pyo.Var(within=pyo.NonNegativeIntegers)
-
-        # Objective function: minimize the cost of the planned shifts
-        obj_expr = 0
-        if "under_supply_cost" in input_options:
-            obj_expr += sum(model.x_under[p] for p in periods) * input_options["under_supply_cost"]
-        if "over_supply_cost" in input_options:
-            obj_expr += model.overSupply * input_options["over_supply_cost"]
-        obj_expr += model.shift_cost
-        model.objective = pyo.Objective(expr=obj_expr, sense=pyo.minimize)
-
-        # Constraints
-
-        # We need to make sure that all demands are covered (or track under supply).
-        for p in periods:
-            constraint_name = f"DemandCover_{p.start_time}_{p.end_time}_{p.qualification}"
-            # Add the new constraint
-            model.add_component(
-                constraint_name,
-                pyo.Constraint(
-                    expr=sum([model.x_assign[s["id"]] for s in p.covering_shifts]) == sum(d["count"] for d in p.demands)
-                ),
-            )
-
-        # Track under supply
-        if "under_supply_cost" in input_options:
-            model.under_supply = pyo.Constraint(
-                expr=model.underSupply
-                == sum(model.x_under[p] * (p.end_time - p.start_time).seconds / 3600 for p in periods)
-            )
-
-        # Track over supply
-        if "over_supply_cost" in input_options:
-            model.over_supply = pyo.Constraint(
-                expr=model.overSupply
-                == sum(
-                    model.x_assign[s["id"]] * (s["end_time"] - s["start_time"]).seconds / 3600 for s in concrete_shifts
-                )
-                - required_hours
-            )
-
-        # Track shift cost
-        model.shift_cost_track = pyo.Constraint(
-            expr=model.shift_cost == sum(model.x_assign[s["id"]] * s["cost"] for s in concrete_shifts)
+    # Make sure the provider is supported.
+    provider = loaded_input.options.provider
+    if provider not in SUPPORTED_PROVIDER_DURATIONS:
+        raise ValueError(
+            f"Unsupported provider: {provider}. The supported providers are: "
+            f"{', '.join(SUPPORTED_PROVIDER_DURATIONS.keys())}"
         )
 
-        # Creates the solver.
-        solver = pyo.SolverFactory(provider)
-        solver.options[SUPPORTED_PROVIDER_DURATIONS[provider]] = input.options.duration
+    # Create the Pyomo model
+    model = pyo.ConcreteModel()
 
-        # Solve the model.
-        results = solver.solve(model, tee=False)  # Set tee to True for Pyomo logging.
+    # Prepare data
+    shifts, demands = convert_data(loaded_input.data)
+    input_options = loaded_input.data.get("options", {})
 
-        # Convert to solution format.
-        val = pyo.value(model.objective, exception=False)
-        schedule = {
-            "planned_shifts": [
-                {
-                    "id": s["id"],
-                    "shift_id": s["shift_id"],
-                    "time_id": s["time_id"],
-                    "start_time": s["start_time"],
-                    "end_time": s["end_time"],
-                    "qualification": s["qualification"],
-                    "count": int(round(model.x_assign[s["id"]].value)),
-                }
-                for s in concrete_shifts
-                if model.x_assign[s["id"]].value > 0.5
-            ]
-            if val
-            else [],
-        }
+    # Generate concrete shifts from shift templates.
+    concrete_shifts = get_concrete_shifts(shifts)
 
-        under_supply = 0
-        over_supply = 0
-        under_supply_cost = 0
-        over_supply_cost = 0
-        if val:
-            if "under_supply_cost" in input_options:
-                under_supply = model.underSupply()
-                under_supply_cost = under_supply * input_options["under_supply_cost"]
-            if "over_supply_cost" in input_options:
-                over_supply = model.overSupply()
-                over_supply_cost = over_supply * input_options["over_supply_cost"]
+    # Determine all unique time periods in which demands occur and the shifts covering them.
+    periods = get_demand_coverage_periods(concrete_shifts, demands)
 
-        statistics = nextmv.Statistics(
-            run=nextmv.RunStatistics(duration=time.time() - start_time),
-            result=nextmv.ResultStatistics(
-                duration=results.solver.time,
-                value=val,
-                custom={
-                    "status": STATUS.get(results.solver.termination_condition, "unknown"),
-                    "variables": model.nvariables(),
-                    "constraints": model.nconstraints(),
-                    "planned_shifts": len(schedule["planned_shifts"]),
-                    "planned_count": sum(s["count"] for s in schedule["planned_shifts"]),
-                    "shift_cost": model.shift_cost() if val else 0.0,
-                    "under_supply": under_supply,
-                    "over_supply": over_supply,
-                    "over_supply_cost": over_supply_cost,
-                    "under_supply_cost": under_supply_cost,
-                },
+    # Determine the time we need to cover.
+    required_hours = sum((p.end_time - p.start_time).seconds for p in periods) / 3600
+
+    # Create integer variables indicating how many times a shift is planned.
+    model.x_assign = pyo.Var([(s["id"],) for s in concrete_shifts], within=pyo.NonNegativeIntegers)
+
+    # Bound assignment variables by the minimum and maximum number of workers.
+    for s in concrete_shifts:
+        model.x_assign[s["id"]].setlb(s["min_workers"])
+        if s["max_workers"] >= 0:
+            model.x_assign[s["id"]].setub(s["max_workers"])
+
+    # Create variables for tracking various costs.
+    if "under_supply_cost" in input_options:
+        model.x_under = pyo.Var([(p,) for p in periods], within=pyo.NonNegativeIntegers)
+        model.underSupply = pyo.Var(within=pyo.NonNegativeIntegers)
+    if "over_supply_cost" in input_options:
+        model.overSupply = pyo.Var(within=pyo.NonNegativeIntegers)
+    model.shift_cost = pyo.Var(within=pyo.NonNegativeIntegers)
+
+    # Objective function: minimize the cost of the planned shifts
+    obj_expr = 0
+    if "under_supply_cost" in input_options:
+        obj_expr += sum(model.x_under[p] for p in periods) * input_options["under_supply_cost"]
+    if "over_supply_cost" in input_options:
+        obj_expr += model.overSupply * input_options["over_supply_cost"]
+    obj_expr += model.shift_cost
+    model.objective = pyo.Objective(expr=obj_expr, sense=pyo.minimize)
+
+    # Constraints
+
+    # We need to make sure that all demands are covered (or track under supply).
+    for p in periods:
+        constraint_name = f"DemandCover_{p.start_time}_{p.end_time}_{p.qualification}"
+        # Add the new constraint
+        model.add_component(
+            constraint_name,
+            pyo.Constraint(
+                expr=sum([model.x_assign[s["id"]] for s in p.covering_shifts]) == sum(d["count"] for d in p.demands)
             ),
         )
 
-        return nextmv.Output(
-            options=input.options,
-            solution=schedule,
-            statistics=statistics,
+    # Track under supply
+    if "under_supply_cost" in input_options:
+        model.under_supply = pyo.Constraint(
+            expr=model.underSupply
+            == sum(model.x_under[p] * (p.end_time - p.start_time).seconds / 3600 for p in periods)
         )
+
+    # Track over supply
+    if "over_supply_cost" in input_options:
+        model.over_supply = pyo.Constraint(
+            expr=model.overSupply
+            == sum(model.x_assign[s["id"]] * (s["end_time"] - s["start_time"]).seconds / 3600 for s in concrete_shifts)
+            - required_hours
+        )
+
+    # Track shift cost
+    model.shift_cost_track = pyo.Constraint(
+        expr=model.shift_cost == sum(model.x_assign[s["id"]] * s["cost"] for s in concrete_shifts)
+    )
+
+    # Creates the solver.
+    solver = pyo.SolverFactory(provider)
+    solver.options[SUPPORTED_PROVIDER_DURATIONS[provider]] = loaded_input.options.duration
+
+    # Solve the model.
+    results = solver.solve(model, tee=False)  # Set tee to True for Pyomo logging.
+
+    # Convert to solution format.
+    val = pyo.value(model.objective, exception=False)
+    schedule = {
+        "planned_shifts": [
+            {
+                "id": s["id"],
+                "shift_id": s["shift_id"],
+                "time_id": s["time_id"],
+                "start_time": s["start_time"],
+                "end_time": s["end_time"],
+                "qualification": s["qualification"],
+                "count": int(round(model.x_assign[s["id"]].value)),
+            }
+            for s in concrete_shifts
+            if model.x_assign[s["id"]].value > 0.5
+        ]
+        if val
+        else [],
+    }
+
+    under_supply = 0
+    over_supply = 0
+    under_supply_cost = 0
+    over_supply_cost = 0
+    if val:
+        if "under_supply_cost" in input_options:
+            under_supply = model.underSupply()
+            under_supply_cost = under_supply * input_options["under_supply_cost"]
+        if "over_supply_cost" in input_options:
+            over_supply = model.overSupply()
+            over_supply_cost = over_supply * input_options["over_supply_cost"]
+
+    metrics = {
+        "run_duration": time.time() - start_time,
+        "solver_duration": results.solver.time,
+        "objective_value": val,
+        "status": STATUS.get(results.solver.termination_condition, "unknown"),
+        "variables": model.nvariables(),
+        "constraints": model.nconstraints(),
+        "planned_shifts": len(schedule["planned_shifts"]),
+        "planned_count": sum(s["count"] for s in schedule["planned_shifts"]),
+        "shift_cost": model.shift_cost() if val else 0.0,
+        "under_supply": under_supply,
+        "over_supply": over_supply,
+        "over_supply_cost": over_supply_cost,
+        "under_supply_cost": under_supply_cost,
+    }
+
+    return schedule, metrics
 
 
 class UniqueQualificationDemandPeriod:
