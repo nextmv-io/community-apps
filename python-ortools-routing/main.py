@@ -11,220 +11,200 @@ from ortools.constraint_solver import pywrapcp, routing_enums_pb2
 def main() -> None:
     """Entry point for the program."""
 
-    options = nextmv.Options(
-        nextmv.Option("input", str, "", "Path to input file. Default is stdin.", False),
-        nextmv.Option("output", str, "", "Path to output file. Default is stdout.", False),
-        nextmv.Option("duration", int, 30, "Max runtime duration (in seconds).", False),
-    )
-
     # Read and prepare the input data.
-    input = nextmv.load(options=options, path=options.input)
-    apply_defaults(input.data)
-    validate_input(input.data)
-    process_distance_matrix(input.data)
-    process_duration_matrix(input.data)
+    loaded_input = nextmv.load()
+    options = loaded_input.options
+    apply_defaults(loaded_input.data)
+    validate_input(loaded_input.data)
+    process_distance_matrix(loaded_input.data)
+    process_duration_matrix(loaded_input.data)
 
     nextmv.log("Solving routing problem:")
-    nextmv.log(f"  - vehicles: {len(input.data.get('vehicles', []))}")
-    nextmv.log(f"  - stops: {len(input.data.get('stops', []))}")
+    nextmv.log(f"  - vehicles: {len(loaded_input.data.get('vehicles', []))}")
+    nextmv.log(f"  - stops: {len(loaded_input.data.get('stops', []))}")
 
-    model = DecisionModel()
-    output = model.solve(input)
-    nextmv.write(output, path=options.output)
+    solution, metrics = solve(loaded_input, options)
+    nextmv.write(solution=solution, metrics=metrics, options=options)
 
 
-class DecisionModel(nextmv.Model):
-    def solve(self, input: nextmv.Input) -> nextmv.Output:
-        """Solves the given problem and returns the solution."""
+def solve(input: nextmv.Input, options: nextmv.Options) -> tuple[dict[str, Any], dict[str, Any]]:
+    """Solves the given problem and returns the solution and metrics."""
 
-        start_time = time.time()
-        nextmv.redirect_stdout()  # Solver chatter is logged to stderr.
+    start_time = time.time()
+    nextmv.redirect_stdout()  # Solver chatter is logged to stderr.
 
-        # Prepare data.
-        speeds = [v["speed"] if "speed" in v else 1 for v in input.data["vehicles"]]
-        capacities = [int(round(v["capacity"])) if "capacity" in v else 0 for v in input.data["vehicles"]]
-        quantities = [int(round(s["quantity"])) if "quantity" in s else 0 for s in input.data["stops"]]
-        quantities += [0] * (len(input.data["vehicles"]) * 2)
-        durations = [int(round(s["duration"])) if "duration" in s else 0 for s in input.data["stops"]]
-        durations += [0] * (len(input.data["vehicles"]) * 2)
-        max_duration_big_m = 365 * 24 * 60 * 60  # 1 year - used to remove the max_duration constraint if not provided
-        max_durations = [
-            v["max_duration"] if "max_duration" in v else max_duration_big_m for v in input.data["vehicles"]
-        ]
-        start_indices = [len(input.data["stops"]) + i * 2 for i in range(len(input.data["vehicles"]))]
-        end_indices = [len(input.data["stops"]) + i * 2 + 1 for i in range(len(input.data["vehicles"]))]
-        duration_matrix = input.data["duration_matrix"] if "duration_matrix" in input.data else None
-        distance_matrix = input.data["distance_matrix"] if "distance_matrix" in input.data else None
+    # Prepare data.
+    speeds = [v["speed"] if "speed" in v else 1 for v in input.data["vehicles"]]
+    capacities = [int(round(v["capacity"])) if "capacity" in v else 0 for v in input.data["vehicles"]]
+    quantities = [int(round(s["quantity"])) if "quantity" in s else 0 for s in input.data["stops"]]
+    quantities += [0] * (len(input.data["vehicles"]) * 2)
+    durations = [int(round(s["duration"])) if "duration" in s else 0 for s in input.data["stops"]]
+    durations += [0] * (len(input.data["vehicles"]) * 2)
+    max_duration_big_m = 365 * 24 * 60 * 60  # 1 year - used to remove the max_duration constraint if not provided
+    max_durations = [v["max_duration"] if "max_duration" in v else max_duration_big_m for v in input.data["vehicles"]]
+    start_indices = [len(input.data["stops"]) + i * 2 for i in range(len(input.data["vehicles"]))]
+    end_indices = [len(input.data["stops"]) + i * 2 + 1 for i in range(len(input.data["vehicles"]))]
+    duration_matrix = input.data["duration_matrix"] if "duration_matrix" in input.data else None
+    distance_matrix = input.data["distance_matrix"] if "distance_matrix" in input.data else None
 
-        # Create the routing index manager.
-        manager = pywrapcp.RoutingIndexManager(
-            len(input.data["stops"]) + 2 * len(input.data["vehicles"]),
-            len(input.data["vehicles"]),
-            start_indices,
-            end_indices,
-        )
+    # Create the routing index manager.
+    manager = pywrapcp.RoutingIndexManager(
+        len(input.data["stops"]) + 2 * len(input.data["vehicles"]),
+        len(input.data["vehicles"]),
+        start_indices,
+        end_indices,
+    )
 
-        # Create Routing Model.
-        routing = pywrapcp.RoutingModel(manager)
+    # Create Routing Model.
+    routing = pywrapcp.RoutingModel(manager)
 
-        # Define transit callbacks.
-        def distance_matrix_callback(from_index: int, to_index: int, speed: float):
-            """Returns the duration between the two nodes based on the distance_matrix."""
-            from_node, to_node = manager.IndexToNode(from_index), manager.IndexToNode(to_index)
-            duration = int(distance_matrix[from_node][to_node] / speed + durations[to_node])
-            return duration
+    # Define transit callbacks.
+    def distance_matrix_callback(from_index: int, to_index: int, speed: float):
+        """Returns the duration between the two nodes based on the distance_matrix."""
+        from_node, to_node = manager.IndexToNode(from_index), manager.IndexToNode(to_index)
+        duration = int(distance_matrix[from_node][to_node] / speed + durations[to_node])
+        return duration
 
-        def duration_matrix_callback(from_index: int, to_index: int):
-            """Returns the duration between the two nodes based on the duration_matrix."""
-            from_node, to_node = manager.IndexToNode(from_index), manager.IndexToNode(to_index)
-            duration = duration_matrix[from_node][to_node] + durations[to_node]
-            return duration
+    def duration_matrix_callback(from_index: int, to_index: int):
+        """Returns the duration between the two nodes based on the duration_matrix."""
+        from_node, to_node = manager.IndexToNode(from_index), manager.IndexToNode(to_index)
+        duration = duration_matrix[from_node][to_node] + durations[to_node]
+        return duration
 
-        # Create and register the duration callback.
-        duration_callbacks = [
-            duration_matrix_callback
-            if "duration_matrix" in input.data
-            else functools.partial(distance_matrix_callback, speed=speed)
-            for speed in speeds
-        ]
-        transit_callbacks = [routing.RegisterTransitCallback(callback) for callback in duration_callbacks]
-        routing.AddDimensionWithVehicleTransitAndCapacity(
-            transit_callbacks,  # transit callback for each vehicle
-            0,  # slack
-            max_durations,  # vehicle maximum travel durations
-            True,  # start cumul to zero
-            "Time",  # dimension name
-        )
-        for i in range(len(input.data["vehicles"])):
-            routing.SetArcCostEvaluatorOfVehicle(transit_callbacks[i], i)
+    # Create and register the duration callback.
+    duration_callbacks = [
+        duration_matrix_callback
+        if "duration_matrix" in input.data
+        else functools.partial(distance_matrix_callback, speed=speed)
+        for speed in speeds
+    ]
+    transit_callbacks = [routing.RegisterTransitCallback(callback) for callback in duration_callbacks]
+    routing.AddDimensionWithVehicleTransitAndCapacity(
+        transit_callbacks,  # transit callback for each vehicle
+        0,  # slack
+        max_durations,  # vehicle maximum travel durations
+        True,  # start cumul to zero
+        "Time",  # dimension name
+    )
+    for i in range(len(input.data["vehicles"])):
+        routing.SetArcCostEvaluatorOfVehicle(transit_callbacks[i], i)
 
-        # Define capacity callback.
-        def capacity_callback(from_index):
-            """Returns the quantity to pickup/dropoff at the node."""
-            return quantities[manager.IndexToNode(from_index)]
+    # Define capacity callback.
+    def capacity_callback(from_index):
+        """Returns the quantity to pickup/dropoff at the node."""
+        return quantities[manager.IndexToNode(from_index)]
 
-        # Create and register the capacity callback.
-        demand_callback_index = routing.RegisterUnaryTransitCallback(capacity_callback)
-        routing.AddDimensionWithVehicleCapacity(
-            demand_callback_index,
-            0,  # null capacity slack
-            capacities,  # vehicle max capacities
-            True,  # start cumul at zero
-            "Capacity",
-        )
+    # Create and register the capacity callback.
+    demand_callback_index = routing.RegisterUnaryTransitCallback(capacity_callback)
+    routing.AddDimensionWithVehicleCapacity(
+        demand_callback_index,
+        0,  # null capacity slack
+        capacities,  # vehicle max capacities
+        True,  # start cumul at zero
+        "Capacity",
+    )
 
-        # Setting first solution heuristic.
-        search_parameters = pywrapcp.DefaultRoutingSearchParameters()
-        search_parameters.time_limit.FromSeconds(input.options.duration)
-        search_parameters.first_solution_strategy = routing_enums_pb2.FirstSolutionStrategy.AUTOMATIC
-        search_parameters.local_search_metaheuristic = routing_enums_pb2.LocalSearchMetaheuristic.AUTOMATIC
+    # Setting first solution heuristic.
+    search_parameters = pywrapcp.DefaultRoutingSearchParameters()
+    search_parameters.time_limit.FromSeconds(options.duration)
+    search_parameters.first_solution_strategy = routing_enums_pb2.FirstSolutionStrategy.AUTOMATIC
+    search_parameters.local_search_metaheuristic = routing_enums_pb2.LocalSearchMetaheuristic.AUTOMATIC
 
-        # Solve the problem.
-        start_time = time.time()
-        solution = routing.SolveWithParameters(search_parameters)
-        end_time = time.time()
+    # Solve the problem.
+    start_time = time.time()
+    solution = routing.SolveWithParameters(search_parameters)
+    end_time = time.time()
 
-        routes = []
-        if solution is not None:
-            # Determine the routes.
-            max_route_duration = 0
-            max_stops_in_vehicle = 0
-            min_stops_in_vehicle = len(input.data["stops"])
-            activated_vehicles = 0
-            for vehicle_index in range(len(input.data["vehicles"])):
-                # Get the route for the vehicle.
-                input_vehicle = input.data["vehicles"][vehicle_index]
-                current_index, previous_index = routing.Start(vehicle_index), -1
-                route_duration, stop_count = 0, 0
-                vehicle_route = []
+    routes = []
+    metrics = {}
 
-                # Traverse the route, we use -1 as the end marker.
-                while current_index != -1:
-                    node_index = manager.IndexToNode(current_index)
+    if solution is not None:
+        # Determine the routes.
+        max_route_duration = 0
+        max_stops_in_vehicle = 0
+        min_stops_in_vehicle = len(input.data["stops"])
+        activated_vehicles = 0
+        for vehicle_index in range(len(input.data["vehicles"])):
+            # Get the route for the vehicle.
+            input_vehicle = input.data["vehicles"][vehicle_index]
+            current_index, previous_index = routing.Start(vehicle_index), -1
+            route_duration, stop_count = 0, 0
+            vehicle_route = []
 
-                    # Keep track of the number of stops. We do not count the start and end locations.
-                    if node_index < len(input.data["stops"]):
-                        stop_count += 1
+            # Traverse the route, we use -1 as the end marker.
+            while current_index != -1:
+                node_index = manager.IndexToNode(current_index)
 
-                    # Calculate cumulative duration.
-                    if previous_index > 0:
-                        route_duration += routing.GetArcCostForVehicle(
-                            previous_index,
-                            current_index,
-                            vehicle_index,
+                # Keep track of the number of stops. We do not count the start and end locations.
+                if node_index < len(input.data["stops"]):
+                    stop_count += 1
+
+                # Calculate cumulative duration.
+                if previous_index > 0:
+                    route_duration += routing.GetArcCostForVehicle(
+                        previous_index,
+                        current_index,
+                        vehicle_index,
+                    )
+
+                # Add the stop to the route. If it is a start/end location, assemble it on the fly.
+                if node_index < len(input.data["stops"]):
+                    vehicle_route.append({"stop": input.data["stops"][node_index]})
+                else:
+                    is_start = (node_index - len(input.data["stops"])) % 2 == 0
+                    if is_start and "start_location" in input_vehicle:
+                        vehicle_route.append(
+                            {
+                                "stop": {
+                                    "location": input_vehicle["start_location"],
+                                    "id": f"{input_vehicle['id']}_start",
+                                }
+                            }
+                        )
+                    elif not is_start and "end_location" in input_vehicle:
+                        vehicle_route.append(
+                            {
+                                "stop": {
+                                    "location": input_vehicle["end_location"],
+                                    "id": f"{input_vehicle['id']}_end",
+                                }
+                            }
                         )
 
-                    # Add the stop to the route. If it is a start/end location, assemble it on the fly.
-                    if node_index < len(input.data["stops"]):
-                        vehicle_route.append({"stop": input.data["stops"][node_index]})
-                    else:
-                        is_start = (node_index - len(input.data["stops"])) % 2 == 0
-                        if is_start and "start_location" in input_vehicle:
-                            vehicle_route.append(
-                                {
-                                    "stop": {
-                                        "location": input_vehicle["start_location"],
-                                        "id": f"{input_vehicle['id']}_start",
-                                    }
-                                }
-                            )
-                        elif not is_start and "end_location" in input_vehicle:
-                            vehicle_route.append(
-                                {
-                                    "stop": {
-                                        "location": input_vehicle["end_location"],
-                                        "id": f"{input_vehicle['id']}_end",
-                                    }
-                                }
-                            )
+                # Keep traversing the route.
+                previous_index = current_index
+                if routing.IsEnd(current_index):
+                    current_index = -1
+                else:
+                    current_index = solution.Value(routing.NextVar(current_index))
 
-                    # Keep traversing the route.
-                    previous_index = current_index
-                    if routing.IsEnd(current_index):
-                        current_index = -1
-                    else:
-                        current_index = solution.Value(routing.NextVar(current_index))
+            route = {
+                "id": input_vehicle["id"],
+                "route_travel_distance": route_duration,
+                "route": vehicle_route,
+            }
+            routes.append(route)
+            max_route_duration = max(route_duration, max_route_duration)
+            activated_vehicles += 1
+            max_stops_in_vehicle = max(max_stops_in_vehicle, stop_count)
+            min_stops_in_vehicle = min(min_stops_in_vehicle, stop_count)
 
-                route = {
-                    "id": input_vehicle["id"],
-                    "route_travel_distance": route_duration,
-                    "route": vehicle_route,
-                }
-                routes.append(route)
-                max_route_duration = max(route_duration, max_route_duration)
-                activated_vehicles += 1
-                max_stops_in_vehicle = max(max_stops_in_vehicle, stop_count)
-                min_stops_in_vehicle = min(min_stops_in_vehicle, stop_count)
+        metrics = {
+            "duration": end_time - start_time,
+            "objective_value": solution.ObjectiveValue(),
+            "solution_found": True,
+            "activated_vehicles": activated_vehicles,
+            "max_route_duration": max_route_duration,
+            "max_stops_in_vehicle": max_stops_in_vehicle,
+            "min_stops_in_vehicle": min_stops_in_vehicle,
+        }
+    else:
+        metrics = {
+            "duration": end_time - start_time,
+            "solution_found": False,
+        }
 
-            statistics = nextmv.Statistics(
-                run=nextmv.RunStatistics(duration=end_time - start_time),
-                result=nextmv.ResultStatistics(
-                    value=solution.ObjectiveValue(),
-                    custom={
-                        "solution_found": True,
-                        "activated_vehicles": activated_vehicles,
-                        "max_route_duration": max_route_duration,
-                        "max_stops_in_vehicle": max_stops_in_vehicle,
-                        "min_stops_in_vehicle": min_stops_in_vehicle,
-                    },
-                ),
-            )
-        else:
-            statistics = nextmv.Statistics(
-                run=nextmv.RunStatistics(duration=end_time - start_time),
-                result=nextmv.ResultStatistics(
-                    value=None,
-                    custom={
-                        "solution_found": False,
-                    },
-                ),
-            )
-
-        return nextmv.Output(
-            options=input.options,
-            solution={"vehicles": routes, "unplanned": []},
-            statistics=statistics,
-        )
+    return {"vehicles": routes, "unplanned": []}, metrics
 
 
 def apply_defaults(input_data: dict[str, Any]) -> None:
