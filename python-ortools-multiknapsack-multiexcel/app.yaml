@@ -13,4 +13,35 @@ python:
 configuration:
   # Specify the format the app reads and writes.
   content:
-    format: "multi-file" # Read and write files from disk.
+    format: multi-file # Read and write files from disk.
+    # Configuration of the multi-file format.
+    multi-file:
+      input:
+        path: inputs # Directory where the app will read input files from.
+      output:
+        solutions: outputs/solutions # Directory where the app will write solution files to.
+        metrics: outputs/metrics.json # Path where the app will write metrics to.
+  # Define the options (parameters) of the app.
+  options:
+    strict: false
+    items:
+      - name: duration
+        option_type: int
+        default: 30
+        description: Max solver runtime in seconds
+        required: false
+        additional_attributes:
+          min: 1
+          max: 300
+          step: 10
+        ui:
+          control_type: slider
+          display_name: Duration
+      - name: provider
+        option_type: string
+        default: SCIP
+        description: Solver provider
+        required: false
+        ui:
+          control_type: text
+          display_name: Provider
