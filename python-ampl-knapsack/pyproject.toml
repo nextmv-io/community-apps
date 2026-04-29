@@ -20,6 +20,11 @@ dependencies = [
     "nextmv==1.7.2",
 ]
 
-[tool.uv]
-index-url = "https://pypi.ampl.com"
-extra-index-url = ["https://pypi.org/simple"]
+[[tool.uv.index]]
+name = "ampl"
+url = "https://pypi.ampl.com"
+default = true
+
+[[tool.uv.index]]
+name = "pypi"
+url = "https://pypi.org/simple"
