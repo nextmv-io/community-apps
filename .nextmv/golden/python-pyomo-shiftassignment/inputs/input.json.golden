@@ -1,9 +1,17 @@
 {
   "assets": [],
+  "metrics": {
+    "active_workers": 5,
+    "constraints": 44,
+    "duration": 0.123,
+    "solver_duration": 0.123,
+    "status": "optimal",
+    "total_workers": 5,
+    "value": 4,
+    "variables": 20
+  },
   "options": {
     "duration": 30,
-    "input": "input.json",
-    "output": "output.json",
     "provider": "cbc"
   },
   "solution": {
@@ -39,22 +47,5 @@
         "worker_id": "Dylan Mccormack"
       }
     ]
-  },
-  "statistics": {
-    "result": {
-      "custom": {
-        "active_workers": 5,
-        "constraints": 44,
-        "status": "optimal",
-        "total_workers": 5,
-        "variables": 20
-      },
-      "duration": 0.123,
-      "value": 4
-    },
-    "run": {
-      "duration": 0.123
-    },
-    "schema": "v1"
   }
 }

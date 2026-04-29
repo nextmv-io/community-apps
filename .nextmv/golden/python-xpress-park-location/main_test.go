@@ -2,7 +2,6 @@ package mip
 
 import (
 	"os"
-	"path"
 	"testing"
 
 	"github.com/nextmv-io/sdk/golden"
@@ -14,11 +13,12 @@ func TestMain(m *testing.M) {
 }
 
 func TestGolden(t *testing.T) {
-	wd, _ := os.Getwd()
 	golden.FileTests(
 		t,
 		"inputs",
 		golden.Config{
+			UseStdIn: true,
+			UseStdOut: true,
 			Args: []string{},
 			DedicatedComparison:[]string{
 				"$.metrics.status",
@@ -30,11 +30,8 @@ func TestGolden(t *testing.T) {
 			// the intention of the test).
 			IgnoreStdOut: true,
 			ExecutionConfig: &golden.ExecutionConfig{
-				Command:    "python3",
-				Args:       []string{"main.py"},
-				InputFlag:  "-input",
-				OutputFlag: "-output",
-				WorkDir: path.Join(wd, "..", "..", "..", "python-xpress-park-location"),
+				Command:    "uv",
+				Args:       []string{"run", "--directory", "../../../python-xpress-park-location", "main.py"},
 			},
 		},
 	)

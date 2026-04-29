@@ -18,10 +18,10 @@ configuration:
   options:
     strict: false
     items:
-      - name: solve_duration
-        option_type: int
-        default: 10
-        description: Max solver runtime in seconds
+      - name: check_duration
+        option_type: float
+        default: 30
+        description: Maximum duration of the check, in seconds.
         required: false
         additional_attributes:
           min: 1
@@ -29,4 +29,659 @@ configuration:
           step: 1
         ui:
           control_type: slider
+          display_name: Check Duration
+
+      - name: check_verbosity
+        option_type: string
+        default: "off"
+        description: Verbosity of the check engine.
+        required: false
+        additional_attributes:
+          values:
+            - off
+            - low
+            - medium
+            - high
+        ui:
+          control_type: select
+          display_name: Check Verbosity
+
+      - name: format_disable_progression
+        option_type: bool
+        default: false
+        description: Whether to disable the progression series.
+        required: false
+        ui:
+          control_type: toggle
+          display_name: Disable Progression Format
+
+      - name: model_constraints_disable_attributes
+        option_type: bool
+        default: false
+        description: Ignore the compatibility attributes constraint.
+        required: false
+        ui:
+          control_type: toggle
+          display_name: Disable Attributes Constraint
+
+      - name: model_constraints_disable_capacity
+        option_type: bool
+        default: false
+        description: Ignore the capacity constraint for all resources.
+        required: false
+        ui:
+          control_type: toggle
+          display_name: Disable Capacity Constraint
+
+      - name: model_constraints_disable_distancelimit
+        option_type: bool
+        default: false
+        description: Ignore the distance limit constraint.
+        required: false
+        ui:
+          control_type: toggle
+          display_name: Disable Distance Limit Constraint
+
+      - name: model_constraints_disable_groups
+        option_type: bool
+        default: false
+        description: Ignore the groups constraint.
+        required: false
+        ui:
+          control_type: toggle
+          display_name: Disable Groups Constraint
+
+      - name: model_constraints_disable_maximumduration
+        option_type: bool
+        default: false
+        description: Ignore the maximum duration constraint.
+        required: false
+        ui:
+          control_type: toggle
+          display_name: Disable Maximum Duration Constraint
+
+      - name: model_constraints_disable_maximumstops
+        option_type: bool
+        default: false
+        description: Ignore the maximum stops constraint.
+        required: false
+        ui:
+          control_type: toggle
+          display_name: Disable Maximum Stops Constraint
+
+      - name: model_constraints_disable_maximumwaitstop
+        option_type: bool
+        default: false
+        description: Ignore the maximum stop wait constraint.
+        required: false
+        ui:
+          control_type: toggle
+          display_name: Disable Maximum Wait Stop Constraint
+
+      - name: model_constraints_disable_maximumwaitvehicle
+        option_type: bool
+        default: false
+        description: Ignore the maximum vehicle wait constraint.
+        required: false
+        ui:
+          control_type: toggle
+          display_name: Disable Maximum Wait Vehicle Constraint
+
+      - name: model_constraints_disable_mixingitems
+        option_type: bool
+        default: false
+        description: Ignore the do not mix items constraint.
+        required: false
+        ui:
+          control_type: toggle
+          display_name: Disable Mixing Items Constraint
+
+      - name: model_constraints_disable_precedence
+        option_type: bool
+        default: false
+        description: Ignore the precedence (pickups & deliveries) constraint.
+        required: false
+        ui:
+          control_type: toggle
+          display_name: Disable Precedence Constraint
+
+      - name: model_constraints_disable_starttimewindows
+        option_type: bool
+        default: false
+        description: Ignore the start time windows constraint.
+        required: false
+        ui:
+          control_type: toggle
+          display_name: Disable Start Time Windows Constraint
+
+      - name: model_constraints_disable_vehicleendtime
+        option_type: bool
+        default: false
+        description: Ignore the vehicle end time constraint.
+        required: false
+        ui:
+          control_type: toggle
+          display_name: Disable Vehicle End Time Constraint
+
+      - name: model_constraints_disable_vehiclestarttime
+        option_type: bool
+        default: false
+        description: Ignore the vehicle start time constraint.
+        required: false
+        ui:
+          control_type: toggle
+          display_name: Disable Vehicle Start Time Constraint
+
+      - name: model_constraints_enable_cluster
+        option_type: bool
+        default: false
+        description: Enable the cluster constraint.
+        required: false
+        ui:
+          control_type: toggle
+          display_name: Enable Cluster Constraint
+
+      - name: model_objectives_capacities
+        option_type: string
+        default: ""
+        description: "Capacity objective, provide triple for each resource `name=default;factor=1.0;offset=0.0`."
+        required: false
+        ui:
+          control_type: input
+          display_name: Capacities Objective
+
+      - name: model_objectives_cluster
+        option_type: float
+        default: 0.0
+        description: Factor to weigh the cluster objective.
+        required: false
+        additional_attributes:
+          min: 0.0
+          max: 10.0
+          step: 0.1
+        ui:
+          control_type: slider
+          display_name: Cluster Objective Factor
+
+      - name: model_objectives_distance
+        option_type: float
+        default: 0.0
+        description: Factor to weigh the distance objective.
+        required: false
+        additional_attributes:
+          min: 0.0
+          max: 10.0
+          step: 0.1
+        ui:
+          control_type: slider
+          display_name: Distance Objective Factor
+
+      - name: model_objectives_earlyarrivalpenalty
+        option_type: float
+        default: 1.0
+        description: Factor to weigh the early arrival objective.
+        required: false
+        additional_attributes:
+          min: 0.0
+          max: 10.0
+          step: 0.1
+        ui:
+          control_type: slider
+          display_name: Early Arrival Penalty Factor
+
+      - name: model_objectives_latearrivalpenalty
+        option_type: float
+        default: 1.0
+        description: Factor to weigh the late arrival objective.
+        required: false
+        additional_attributes:
+          min: 0.0
+          max: 10.0
+          step: 0.1
+        ui:
+          control_type: slider
+          display_name: Late Arrival Penalty Factor
+
+      - name: model_objectives_minstops
+        option_type: float
+        default: 1.0
+        description: Factor to weigh the min stops objective.
+        required: false
+        additional_attributes:
+          min: 0.0
+          max: 10.0
+          step: 0.1
+        ui:
+          control_type: slider
+          display_name: Min Stops Objective Factor
+
+      - name: model_objectives_stopbalance
+        option_type: float
+        default: 0.0
+        description: Factor to weigh the stop balance objective.
+        required: false
+        additional_attributes:
+          min: 0.0
+          max: 10.0
+          step: 0.1
+        ui:
+          control_type: slider
+          display_name: Stop Balance Objective Factor
+
+      - name: model_objectives_travelduration
+        option_type: float
+        default: 0.0
+        description: Factor to weigh the travel duration objective.
+        required: false
+        additional_attributes:
+          min: 0.0
+          max: 10.0
+          step: 0.1
+        ui:
+          control_type: slider
+          display_name: Travel Duration Objective Factor
+
+      - name: model_objectives_unplannedpenalty
+        option_type: float
+        default: 1.0
+        description: Factor to weigh the unplanned objective.
+        required: false
+        additional_attributes:
+          min: 0.0
+          max: 10.0
+          step: 0.1
+        ui:
+          control_type: slider
+          display_name: Unplanned Penalty Factor
+
+      - name: model_objectives_vehicleactivationpenalty
+        option_type: float
+        default: 1.0
+        description: Factor to weigh the vehicle activation objective.
+        required: false
+        additional_attributes:
+          min: 0.0
+          max: 10.0
+          step: 0.1
+        ui:
+          control_type: slider
+          display_name: Vehicle Activation Penalty Factor
+
+      - name: model_objectives_vehiclesduration
+        option_type: float
+        default: 1.0
+        description: Factor to weigh the vehicles duration objective.
+        required: false
+        additional_attributes:
+          min: 0.0
+          max: 10.0
+          step: 0.1
+        ui:
+          control_type: slider
+          display_name: Vehicles Duration Objective Factor
+
+      - name: model_properties_disable_durationgroups
+        option_type: bool
+        default: false
+        description: Ignore the durations groups of stops.
+        required: false
+        ui:
+          control_type: toggle
+          display_name: Disable Duration Groups
+
+      - name: model_properties_disable_durations
+        option_type: bool
+        default: false
+        description: Ignore the durations of stops.
+        required: false
+        ui:
+          control_type: toggle
+          display_name: Disable Durations
+
+      - name: model_properties_disable_initialsolution
+        option_type: bool
+        default: false
+        description: Ignore the initial solution.
+        required: false
+        ui:
+          control_type: toggle
+          display_name: Disable Initial Solution
+
+      - name: model_properties_disable_stopdurationmultipliers
+        option_type: bool
+        default: false
+        description: Ignore the stop duration multipliers defined on vehicles.
+        required: false
+        ui:
+          control_type: toggle
+          display_name: Disable Stop Duration Multipliers
+
+      - name: model_properties_maximumtimehorizon
+        option_type: int
+        default: 15552000
+        description: Maximum time horizon for the model in seconds.
+        required: false
+        additional_attributes:
+          min: 0
+        ui:
+          control_type: input
+          display_name: Maximum Time Horizon
+
+      - name: model_validate_disable_resources
+        option_type: bool
+        default: false
+        description: Disable the resources validation.
+        required: false
+        ui:
+          control_type: toggle
+          display_name: Disable Resources Validation
+
+      - name: model_validate_disable_starttime
+        option_type: bool
+        default: false
+        description: Disable the start time validation.
+        required: false
+        ui:
+          control_type: toggle
+          display_name: Disable Start Time Validation
+
+      - name: model_validate_enable_matrix
+        option_type: bool
+        default: false
+        description: Enable matrix validation.
+        required: false
+        ui:
+          control_type: toggle
+          display_name: Enable Matrix Validation
+
+      - name: model_validate_enable_matrixasymmetrytolerance
+        option_type: int
+        default: 20
+        description: Percentage of acceptable matrix asymmetry, requires matrix validation enabled.
+        required: false
+        additional_attributes:
+          min: 0
+          max: 100
+          step: 1
+        ui:
+          control_type: slider
+          display_name: Matrix Asymmetry Tolerance
+
+      - name: solve_duration
+        option_type: float
+        default: 5
+        description: Maximum duration, in seconds, of the solver.
+        required: false
+        additional_attributes:
+          min: 1
+          max: 600
+          step: 1
+        ui:
+          control_type: slider
           display_name: Solve Duration
+
+      - name: solve_iterations
+        option_type: int
+        default: -1
+        description: "Maximum number of iterations, -1 assumes no limit; iterations are counted after start solutions are generated."
+        required: false
+        additional_attributes:
+          min: -1
+        ui:
+          control_type: input
+          display_name: Solve Iterations
+
+      - name: solve_parallelruns
+        option_type: int
+        default: -1
+        description: "Maximum number of parallel runs, -1 results in using all available resources."
+        required: false
+        additional_attributes:
+          min: -1
+        ui:
+          control_type: input
+          display_name: Parallel Runs
+
+      - name: solve_plateau_delay
+        option_type: float
+        default: 0.0
+        description: Delay before starting to monitor for a plateau.
+        required: false
+        additional_attributes:
+          min: 0.0
+          max: 60.0
+          step: 0.5
+        ui:
+          control_type: slider
+          display_name: Plateau Delay
+
+      - name: solve_plateau_absolutethreshold
+        option_type: float
+        default: -1
+        description: Absolute threshold for significant improvement.
+        required: false
+        ui:
+          control_type: input
+          display_name: Plateau Absolute Threshold
+
+      - name: solve_plateau_duration
+        option_type: float
+        default: 0.0
+        description: "Maximum duration, in seconds, without (significant) improvement."
+        required: false
+        additional_attributes:
+          min: 0.0
+          max: 300.0
+          step: 1.0
+        ui:
+          control_type: slider
+          display_name: Plateau Duration
+
+      - name: solve_plateau_iterations
+        option_type: int
+        default: 0
+        description: Maximum number of iterations without (significant) improvement.
+        required: false
+        additional_attributes:
+          min: 0
+        ui:
+          control_type: input
+          display_name: Plateau Iterations
+
+      - name: solve_plateau_relativethreshold
+        option_type: float
+        default: 0.0
+        description: Relative threshold for significant improvement.
+        required: false
+        additional_attributes:
+          min: 0.0
+          max: 1.0
+          step: 0.01
+        ui:
+          control_type: slider
+          display_name: Plateau Relative Threshold
+
+      - name: solve_rundeterministically
+        option_type: bool
+        default: false
+        description: Run the parallel solver deterministically.
+        required: false
+        ui:
+          control_type: toggle
+          display_name: Run Deterministically
+
+      - name: solve_solver_plangroupsize_delta
+        option_type: int
+        default: 0
+        description: Delta for the plan group size parameter.
+        required: false
+        additional_attributes:
+          min: 0
+        ui:
+          control_type: input
+          display_name: Plan Group Size Delta
+
+      - name: solve_solver_plangroupsize_deltaafteriterations
+        option_type: int
+        default: 1000000000
+        description: Delta after each iteration for the plan group size parameter.
+        required: false
+        additional_attributes:
+          min: 0
+        ui:
+          control_type: input
+          display_name: Plan Group Size Delta After Iterations
+
+      - name: solve_solver_plangroupsize_maxvalue
+        option_type: int
+        default: 2
+        description: Maximum value for the plan group size parameter.
+        required: false
+        additional_attributes:
+          min: 1
+          max: 100
+          step: 1
+        ui:
+          control_type: slider
+          display_name: Plan Group Size Max Value
+
+      - name: solve_solver_plangroupsize_minvalue
+        option_type: int
+        default: 2
+        description: Minimum value for the plan group size parameter.
+        required: false
+        additional_attributes:
+          min: 1
+          max: 100
+          step: 1
+        ui:
+          control_type: slider
+          display_name: Plan Group Size Min Value
+
+      - name: solve_solver_plangroupsize_snapbackafterimprovement
+        option_type: bool
+        default: true
+        description: Snap back to start value after improvement of best solution for the plan group size parameter.
+        required: false
+        ui:
+          control_type: toggle
+          display_name: Plan Group Size Snap Back After Improvement
+
+      - name: solve_solver_plangroupsize_startvalue
+        option_type: int
+        default: 2
+        description: Start value for the plan group size parameter.
+        required: false
+        additional_attributes:
+          min: 1
+          max: 100
+          step: 1
+        ui:
+          control_type: slider
+          display_name: Plan Group Size Start Value
+
+      - name: solve_solver_plangroupsize_zigzag
+        option_type: bool
+        default: true
+        description: Zigzag between min and max value like a jig saw for the plan group size parameter.
+        required: false
+        ui:
+          control_type: toggle
+          display_name: Plan Group Size Zigzag
+
+      - name: solve_solver_unplanunits_delta
+        option_type: int
+        default: 2
+        description: Delta for the unplan units parameter.
+        required: false
+        additional_attributes:
+          min: 0
+        ui:
+          control_type: input
+          display_name: Unplan Units Delta
+
+      - name: solve_solver_unplanunits_deltaafteriterations
+        option_type: int
+        default: 125
+        description: Delta after each iteration for the unplan units parameter.
+        required: false
+        additional_attributes:
+          min: 0
+        ui:
+          control_type: input
+          display_name: Unplan Units Delta After Iterations
+
+      - name: solve_solver_unplanunits_maxvalue
+        option_type: int
+        default: -1
+        description: Maximum value for the unplan units parameter.
+        required: false
+        additional_attributes:
+          min: -1
+        ui:
+          control_type: input
+          display_name: Unplan Units Max Value
+
+      - name: solve_solver_unplanunits_minvalue
+        option_type: int
+        default: 2
+        description: Minimum value for the unplan units parameter.
+        required: false
+        additional_attributes:
+          min: 1
+          max: 100
+          step: 1
+        ui:
+          control_type: slider
+          display_name: Unplan Units Min Value
+
+      - name: solve_solver_unplanunits_snapbackafterimprovement
+        option_type: bool
+        default: true
+        description: Snap back to start value after improvement of best solution for the unplan units parameter.
+        required: false
+        ui:
+          control_type: toggle
+          display_name: Unplan Units Snap Back After Improvement
+
+      - name: solve_solver_unplanunits_startvalue
+        option_type: int
+        default: 2
+        description: Start value for the unplan units parameter.
+        required: false
+        additional_attributes:
+          min: 1
+          max: 100
+          step: 1
+        ui:
+          control_type: slider
+          display_name: Unplan Units Start Value
+
+      - name: solve_solver_unplanunits_zigzag
+        option_type: bool
+        default: true
+        description: Zigzag between min and max value like a jig saw for the unplan units parameter.
+        required: false
+        ui:
+          control_type: toggle
+          display_name: Unplan Units Zigzag
+
+      - name: solve_solver_unplanweights
+        option_type: string
+        default: "Vehicle:3,Island:1,Location:293"
+        description: Unplan heuristic weights parameter.
+        required: false
+        ui:
+          control_type: input
+          display_name: Unplan Weights
+
+      - name: solve_startsolutions
+        option_type: int
+        default: -1
+        description: "Number of solutions to generate on top of those passed in; one solution generated with sweep algorithm, the rest generated randomly."
+        required: false
+        additional_attributes:
+          min: -1
+        ui:
+          control_type: input
+          display_name: Start Solutions

@@ -1,9 +1,22 @@
 {
   "assets": [],
+  "metrics": {
+    "available_time_units": 16,
+    "excess_time_units": 0,
+    "number_of_edges": 25,
+    "number_of_fulfilled_projects": 5,
+    "number_of_nodes": 12,
+    "number_of_projects": 5,
+    "number_of_unfulfilled_projects": 0,
+    "number_of_workers": 3,
+    "required_time_units": 16,
+    "result_duration": 0.00003500000000000725,
+    "run_duration": 0.02756500244140625,
+    "unmet_time_units": 0,
+    "value": -17448
+  },
   "options": {
     "duration": 30,
-    "input": "input.json",
-    "output": "output.json",
     "penalty": 3000
   },
   "solution": {
@@ -230,27 +243,5 @@
     ],
     "status": "optimal",
     "total_value_of_fulfilled_projects": 17450
-  },
-  "statistics": {
-    "result": {
-      "custom": {
-        "available_time_units": 16,
-        "excess_time_units": 0,
-        "number_of_edges": 25,
-        "number_of_fulfilled_projects": 5,
-        "number_of_nodes": 12,
-        "number_of_projects": 5,
-        "number_of_unfulfilled_projects": 0,
-        "number_of_workers": 3,
-        "required_time_units": 16,
-        "unmet_time_units": 0
-      },
-      "duration": 0.015,
-      "value": -17448
-    },
-    "run": {
-      "duration": 0.015
-    },
-    "schema": "v1"
   }
 }

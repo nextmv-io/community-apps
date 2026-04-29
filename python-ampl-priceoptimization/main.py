@@ -140,7 +140,7 @@ def solve(loaded_input: nextmv.Input) -> tuple[dict[str, Any], dict[str, Any]]:
     metrics: dict[str, Any] = {
         "run_duration": time.time() - start_time,
         "solve_duration": ampl.get_value("_total_solve_time"),
-        "objective_value": objective_val.value(),
+        "value": objective_val.value(),
         "status": status,
         "variables": ampl.get_value("_nvars"),
         "constraints": ampl.get_value("_ncons"),

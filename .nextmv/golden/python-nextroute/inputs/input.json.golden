@@ -1,12 +1,31 @@
 {
   "assets": [],
+  "metrics": {
+    "result": {
+      "custom": {
+        "activated_vehicles": 2,
+        "max_duration": 20258,
+        "max_stops_in_vehicle": 10,
+        "max_travel_duration": 17258,
+        "min_duration": 14135,
+        "min_stops_in_vehicle": 9,
+        "min_travel_duration": 11435,
+        "unplanned_stops": 7
+      },
+      "duration": 0.123,
+      "value": 2059665.4384450912
+    },
+    "run": {
+      "duration": 0.123,
+      "iterations": 50
+    },
+    "schema": "v1"
+  },
   "options": {
     "check_duration": 30,
     "check_verbosity": "off",
     "format_disable_progression": true,
-    "input": "input.json",
     "model_constraints_disable_attributes": false,
-    "model_constraints_disable_capacities": [],
     "model_constraints_disable_capacity": false,
     "model_constraints_disable_distancelimit": false,
     "model_constraints_disable_groups": false,
@@ -40,7 +59,6 @@
     "model_validate_disable_starttime": false,
     "model_validate_enable_matrix": false,
     "model_validate_enable_matrixasymmetrytolerance": 20,
-    "output": "output.json",
     "solve_duration": 3,
     "solve_iterations": 50,
     "solve_parallelruns": 1,
@@ -595,26 +613,5 @@
         "route_travel_duration": 17258
       }
     ]
-  },
-  "statistics": {
-    "result": {
-      "custom": {
-        "activated_vehicles": 2,
-        "max_duration": 20258,
-        "max_stops_in_vehicle": 10,
-        "max_travel_duration": 17258,
-        "min_duration": 14135,
-        "min_stops_in_vehicle": 9,
-        "min_travel_duration": 11435,
-        "unplanned_stops": 7
-      },
-      "duration": 0.123,
-      "value": 2059665.4384450912
-    },
-    "run": {
-      "duration": 0.123,
-      "iterations": 50
-    },
-    "schema": "v1"
   }
 }

@@ -20,11 +20,11 @@ func TestGolden(t *testing.T) {
 			UseStdIn:  true,
 			UseStdOut: true,
 			ExecutionConfig: &golden.ExecutionConfig{
-				Command: "python3",
-				Args:    []string{"../../../python-hello-world/main.py"},
+				Command: "uv",
+				Args:    []string{"run", "--directory", "../../../python-hello-world", "main.py"},
 			},
 			DedicatedComparison: []string{
-				"$.statistics.result.value",
+				"$.metrics.value",
 			},
 		},
 	)

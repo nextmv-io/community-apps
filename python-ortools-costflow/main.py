@@ -153,7 +153,7 @@ def solve(loaded_input: nextmv.Input) -> tuple[dict[str, Any], dict[str, Any]]:
     metrics = {
         "run_duration": time.time() - start_time,
         "result_duration": wall_time,
-        "result_value": solver.optimal_cost(),
+        "value": solver.optimal_cost(),
         "number_of_edges": solver.num_arcs(),
         "number_of_nodes": solver.num_nodes(),
         "number_of_workers": len(loaded_input.data["workers"]),
@@ -245,7 +245,7 @@ def error_status() -> tuple[dict[str, Any], dict[str, Any]]:
     metrics = {
         "run_duration": 0,
         "result_duration": 0,
-        "result_value": 0,
+        "value": 0,
         "number_of_edges": 0,
         "number_of_nodes": 0,
         "number_of_workers": 0,
