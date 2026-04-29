@@ -1,7 +1,28 @@
-target-version="py312"
+[project]
+name = "community-apps"
+version = "0.1.0"
+requires-python = ">=3.10"
+dependencies = [
+    "ruff>=0.15.12",
+]
+
+[tool.ruff]
+target-version = "py312"
+
+# Ignore specific directories
+exclude = [
+    "python-gurobi-price-optimization",
+    "python-wf-databricks/hello-world-nextmv-app.ipynb",
+    "python-wf-databricks-ml-gurobi-price-optimization/avocado-price-optimizer.ipynb",
+    "python-wf-databricks-ml-gurobi-price-optimization/avocado-ml-regressor.ipynb",
+]
+
+# Rule configuration.
+line-length = 120
 
 # Rule selection.
-lint.select = [
+[tool.ruff.lint]
+select = [
     "E",  # pycodestyle errors
     "W",  # pycodestyle warnings
     "F",  # pyflakes
@@ -11,22 +32,11 @@ lint.select = [
     "UP",  # pyupgrade
 ]
 
-# Ignore specific directories
-exclude = [
-    "python-gurobi-price-optimization",
-    "python-wf-databricks/hello-world-nextmv-app.ipynb",
-    "python-wf-databricks-ml-gurobi-price-optimization/avocado-price-optimizer.ipynb",
-    "python-wf-databricks-ml-gurobi-price-optimization/avocado-ml-regressor.ipynb"
-]
-
-
-# Rule configuration.
-line-length = 120
-
 # Allow generous cyclomatic complexity for examples.
-lint.mccabe.max-complexity = 25
+[tool.ruff.lint.mccabe]
+max-complexity = 25
 
-[lint.per-file-ignores]
+[tool.ruff.lint.per-file-ignores]
 # Set a different max complexity for a specific file
 "python-ortools-shiftassignment/main.py" = ["C901"]
 "python-gurobi-knapsack/main.ipynb" = ["I001"]
