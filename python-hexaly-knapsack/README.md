@@ -9,15 +9,37 @@ key. Modify the `app.yaml` file to include the `license.dat` in the files list.
 
 1. Install packages.
 
-    ```bash
-    pip3 install -r requirements.txt
-    ```
+   * With `pip`
 
-1. Run the app.
+      ```bash
+      pip install .
+      ```
 
-    ```bash
-    python3 main.py -input input.json -output output.json -duration 30
-    ```
+   * With `uv`
+  
+      ```bash
+      uv sync
+      ```
+
+2. Run the app.
+
+   * With `python`
+
+      ```bash
+      cat input.json | python main.py
+      ```
+
+   * With `uv`
+
+      ```bash
+      cat input.json | uv run main.py
+      ```
+
+      Or with custom options:
+
+      ```bash
+      cat input.json | uv run main.py -duration 30
+      ```
 
 ## Mirror running on Nextmv Cloud locally
 
@@ -34,9 +56,7 @@ sh -c 'pip install -r /app/requirements.txt && python3 /app/main.py -input input
 ```
 <!-- markdownlint-enable MD013 -->
 
-You can also debug the application by running it in a Dev Container. This
-workspace recommends to install the Dev Container extension for VSCode. If you
-have the extension installed, you can open the workspace in a container by
+You can also debug the application by running it in a container by
 using the command `Dev Containers: Reopen in Container`.
 
 ## Next steps

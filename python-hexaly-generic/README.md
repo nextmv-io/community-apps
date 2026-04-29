@@ -5,8 +5,10 @@ Hexaly solver while reading data from multiple Excel (.xlsx) files. We solve a
 multi knapsack Mixed Integer Programming problem.
 
 1. Setup license:
-    1. **Local**: Add license file `license.dat` to the root of the project, or,
-        alternative locations that Hexaly recognizes.
+    1. **Local**: If you have a Hexaly license, remove the `.template`
+       extension from the `license.dat.template` file and replace the contents
+       with your actual license key. Modify the `app.yaml` file to include the
+       `license.dat` in the files list.
     1. **Platform**: Don't forget to also define the license file as a
         [secret][secret] in your Nextmv Application as well. This can be easily
         done via [console][console].
@@ -14,11 +16,20 @@ multi knapsack Mixed Integer Programming problem.
           your license file.
         - Define an environment variable secret with the name `LD_LIBRARY_PATH`
           and the value `./lib` to point Hexaly to the bundled `*.so` libraries.
+
 1. Install packages.
 
-    ```bash
-    pip3 install -r requirements.txt
-    ```
+   - With `pip`
+
+      ```bash
+      pip install .
+      ```
+
+   - With `uv`
+  
+      ```bash
+      uv sync
+      ```
 
 1. Put your model file and any other necessary files in the `inputs/` directory.
    The _model file_ should have the extension `.hxm`. All other files need to be
@@ -27,17 +38,26 @@ multi knapsack Mixed Integer Programming problem.
    directory for reference.
    - The model automatically loads the first `.hxm` file (alternatively, the
      first `.lsp` file) it finds in the input directory.
-1. Run the app locally.
 
-    ```bash
-    python3 main.py inFileName=inputs/input.dat solFileName=output.txt
-    ```
+1. Run the app.
+
+   - With `python`
+
+      ```bash
+      python main.py inFileName=inputs/input.dat solFileName=output.txt
+      ```
+
+   - With `uv`
+
+      ```bash
+      uv run main.py inFileName=inputs/input.dat solFileName=output.txt
+      ```
 
 1. If above steps were successful, you can push the app to the Nextmv Platform.
    E.g., using the [Nextmv CLI][install-cli]:
 
     ```bash
-    nextmv push --app-id <your-app-id>
+    nextmv cloud app push --app-id <your-app-id>
     ```
 
 1. You can then run the app on the Nextmv Platform by using the CLI (note that
@@ -45,7 +65,7 @@ multi knapsack Mixed Integer Programming problem.
    Nextmv Application):
 
     ```bash
-    nextmv app run --app-id <your-app-id> \
+    nextmv cloud run create --app-id <your-app-id> \
         --input inputs/ \
         --secret-collection-id <your-secret-collection> \
         --options 'inFileName=input.dat,solFileName=output.txt'
@@ -64,7 +84,7 @@ Cloud, you can use the following command:
 ```bash
 docker run -i --rm \
 -v $(pwd):/app ghcr.io/nextmv-io/runtime/python:3.11 \
-sh -c 'pip install -r /app/requirements.txt && python3 /app/main.py inFileName=inputs/input.dat solFileName=output.txt'
+sh -c 'pip install /app && python3 /app/main.py'
 ```
 <!-- markdownlint-enable MD013 -->
 
