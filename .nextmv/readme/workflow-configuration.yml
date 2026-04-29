@@ -188,11 +188,11 @@ apps:
       - name: 1.sh
         silent: true
       - name: 2.sh
-        stderr: true
+        silent: true
       - name: 3.sh
-        stderr: true
+        silent: true
       - name: 4.sh
-        stderr: true
+        silent: true
   - name: python-gurobi-knapsack
     scripts:
       - name: 0.sh
@@ -236,9 +236,9 @@ apps:
       - name: 1.sh
         silent: true
       - name: 2.sh
-        silent: true
+        skip: true
       - name: 3.sh
-        silent: true
+        skip: true
       - name: 4.sh
         skip: true
       - name: 5.sh
@@ -252,9 +252,9 @@ apps:
       - name: 1.sh
         silent: true
       - name: 2.sh
-        silent: true
+        skip: true
       - name: 3.sh
-        silent: true
+        skip: true
       - name: 4.sh
         skip: true
       - name: 5.sh

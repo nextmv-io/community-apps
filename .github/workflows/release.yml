@@ -152,10 +152,11 @@ jobs:
           echo "PYTHON_VERSION=${PYTHON_VERSION}" >> $GITHUB_ENV
         working-directory: ./community-apps/.nextmv
 
-      - name: set up Python
+      - name: install uv
         if: ${{ env.APPS != '' }}
-        uses: actions/setup-python@v5
+        uses: astral-sh/setup-uv@v7
         with:
+          version: "0.9.29"
           python-version: ${{ env.PYTHON_VERSION }}
 
       - name: set go version
@@ -184,9 +185,7 @@ jobs:
 
       - name: Install Python dependencies
         if: ${{ env.APPS != '' }}
-        run: |
-          pip install --upgrade pip
-          pip install -r requirements.txt
+        run: uv add -r requirements.txt
         working-directory: ./community-apps/.nextmv/release
 
       - name: Set up AWS CLI
@@ -205,21 +204,12 @@ jobs:
           java-version: 21
           cache: "maven"
 
-      - name: Install Nextmv CLI
-        if: ${{ env.APPS != '' }}
-        run: |
-          export NEXTMV_API_KEY=$MARKETPLACE_API_KEY
-          export NEXTMV_BASE_URL=https://$API_ENDPOINT
-          curl -sS "https://$CONSOLE_URL/install-cli.txt" | bash -
-
       - name: Set up Nextmv CLI
         if: ${{ env.APPS != '' }}
-        run: |
-          export PATH=~/.nextmv:$PATH # Make CLI available in non-interactive shell
-          nextmv configure \
-            --api-key $MARKETPLACE_API_KEY \
-            -e $API_ENDPOINT
-          nextmv activate
+        uses: nextmv-io/setup-nextmv@v1
+        with:
+          api-key: ${{ env.MARKETPLACE_API_KEY }}
+          endpoint: ${{ env.API_ENDPOINT }}
 
       - name: Release the apps
         if: ${{ env.APPS != '' }}
@@ -229,7 +219,7 @@ jobs:
           if [ ${{ matrix.environment }} == "prod" ]; then
             export SLACK_NOTIFY_PARAM="--slack-url ${{ secrets.SLACK_URL_MISSION_CONTROL }}"
           fi
-          python main.py \
+          uv run main.py \
             --apps "${{ env.APPS }}" \
             --bucket "${{ env.BUCKET }}" \
             --folder "${{ env.FOLDER }}" \
