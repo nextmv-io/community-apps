@@ -3,6 +3,6 @@ name = "python-ortools-shiftassignment"
 version = "0.1.0"
 requires-python = ">=3.10"
 dependencies = [
-    "nextmv==1.7.2",
+    "nextmv>=1.7.4.dev0",
     "ortools==9.15.6755",
 ]

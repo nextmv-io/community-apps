@@ -3,6 +3,6 @@ name = "python-xpress-facility-location"
 version = "0.1.0"
 requires-python = ">=3.10"
 dependencies = [
-    "nextmv==1.7.2",
+    "nextmv>=1.7.4.dev0",
     "xpress==9.8.0",
 ]

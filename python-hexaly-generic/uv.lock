@@ -339,7 +339,7 @@ wheels = [
 
 [[package]]
 name = "nextmv"
-version = "1.7.2"
+version = "1.7.4.dev0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "folium" },
@@ -353,9 +353,9 @@ dependencies = [
     { name = "urllib3" },
     { name = "uv" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/aa/47/7f9cbb9dc6215ccdc0a59d2275db8133bede1f617e4266a22d954c2e7a96/nextmv-1.7.2.tar.gz", hash = "sha256:d6b073419a557db00fe6fdf5700c554e394eb06bc65df87b24006ac456abeef7", size = 689504, upload-time = "2026-04-23T21:15:41.826Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/4a/92/9a0bd8947de10f1abe35a20f014428165738e9b583d858bfd18f02173e68/nextmv-1.7.4.dev0.tar.gz", hash = "sha256:6e2badf7ba4f4496bdc28c7779163810b7d59e7925c005707bbcbb97ae559923", size = 691291, upload-time = "2026-04-29T02:07:04.759Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/3b/7a/15ed798d3cf24da33da1ea44383221170c7de5a5379bd6dd821beb2d2427/nextmv-1.7.2-py3-none-any.whl", hash = "sha256:7ae6f7878e11e5898af8d5041c25261821d4ab83c1c6e10bde12d2bc179aac16", size = 546126, upload-time = "2026-04-23T21:15:39.576Z" },
+    { url = "https://files.pythonhosted.org/packages/62/9c/a791f1c7471ca13ba18d75ab480c390f797805bab0ae6465ec5fb94c7f7e/nextmv-1.7.4.dev0-py3-none-any.whl", hash = "sha256:5b89efbf083a4ba2479f96346d08fec44ebb3781619cc8e7d24ec262c93ee165", size = 546887, upload-time = "2026-04-29T02:07:02.927Z" },
 ]
 
 [[package]]
@@ -700,7 +700,7 @@ dependencies = [
 [package.metadata]
 requires-dist = [
     { name = "hexaly", specifier = "==13.0.20240712" },
-    { name = "nextmv", specifier = "==1.7.2" },
+    { name = "nextmv", specifier = ">=1.7.4.dev0" },
 ]
 
 [[package]]

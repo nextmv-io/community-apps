@@ -17,7 +17,7 @@ dependencies = [
     "ampl-module-xpress==20241227",
     "amplpy==0.14.0",
     "ampltools==0.7.5",
-    "nextmv==1.7.2",
+    "nextmv>=1.7.4.dev0",
     "plotly==6.0.1",
 ]
 
