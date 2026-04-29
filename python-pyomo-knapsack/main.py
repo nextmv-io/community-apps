@@ -35,7 +35,7 @@ def main() -> None:
     nextmv.write(solution=solution, metrics=metrics, options=options)
 
 
-def solve(loaded_input: nextmv.Input, options: dict[str, Any]) -> tuple[dict[str, Any], dict[str, Any]]:
+def solve(loaded_input: nextmv.Input, options: nextmv.Options) -> tuple[dict[str, Any], dict[str, Any]]:
     """Solves the given problem and returns the solution and metrics."""
 
     start_time = time.time()
@@ -55,6 +55,9 @@ def solve(loaded_input: nextmv.Input, options: dict[str, Any]) -> tuple[dict[str
     # Creates the solver.
     solver = pyo.SolverFactory(provider)
     solver.options[SUPPORTED_PROVIDER_DURATIONS[provider]] = options.duration
+    # Sometimes solver needs more time to reply with its version, we cut it some slack
+    if hasattr(solver, "_version_timeout"):
+        solver._version_timeout = 10
 
     # Initializes the linear sums.
     weights = 0.0

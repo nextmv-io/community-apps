@@ -139,6 +139,9 @@ def solve(loaded_input: nextmv.Input) -> tuple[dict[str, Any], dict[str, Any]]:
     # Creates the solver.
     solver = pyo.SolverFactory(provider)
     solver.options[SUPPORTED_PROVIDER_DURATIONS[provider]] = loaded_input.options.duration
+    # Sometimes solver needs more time to reply with its version, we cut it some slack
+    if hasattr(solver, "_version_timeout"):
+        solver._version_timeout = 10
 
     # Solve the model.
     results = solver.solve(model, tee=False)  # Set tee to True for Pyomo logging.
