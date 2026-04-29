@@ -64,6 +64,12 @@ jobs:
           python-version: ${{ matrix.apps.language-version }}
           cache: "pip"
 
+      - name: install uv
+        uses: astral-sh/setup-uv@v7
+        with:
+          version: "0.9.29"
+          python-version: ${{ matrix.apps.language-version }}
+
       - name: Install Python dependencies
         if: ${{ matrix.apps.language == 'python' && steps.changes.outputs.src == 'true' }}
         run: |
