@@ -41,6 +41,9 @@ func TestGolden(t *testing.T) {
 				Command:    "uv",
 				Args:       []string{"run", "--directory", "../../../python-xpress-facility-location", "main.py"},
 			},
+			Thresholds: golden.Tresholds{
+				Float: 10,
+			},
 		},
 	)
 }

@@ -34,7 +34,8 @@ Pyvroom package. We solve a vehicle routing problem.
       Or with custom options:
 
       ```bash
-      cat input.json | uv run main.py -duration 30 -exploration_level 4 -threads 6
+      cat input.json | uv run main.py \
+         -duration 30 -exploration_level 4 -threads 6
       ```
 
 ## Mirror running on Nextmv Cloud locally

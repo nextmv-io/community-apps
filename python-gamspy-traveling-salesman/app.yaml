@@ -8,7 +8,6 @@ python:
 # (e.g.: configs/*.json) is supported.
 files:
   - main.py
-  - tsp.py
 
 # Application configurations.
 configuration:

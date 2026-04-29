@@ -5,5 +5,8 @@ requires-python = ">=3.10"
 dependencies = [
     "nextmv>=1.7.4.dev0",
     "ortools==9.15.6755",
-    "pandas>=2.3.3",
+    "pandas==2.3.3",
 ]
+
+[tool.setuptools]
+packages = []

@@ -1,1 +1,1 @@
-cd ../python-wf-ortools-region-allocation
+pip install .

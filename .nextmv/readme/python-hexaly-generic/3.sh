@@ -1,4 +1,1 @@
-nextmv app run --app-id <your-app-id> \
-    --input inputs/ \
-    --secret-collection-id <your-secret-collection> \
-    --options 'inFileName=input.dat,solFileName=output.txt'
+uv run main.py inFileName=inputs/input.dat solFileName=output.txt

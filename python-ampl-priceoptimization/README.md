@@ -34,7 +34,7 @@ the files list.
    * With `pip`
 
       ```bash
-      pip install .
+      pip install -r requirements.txt
       ```
 
    * With `uv`

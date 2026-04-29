@@ -12,7 +12,7 @@ key. Modify the `app.yaml` file to include the `license.dat` in the files list.
    * With `pip`
 
       ```bash
-      pip install .
+      pip install -r requirements.txt
       ```
 
    * With `uv`

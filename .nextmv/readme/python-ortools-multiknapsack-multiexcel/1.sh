@@ -1,1 +1,1 @@
-python3 main.py -duration 30 -provider SCIP
+uv sync

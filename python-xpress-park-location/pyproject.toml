@@ -8,3 +8,6 @@ dependencies = [
     "plotly==6.5.2",
     "xpress==9.8.0",
 ]
+
+[tool.setuptools]
+packages = []

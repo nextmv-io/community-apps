@@ -8,3 +8,6 @@ dependencies = [
     "polyline==1.4.0",
     "requests==2.32.4",
 ]
+
+[tool.setuptools]
+packages = []

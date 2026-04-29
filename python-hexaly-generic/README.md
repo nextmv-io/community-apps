@@ -22,7 +22,7 @@ multi knapsack Mixed Integer Programming problem.
    - With `pip`
 
       ```bash
-      pip install .
+      pip install -r requirements.txt
       ```
 
    - With `uv`

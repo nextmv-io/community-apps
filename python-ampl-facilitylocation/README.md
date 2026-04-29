@@ -26,7 +26,7 @@ the files list.
    * With `pip`
 
       ```bash
-      pip install .
+      pip install -r requirements.txt
       ```
 
    * With `uv`
@@ -52,7 +52,8 @@ the files list.
       Or with custom options:
 
       ```bash
-      cat input.json | uv run main.py -duration 30 -provider highs -modelpath . -runpath .
+      cat input.json | uv run main.py \
+         -duration 30 -provider highs -modelpath . -runpath .
       ```
 
 ## Mirror running on Nextmv Cloud locally
