@@ -164,10 +164,6 @@ apps:
         skip: true
       - name: 2.sh
         skip: true
-      - name: 3.sh
-        skip: true
-      - name: 4.sh
-        skip: true
   # TODO: enable when GAMS fixes breaking changes.
   - name: python-gams-cutstock
     scripts:

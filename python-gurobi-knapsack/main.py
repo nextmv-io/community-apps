@@ -70,9 +70,10 @@ def solve(loaded_input: nextmv.Input) -> tuple[dict[str, Any], dict[str, Any]]:
     model.optimize()
 
     # Determines which items were chosen.
-    chosen_items = [item["item"] for item in items if item["variable"].X > 0.9]
-
-    solution = {"items": chosen_items}
+    solution = {}
+    if model.Status == 2:
+        chosen_items = [item["item"] for item in items if item["variable"].X > 0.9]
+        solution = {"items": chosen_items}
 
     metrics = {
         "run_duration": time.time() - start_time,

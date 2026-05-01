@@ -36,5 +36,5 @@ configuration:
         description: Solver provider (cbc, glpk, or scip)
         required: false
         ui:
-          control_type: text
+          control_type: input
           display_name: Provider

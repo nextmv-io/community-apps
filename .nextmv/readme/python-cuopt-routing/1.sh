@@ -1,1 +1,1 @@
-uv sync
+cat input.json | python main.py

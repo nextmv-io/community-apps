@@ -41,7 +41,7 @@ configuration:
         description: Solver provider.
         required: false
         ui:
-          control_type: text
+          control_type: input
           display_name: Provider
       - name: runpath
         option_type: string
@@ -49,7 +49,7 @@ configuration:
         description: Path to the directory with the run file.
         required: false
         ui:
-          control_type: text
+          control_type: input
           display_name: Run Path
       - name: modelpath
         option_type: string
@@ -57,5 +57,5 @@ configuration:
         description: Path to the directory with the model file.
         required: false
         ui:
-          control_type: text
+          control_type: input
           display_name: Model Path

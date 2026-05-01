@@ -24,6 +24,7 @@ def solve(loaded_input: nextmv.Input) -> tuple[dict[str, Any], dict[str, Any]]:
 
     options = loaded_input.options
     max_nodes = options.maxnodes
+    provider = options.provider
     start_time = time.time()
     nextmv.redirect_stdout()  # Solver chatter is logged to stderr.
     city_data = loaded_input.data
@@ -43,7 +44,12 @@ def solve(loaded_input: nextmv.Input) -> tuple[dict[str, Any], dict[str, Any]]:
     dist_df = pd.DataFrame(dist_mat, index=city_df["row.city"], columns=city_df["row.city"])
     distance_df = dist_df.reset_index().melt(id_vars="row.city", var_name="to_city", value_name="distance")
 
-    [sol, tot_time], model = tsp_model(nodes_recs=city_df, distance_recs=distance_df, maxnodes=max_nodes)
+    [sol, tot_time], model = tsp_model(
+        nodes_recs=city_df,
+        distance_recs=distance_df,
+        maxnodes=max_nodes,
+        provider=provider,
+    )
 
     path = get_path(sol)
 
@@ -92,7 +98,10 @@ def get_path(sol: pd.DataFrame):
 
 
 def tsp_model(
-    nodes_recs: pd.DataFrame, distance_recs: pd.DataFrame, maxnodes: int = 10
+    nodes_recs: pd.DataFrame,
+    distance_recs: pd.DataFrame,
+    maxnodes: int = 10,
+    provider: str = "CPLEX",
 ) -> tuple[list[pd.DataFrame, float], gp.Model]:
     m = gp.Container()
 
@@ -164,7 +173,7 @@ def tsp_model(
 
     while True:
         start = time.time()
-        tsp.solve(solver="CPLEX", options=gp.Options(time_limit=time_limit))
+        tsp.solve(solver=provider, options=gp.Options(time_limit=time_limit))
         sol = X[...].where[X.l > 0.5].records
         subtours = find_subtours(sol)
 

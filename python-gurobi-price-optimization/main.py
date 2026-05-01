@@ -71,7 +71,7 @@ def solve(loaded_input: nextmv.Input, options: nextmv.Options) -> tuple[dict[str
         r: (
             data["coefficients"]["Intercept"]
             + data["coefficients"]["price"] * p[r]
-            + data["coefficients"]["C(region)[T.%s]" % r]
+            + data["coefficients"][f"C(region)[T.{r}]" ]
             + data["coefficients"]["year_index"] * (year - 2015)
             + data["coefficients"]["peak"] * peak_or_not
         )
@@ -101,7 +101,7 @@ def solve(loaded_input: nextmv.Input, options: nextmv.Options) -> tuple[dict[str
                 "predicted_demand": round(
                     data["coefficients"]["Intercept"]
                     + data["coefficients"]["price"] * p[r].X
-                    + data["coefficients"]["C(region)[T.%s]" % r]
+                    + data["coefficients"][f"C(region)[T.{r}]" ]
                     + data["coefficients"]["year_index"] * (year - 2015)
                     + data["coefficients"]["peak"] * peak_or_not,
                     8,

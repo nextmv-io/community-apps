@@ -38,10 +38,10 @@ configuration:
         required: false
         additional_attributes:
           values:
-            - off
-            - low
-            - medium
-            - high
+            - "off"
+            - "low"
+            - "medium"
+            - "high"
         ui:
           control_type: select
           display_name: Check Verbosity

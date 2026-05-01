@@ -9,7 +9,8 @@ from gurobipy import GRB
 def main() -> None:
     """Entry point for the program."""
 
-    loaded_input = nextmv.load()
+    gp_opt = ngp.ModelOptions().to_nextmv()
+    loaded_input = nextmv.load(options=gp_opt)
     options = loaded_input.options
 
     nextmv.log("Solving knapsack problem:")
@@ -48,10 +49,11 @@ def solve(loaded_input: nextmv.Input) -> tuple[dict[str, Any], dict[str, Any]]:
     # Solves the problem.
     model.optimize()
 
-    # Build solution dictionary from model
+    # Determines which items were chosen.
     solution = {}
-    for item_data in items:
-        solution[item_data["item"]["id"]] = item_data["variable"].X
+    if model.Status == 2:
+        chosen_items = [item["item"] for item in items if item["variable"].X > 0.9]
+        solution = {"items": chosen_items}
 
     # Build metrics dictionary
     solve_duration = time.time() - start_time

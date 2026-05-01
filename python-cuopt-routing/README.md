@@ -14,12 +14,6 @@ To run the model locally, you must have a cuOpt-capable NVIDIA GPU. Open the
       pip install .
       ```
 
-   * With `uv`
-  
-      ```bash
-      uv sync
-      ```
-
 2. Run the app.
 
    * With `python`
@@ -28,16 +22,10 @@ To run the model locally, you must have a cuOpt-capable NVIDIA GPU. Open the
       cat input.json | python main.py
       ```
 
-   * With `uv`
-
-      ```bash
-      cat input.json | uv run main.py
-      ```
-
       Or with custom options:
 
       ```bash
-      cat input.json | uv run main.py -time_limit 5
+      cat input.json | python main.py -time_limit 5
       ```
 
 ## Features

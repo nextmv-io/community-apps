@@ -5,6 +5,7 @@ from typing import Any
 
 import nextmv
 from amplpy import AMPL, modules
+from visuals import create_visuals
 
 # Duration parameter for the solver.
 SUPPORTED_PROVIDER_DURATIONS = {
@@ -39,12 +40,12 @@ def main() -> None:
     nextmv.log("Solving price optimization problem:")
     nextmv.log(f"  - regions: {len(loaded_input.data.get('regions', []))}")
 
-    solution, metrics = solve(loaded_input)
-    nextmv.write(solution=solution, metrics=metrics, options=options)
+    solution, metrics, assets = solve(loaded_input)
+    nextmv.write(solution=solution, metrics=metrics, assets=assets, options=options)
 
 
-def solve(loaded_input: nextmv.Input) -> tuple[dict[str, Any], dict[str, Any]]:
-    """Solves the given problem and returns the solution and metrics."""
+def solve(loaded_input: nextmv.Input) -> tuple[dict[str, Any], dict[str, Any], list[nextmv.Asset]]:
+    """Solves the given problem and returns the solution, metrics, and assets."""
 
     start_time = time.time()
     nextmv.redirect_stdout()  # Solver chatter is logged to stderr.
@@ -150,7 +151,9 @@ def solve(loaded_input: nextmv.Input) -> tuple[dict[str, Any], dict[str, Any]]:
         "license_used": license_used,
     }
 
-    return solution, metrics
+    assets = create_visuals(solution, metrics)
+
+    return solution, metrics, assets
 
 
 def activate_license() -> str:

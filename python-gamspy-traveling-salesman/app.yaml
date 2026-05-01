@@ -30,3 +30,15 @@ configuration:
         ui:
           control_type: slider
           display_name: Maximum Nodes
+      - name: provider
+        option_type: string
+        default: CPLEX
+        description: Solver provider
+        required: false
+        ui:
+          control_type: select
+          display_name: Solver Provider
+        additional_attributes:
+          values:
+            - CPLEX
+            - KESTREL # Set the NEOS_EMAIL env var to use this solver.

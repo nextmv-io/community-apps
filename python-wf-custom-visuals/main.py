@@ -1,5 +1,4 @@
 import colorsys
-from typing import Any
 
 import nextmv
 from nextpipe import FlowSpec, app, needs, step
@@ -26,101 +25,95 @@ class Flow(FlowSpec):
     )
     @needs(predecessors=[prepare])
     @step
-    def routing():
+    def solve():
         """Solves the routing problem using Nextroute Marketplace App."""
         pass  # Execution happens in sub-app.
 
-    @needs(predecessors=[routing])
+    @needs(predecessors=[solve])
     @step
     def postprocess(result: dict):
         """Post-processes the result."""
-        return result
+
+        # Add custom cluster polygon visualization of the routes via geojson.
+        geojson = {}
+        if "solutions" in result and result["solutions"]:
+            polygons = [
+                (
+                    convex_hull_scipy(vehicle["route"]),
+                    vehicle["id"],
+                    vehicle["route_duration"],
+                    vehicle["route_travel_duration"],
+                    vehicle["route_travel_distance"],
+                )
+                for vehicle in result["solutions"][-1]["vehicles"]
+            ]
+            geojson = {
+                "type": "FeatureCollection",
+                "features": [
+                    {
+                        "type": "Feature",
+                        "geometry": {
+                            "type": "Polygon",
+                            "coordinates": [polygon],
+                        },
+                        "properties": {
+                            "name": f"Route {i + 1}",
+                            # Assign a color based on the index of the polygon.
+                            "style": {
+                                "color": get_color(i / len(polygons)),
+                                "fillColor": get_color(i / len(polygons)),
+                                "fillOpacity": 0.7,
+                            },
+                            # Define some metadata to show when clicking on the polygon.
+                            "metadata": [
+                                {"key": "Vehicle ID", "value": vehicle_id},
+                                {"key": "#Stops", "value": len(polygon) - 1},  # Exclude the closing point
+                                {"key": "Route Duration", "value": f"{duration} seconds"},
+                                {"key": "Travel Duration", "value": f"{travel_duration} seconds"},
+                                {"key": "Travel Distance", "value": f"{travel_distance} meters"},
+                            ],
+                        },
+                    }
+                    for i, (polygon, vehicle_id, duration, travel_duration, travel_distance) in enumerate(polygons)
+                ],
+            }
+
+        # Write out the result
+        return nextmv.Output(
+            json_configurations={
+                "indent": None,
+                "separators": (",", ":"),
+            },
+            solution=result["solutions"][-1],
+            metrics=result["statistics"],
+            assets=[
+                nextmv.Asset(
+                    name="clusters",
+                    content_type="json",
+                    visual=nextmv.Visual(
+                        visual_schema=nextmv.VisualSchema(value=nextmv.VisualSchema.GEOJSON),
+                        label="Clusters",
+                        visual_type="custom-tab",
+                    ),
+                    content=geojson,
+                ),
+            ],
+        )
 
 
-def solve(loaded_input: nextmv.Input) -> tuple[dict[str, Any], dict[str, Any]]:
-    """Runs the workflow and returns the solution and metrics."""
+def main():
+    """
+    Main function to run above workflow.
+    """
+
+    loaded_input = nextmv.load()
+
+    # Run workflow
     flow = Flow("DecisionFlow", loaded_input.data)
     flow.run()
-    result = flow.get_result(flow.postprocess)
-    solution = result["solutions"][-1]
-    metrics = result["statistics"]
-    return solution, metrics
 
-
-def main() -> None:
-    """Entry point for the program."""
-    loaded_input = nextmv.load()
-    options = loaded_input.options
-
-    solution, metrics = solve(loaded_input)
-
-    # Add custom cluster polygon visualization of the routes via geojson.
-    geojson = {}
-    if solution.get("vehicles"):
-        polygons = [
-            (
-                convex_hull_scipy(vehicle["route"]),
-                vehicle["id"],
-                vehicle["route_duration"],
-                vehicle["route_travel_duration"],
-                vehicle["route_travel_distance"],
-            )
-            for vehicle in solution["vehicles"]
-        ]
-        geojson = {
-            "type": "FeatureCollection",
-            "features": [
-                {
-                    "type": "Feature",
-                    "geometry": {
-                        "type": "Polygon",
-                        "coordinates": [polygon],
-                    },
-                    "properties": {
-                        "name": f"Route {i + 1}",
-                        # Assign a color based on the index of the polygon.
-                        "style": {
-                            "color": get_color(i / len(polygons)),
-                            "fillColor": get_color(i / len(polygons)),
-                            "fillOpacity": 0.7,
-                        },
-                        # Define some metadata to show when clicking on the polygon.
-                        "metadata": [
-                            {"key": "Vehicle ID", "value": vehicle_id},
-                            {"key": "#Stops", "value": len(polygon) - 1},  # Exclude the closing point
-                            {"key": "Route Duration", "value": f"{duration} seconds"},
-                            {"key": "Travel Duration", "value": f"{travel_duration} seconds"},
-                            {"key": "Travel Distance", "value": f"{travel_distance} meters"},
-                        ],
-                    },
-                }
-                for i, (polygon, vehicle_id, duration, travel_duration, travel_distance) in enumerate(polygons)
-            ],
-        }
-
-    assets = [
-        nextmv.Asset(
-            name="clusters",
-            content_type="json",
-            visual=nextmv.Visual(
-                visual_schema=nextmv.VisualSchema(value=nextmv.VisualSchema.GEOJSON),
-                label="Clusters",
-                visual_type="custom-tab",
-            ),
-            content=geojson,
-        ),
-    ]
-
-    nextmv.write(
-        solution=solution,
-        metrics=metrics,
-        options=options,
-        assets=assets,
-        json_configurations={
-            "indent": None,
-            "separators": (",", ":"),
-        },
-    )
+    # Write out the result
+    nextmv.write(output=flow.get_result(flow.postprocess))
 
 
 def convex_hull_scipy(route: list[dict]) -> list[tuple[float, float]]:

@@ -39,5 +39,5 @@ configuration:
         description: Solver provider.
         required: false
         ui:
-          control_type: text
+          control_type: input
           display_name: Provider

@@ -41,7 +41,7 @@ configuration:
         description: Solver provider.
         required: false
         ui:
-          control_type: text
+          control_type: input
           display_name: Provider
       - name: model
         option_type: string
@@ -49,5 +49,5 @@ configuration:
         description: Path to folder containing the .mod file.
         required: false
         ui:
-          control_type: text
+          control_type: input
           display_name: Model Path

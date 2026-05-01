@@ -40,10 +40,11 @@ configuration:
         default: cbc
         description: Solver provider.
         required: false
-        ui:
-          control_type: dropdown
-          display_name: Provider
-          options:
+        additional_attributes:
+          values:
             - cbc
             - glpk
             - scip
+        ui:
+          control_type: select
+          display_name: Provider
