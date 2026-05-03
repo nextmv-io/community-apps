@@ -1,0 +1,113 @@
+{
+  "defaults": {
+    "stops": {
+      "duration": 120,
+      "unplanned_penalty": 200000
+    },
+    "vehicles": {
+      "end_location": {
+        "lat": 33.122746,
+        "lon": -96.659222
+      },
+      "end_time": "2021-10-17T11:00:00-06:00",
+      "speed": 10,
+      "start_location": {
+        "lat": 33.122746,
+        "lon": -96.659222
+      },
+      "start_time": "2021-10-17T09:00:00-06:00"
+    }
+  },
+  "stops": [
+    {
+      "id": "location-1",
+      "location": {
+        "lat": 33.20580830033956,
+        "lon": -96.75038245222623
+      },
+      "quantity": -27
+    },
+    {
+      "id": "location-2",
+      "location": {
+        "lat": 33.2259142720506,
+        "lon": -96.54613745932127
+      },
+      "quantity": -30
+    },
+    {
+      "id": "location-3",
+      "location": {
+        "lat": 33.23528740544529,
+        "lon": -96.61059803136642
+      },
+      "quantity": -36
+    },
+    {
+      "id": "location-4",
+      "location": {
+        "lat": 33.20379744909628,
+        "lon": -96.61356543957307
+      },
+      "quantity": -19
+    },
+    {
+      "id": "location-5",
+      "location": {
+        "lat": 33.178801586789376,
+        "lon": -96.64137458150537
+      },
+      "quantity": -31
+    },
+    {
+      "id": "location-6",
+      "location": {
+        "lat": 33.02896457334468,
+        "lon": -96.83157538607735
+      },
+      "quantity": -15
+    },
+    {
+      "id": "location-7",
+      "location": {
+        "lat": 33.08670100884261,
+        "lon": -96.62951544963792
+      },
+      "quantity": -31
+    },
+    {
+      "id": "location-8",
+      "location": {
+        "lat": 33.08133590083287,
+        "lon": -96.86007117348946
+      },
+      "quantity": -52
+    },
+    {
+      "id": "location-9",
+      "location": {
+        "lat": 33.092841906114394,
+        "lon": -96.87346076034575
+      },
+      "quantity": -48
+    },
+    {
+      "id": "location-10",
+      "location": {
+        "lat": 33.10492159118987,
+        "lon": -96.79586982112724
+      },
+      "quantity": -40
+    }
+  ],
+  "vehicles": [
+    {
+      "capacity": 305,
+      "id": "vehicle-1"
+    },
+    {
+      "capacity": 205,
+      "id": "vehicle-2"
+    }
+  ]
+}
