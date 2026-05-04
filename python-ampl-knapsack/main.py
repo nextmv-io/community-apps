@@ -1,6 +1,7 @@
 import os
 import time
 from platform import uname
+from typing import Any
 
 import nextmv
 from amplpy import AMPL, modules
@@ -32,107 +33,93 @@ STATUS = [
 def main() -> None:
     """Entry point for the program."""
 
-    options = nextmv.Options(
-        nextmv.Option("input", str, "", "Path to input file. Default is stdin.", False),
-        nextmv.Option("output", str, "", "Path to output file. Default is stdout.", False),
-        nextmv.Option("duration", int, 30, "Max runtime duration (in seconds).", False),
-        nextmv.Option("provider", str, "highs", "Solver provider.", False),
-    )
-
-    input = nextmv.load(options=options, path=options.input)
+    loaded_input = nextmv.load()
+    options = loaded_input.options
 
     nextmv.log("Solving knapsack problem:")
-    nextmv.log(f"  - items: {len(input.data.get('items', []))}")
-    nextmv.log(f"  - capacity: {input.data.get('weight_capacity', 0)}")
+    nextmv.log(f"  - items: {len(loaded_input.data.get('items', []))}")
+    nextmv.log(f"  - capacity: {loaded_input.data.get('weight_capacity', 0)}")
 
-    model = DecisionModel()
-    output = model.solve(input)
-    nextmv.write(output, path=options.output)
+    solution, metrics = solve(loaded_input)
+    nextmv.write(solution=solution, metrics=metrics, options=options)
 
 
-class DecisionModel(nextmv.Model):
-    def solve(self, input: nextmv.Input) -> nextmv.Output:
-        """Solves the given problem and returns the solution."""
+def solve(loaded_input: nextmv.Input) -> tuple[dict[str, Any], dict[str, Any]]:
+    """Solves the given problem and returns the solution and metrics."""
 
-        start_time = time.time()
-        nextmv.redirect_stdout()  # Solver chatter is logged to stderr.
+    start_time = time.time()
+    nextmv.redirect_stdout()  # Solver chatter is logged to stderr.
 
-        # Activate license.
-        license_used = activate_license()
-        input.options.license_used = license_used
+    # Activate license.
+    license_used = activate_license()
 
-        # Defines the model.
-        ampl = AMPL()
-        ampl.eval(
-            r"""
-            # Sets
-            set I; # Set of items.
+    # Defines the model.
+    ampl = AMPL()
+    ampl.eval(
+        r"""
+        # Sets
+        set I; # Set of items.
 
-            # Parameters
-            param W >= 0; # Maximum weight capacity.
-            param v {I} >= 0; # Value of each item.
-            param w {I} >= 0; # Weight of each item.
+        # Parameters
+        param W >= 0; # Maximum weight capacity.
+        param v {I} >= 0; # Value of each item.
+        param w {I} >= 0; # Weight of each item.
 
-            # Variables
-            var x {I} binary; # 1 if item is selected, 0 otherwise.
+        # Variables
+        var x {I} binary; # 1 if item is selected, 0 otherwise.
 
-            # Objective
-            maximize z: sum {i in I} v[i] * x[i];
+        # Objective
+        maximize z: sum {i in I} v[i] * x[i];
 
-            # Constraints
-            s.t. weight_limit: sum {i in I} w[i] * x[i] <= W;
-            """
-        )
+        # Constraints
+        s.t. weight_limit: sum {i in I} w[i] * x[i] <= W;
+        """
+    )
 
-        # Sets the solver and options.
-        provider = input.options.provider
-        ampl.option["solver"] = provider
-        if provider in SUPPORTED_PROVIDER_DURATIONS.keys():
-            ampl.option[f"{provider}_options"] = f"{SUPPORTED_PROVIDER_DURATIONS[provider]}={input.options.duration}"
+    # Sets the solver and options.
+    provider = loaded_input.options.provider
+    ampl.option["solver"] = provider
+    if provider in SUPPORTED_PROVIDER_DURATIONS.keys():
+        ampl.option[f"{provider}_options"] = f"{SUPPORTED_PROVIDER_DURATIONS[provider]}={loaded_input.options.duration}"
 
-        # Set the data on the model.
-        ampl.set["I"] = [item["id"] for item in input.data["items"]]
-        ampl.param["W"] = input.data["weight_capacity"]
-        ampl.param["v"] = {item["id"]: item["value"] for item in input.data["items"]}
-        ampl.param["w"] = {item["id"]: item["weight"] for item in input.data["items"]}
+    # Set the data on the model.
+    ampl.set["I"] = [item["id"] for item in loaded_input.data["items"]]
+    ampl.param["W"] = loaded_input.data["weight_capacity"]
+    ampl.param["v"] = {item["id"]: item["value"] for item in loaded_input.data["items"]}
+    ampl.param["w"] = {item["id"]: item["weight"] for item in loaded_input.data["items"]}
 
-        # Solves the problem. Verbose mode is turned off to avoid printing to
-        # stdout. Only the output should be printed to stdout.
-        ampl.solve()
+    # Solves the problem. Verbose mode is turned off to avoid printing to
+    # stdout. Only the output should be printed to stdout.
+    ampl.solve()
 
-        # Convert to solution format.
-        value = ampl.get_objective("z")
-        chosen_items = []
-        if value:
-            chosen_items = [item for item in input.data["items"] if ampl.get_variable("x")[item["id"]].value() > 0.9]
+    # Convert to solution format.
+    value = ampl.get_objective("z")
+    chosen_items = []
+    if value:
+        chosen_items = [item for item in loaded_input.data["items"] if ampl.get_variable("x")[item["id"]].value() > 0.9]
 
-        solve_result = ampl.solve_result_num
-        status = "unknown"
-        for s in STATUS:
-            lb = s.get("lb")
-            ub = s.get("ub")
-            if lb is not None and ub is not None and lb <= solve_result <= ub:
-                status = s.get("status")
-                break
+    solve_result = ampl.solve_result_num
+    status = "unknown"
+    for s in STATUS:
+        lb = s.get("lb")
+        ub = s.get("ub")
+        if lb is not None and ub is not None and lb <= solve_result <= ub:
+            status = s.get("status")
+            break
 
-        statistics = nextmv.Statistics(
-            run=nextmv.RunStatistics(duration=time.time() - start_time),
-            result=nextmv.ResultStatistics(
-                duration=ampl.get_value("_total_solve_time"),
-                value=value.value(),
-                custom={
-                    "status": status,
-                    "variables": ampl.get_value("_nvars"),
-                    "constraints": ampl.get_value("_ncons"),
-                },
-            ),
-        )
+    metrics = {
+        "run_duration": time.time() - start_time,
+        "solve_duration": ampl.get_value("_total_solve_time"),
+        "value": value.value(),
+        "status": status,
+        "variables": ampl.get_value("_nvars"),
+        "constraints": ampl.get_value("_ncons"),
+        "license_used": license_used,
+    }
 
-        return nextmv.Output(
-            options=input.options,
-            solution={"items": chosen_items},
-            statistics=statistics,
-        )
+    solution = {"items": chosen_items}
+
+    return solution, metrics
 
 
 def activate_license() -> str:

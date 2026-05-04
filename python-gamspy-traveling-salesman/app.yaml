@@ -8,4 +8,37 @@ python:
 # (e.g.: configs/*.json) is supported.
 files:
   - main.py
-  - tsp.py
+
+# Application configurations.
+configuration:
+  # Define the content format of the app, one of: json, multi-file.
+  content:
+    format: json
+  # Define the options (parameters) of the app.
+  options:
+    strict: false
+    items:
+      - name: maxnodes
+        option_type: int
+        default: 5
+        description: Maximum number of nodes to solve the model with
+        required: false
+        additional_attributes:
+          min: 1
+          max: 100
+          step: 1
+        ui:
+          control_type: slider
+          display_name: Maximum Nodes
+      - name: provider
+        option_type: string
+        default: CPLEX
+        description: Solver provider
+        required: false
+        ui:
+          control_type: select
+          display_name: Solver Provider
+        additional_attributes:
+          values:
+            - CPLEX
+            - KESTREL # Set the NEOS_EMAIL env var to use this solver.

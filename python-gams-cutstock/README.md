@@ -7,16 +7,37 @@ the product demand.
 
 1. Install packages.
 
-    ```bash
-    pip3 install -r requirements.txt
-    ```
+   * With `pip`
 
-1. Run the app.
+      ```bash
+      pip install .
+      ```
 
-    ```bash
-    python3 main.py -input data.json -output output.json \
-      -raw_width 100 -max_pattern 35
-    ```
+   * With `uv`
+  
+      ```bash
+      uv sync
+      ```
+
+2. Run the app.
+
+   * With `python`
+
+      ```bash
+      cat data.json | python main.py
+      ```
+
+   * With `uv`
+
+      ```bash
+      cat data.json | uv run main.py
+      ```
+
+      Or with custom options:
+
+      ```bash
+      cat data.json | uv run main.py -raw_width 100 -max_pattern 35
+      ```
 
 ## Next steps
 

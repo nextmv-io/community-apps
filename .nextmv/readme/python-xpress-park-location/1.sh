@@ -1,1 +1,1 @@
-python3 main.py -input input.json -output output.json -objective average_distance
+uv sync

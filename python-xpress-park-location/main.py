@@ -1,4 +1,5 @@
 import json
+from typing import Any
 
 import nextmv
 import numpy as np
@@ -17,32 +18,40 @@ STATUS = {
 def main() -> None:
     """Entry point for the program."""
 
-    manifest = nextmv.Manifest.from_yaml(".")
-    options = manifest.extract_options()
+    loaded_input = nextmv.load()
+    options = loaded_input.options
 
-    input = nextmv.load(options=options, path=options.input)
     valid = {"average_distance", "total_distance", "max_distance"}
     if options.objective not in valid:
         raise ValueError(f"Invalid objective. Must be in set {valid}.")
 
-    nextmv.log("Solving facility location problem:")
+    nextmv.log("Solving park location problem:")
     nextmv.log(f"  - objective: {options.objective}")
     nextmv.log(f"  - parks_override: {options.parks_override}")
-    nextmv.log(f"  - schools: {input.data.get('num_schools')}")
-    nextmv.log(f"  - sites: {input.data.get('num_sites')}")
-    nextmv.log(f"  - parks: {input.data.get('num_parks')}")
+    nextmv.log(f"  - schools: {loaded_input.data.get('num_schools')}")
+    nextmv.log(f"  - sites: {loaded_input.data.get('num_sites')}")
+    nextmv.log(f"  - parks: {loaded_input.data.get('num_parks')}")
 
-    np.random.seed(input.data.get("seed"))
+    solution, metrics, assets = solve(loaded_input, options)
+    nextmv.write(solution=solution, metrics=metrics, options=options, assets=assets)
 
-    SCHOOLS = range(input.data.get("num_schools"))  # set of schools
-    SITES = range(input.data.get("num_sites"))  # set of candidate sites
-    num_parks = input.data.get("num_parks")
+
+def solve(
+    loaded_input: nextmv.Input, options: nextmv.Options
+) -> tuple[dict[str, Any], dict[str, Any], list[nextmv.Asset]]:
+    """Solves the given problem and returns the solution, metrics, and assets."""
+
+    np.random.seed(loaded_input.data.get("seed"))
+
+    SCHOOLS = range(loaded_input.data.get("num_schools"))  # set of schools
+    SITES = range(loaded_input.data.get("num_sites"))  # set of candidate sites
+    num_parks = loaded_input.data.get("num_parks")
     if options.parks_override is not None:
         num_parks = options.parks_override
 
     # x-y coordinates between 0 and 10 (in km)
-    coord_schools = 10 * np.random.random((input.data.get("num_schools"), 2))
-    coord_sites = 10 * np.random.random((input.data.get("num_sites"), 2))
+    coord_schools = 10 * np.random.random((loaded_input.data.get("num_schools"), 2))
+    coord_sites = 10 * np.random.random((loaded_input.data.get("num_sites"), 2))
 
     # Create a dictionary with the distances between schools and candidate sites
     dist = {(i, j): np.linalg.norm([coord_schools[i] - coord_sites[j]]) for i in SCHOOLS for j in SITES}
@@ -56,7 +65,7 @@ def main() -> None:
     # Objective function and constraints
     if options.objective == "average_distance":
         prob.setObjective(
-            xp.Sum(dist[i, j] * serves[i, j] for i in SCHOOLS for j in SITES) / input.data.get("num_schools")
+            xp.Sum(dist[i, j] * serves[i, j] for i in SCHOOLS for j in SITES) / loaded_input.data.get("num_schools")
         )
     elif options.objective == "total_distance":
         prob.setObjective(xp.Sum(dist[i, j] * serves[i, j] for i in SCHOOLS for j in SITES))
@@ -68,23 +77,23 @@ def main() -> None:
     # Every school must be served by one park
     prob.addConstraint(xp.Sum(serves[i, j] for j in SITES) == 1 for i in SCHOOLS)
 
-    # Exactly n parks are built:
+    # Exactly n parks are built
     prob.addConstraint(xp.Sum(build[j] for j in SITES) == num_parks)
 
     # Only parks that are built can serve schools
-    prob.addConstraint(xp.Sum(serves[i, j] for i in SCHOOLS) <= input.data.get("num_schools") * build[j] for j in SITES)
+    prob.addConstraint(
+        xp.Sum(serves[i, j] for i in SCHOOLS) <= loaded_input.data.get("num_schools") * build[j] for j in SITES
+    )
 
     _, status = prob.optimize()
 
     prob.write("problem.lp")
-    solution = json.dumps(prob.getSolution())
+    solution_data = json.dumps(prob.getSolution())
     value = prob.attributes.objval
 
-    input.options.provider = "xpress"
-
     input_charts = draw_sol(
-        n=input.data.get("num_schools"),
-        m=input.data.get("num_sites"),
+        n=loaded_input.data.get("num_schools"),
+        m=loaded_input.data.get("num_sites"),
         label="Input Chart",
         coord_schools=coord_schools,
         coord_sites=coord_sites,
@@ -93,8 +102,8 @@ def main() -> None:
         tab_order=1,
     )
     output_charts = draw_sol(
-        input.data.get("num_schools"),
-        input.data.get("num_sites"),
+        loaded_input.data.get("num_schools"),
+        loaded_input.data.get("num_sites"),
         prob,
         serves,
         build,
@@ -107,7 +116,9 @@ def main() -> None:
     )
 
     sol = prob.getSolution(serves)
-    average_distance = sum(dist[i, j] * sol[i, j] for i in SCHOOLS for j in SITES) / input.data.get("num_schools")
+    average_distance = sum(dist[i, j] * sol[i, j] for i in SCHOOLS for j in SITES) / loaded_input.data.get(
+        "num_schools"
+    )
     total_distance = sum(dist[i, j] * sol[i, j] for i in SCHOOLS for j in SITES)
     max_distance = max(dist[i, j] for i in SCHOOLS for j in SITES if sol[i, j] > 0.5)
 
@@ -115,21 +126,19 @@ def main() -> None:
     nextmv.log(f"total_distance: {total_distance}")
     nextmv.log(f"max_distance: {max_distance}")
 
-    output = nextmv.Output(
-        solution={"solution": solution},
-        assets=[input_charts, output_charts],
-        metrics={
-            "result_value": value,
-            "average_distance": average_distance,
-            "total_distance": total_distance,
-            "max_distance": max_distance,
-            "status": STATUS.get(status, "unknown"),
-            "variables": prob.getAttrib("cols"),
-            "constraints": prob.getAttrib("rows"),
-        },
-    )
+    solution = {"solution": solution_data}
+    metrics = {
+        "result_value": value,
+        "average_distance": average_distance,
+        "total_distance": total_distance,
+        "max_distance": max_distance,
+        "status": STATUS.get(status, "unknown"),
+        "variables": prob.getAttrib("cols"),
+        "constraints": prob.getAttrib("rows"),
+    }
+    assets = [input_charts, output_charts]
 
-    nextmv.write(output, path=options.output)
+    return solution, metrics, assets
 
 
 if __name__ == "__main__":

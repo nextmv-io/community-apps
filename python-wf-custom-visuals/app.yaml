@@ -6,4 +6,4 @@ python:
   pip-requirements: requirements.txt
 configuration:
   content:
-    format: "json"
+    format: json

@@ -1,5 +1,6 @@
 import time
 from importlib.metadata import version
+from typing import Any
 
 import nextmv
 import pyscipopt
@@ -8,70 +9,57 @@ import pyscipopt
 def main() -> None:
     """Entry point for the program."""
 
-    options = nextmv.Options(
-        nextmv.Option("input", str, "", "Path to input file. Default is stdin.", False),
-        nextmv.Option("output", str, "", "Path to output file. Default is stdout.", False),
-        nextmv.Option("duration", int, 30, "Max runtime duration (in seconds).", False),
-    )
-
-    input = nextmv.load(options=options, path=options.input)
+    loaded_input = nextmv.load()
+    options = loaded_input.options
 
     nextmv.log("Solving knapsack problem:")
-    nextmv.log(f"  - items: {len(input.data.get('items', []))}")
-    nextmv.log(f"  - capacity: {input.data.get('weight_capacity', 0)}")
+    nextmv.log(f"  - items: {len(loaded_input.data.get('items', []))}")
+    nextmv.log(f"  - capacity: {loaded_input.data.get('weight_capacity', 0)}")
 
-    model = DecisionModel()
-    output = model.solve(input)
-    nextmv.write(output, path=options.output)
+    solution, metrics = solve(loaded_input)
+    nextmv.write(solution=solution, metrics=metrics, options=options)
 
 
-class DecisionModel(nextmv.Model):
-    def solve(self, input: nextmv.Input) -> nextmv.Output:
-        """Solves the given problem and returns the solution."""
+def solve(loaded_input: nextmv.Input) -> tuple[dict[str, Any], dict[str, Any]]:
+    """Solves the given problem and returns the solution and metrics."""
 
-        start_time = time.time()
+    start_time = time.time()
+    options = loaded_input.options
 
-        # Create the model.
-        model = pyscipopt.Model("knapsack")
-        # Define variables for assignment of items to the knapsack.
-        x = []
-        for item in input.data["items"]:
-            x.append(model.addVar(vtype="B", obj=item["value"]))
-        # Define constraint respecting the weight capacity of the knapsack.
-        model.addCons(
-            sum(x[i] * item["weight"] for i, item in enumerate(input.data["items"])) <= input.data["weight_capacity"]
-        )
-        # Maximize the total value of the knapsack.
-        model.setMaximize()
-        nVars, nCons = model.getNVars(), model.getNConss()
+    # Create the model.
+    model = pyscipopt.Model("knapsack")
+    # Define variables for assignment of items to the knapsack.
+    x = []
+    for item in loaded_input.data["items"]:
+        x.append(model.addVar(vtype="B", obj=item["value"]))
+    # Define constraint respecting the weight capacity of the knapsack.
+    model.addCons(
+        sum(x[i] * item["weight"] for i, item in enumerate(loaded_input.data["items"]))
+        <= loaded_input.data["weight_capacity"]
+    )
+    # Maximize the total value of the knapsack.
+    model.setMaximize()
+    n_vars, n_cons = model.getNVars(), model.getNConss()
 
-        # Solve the model.
-        model.setParam("limits/time", input.options.duration)
-        model.setParam("display/verblevel", 0)  # suppress output to support clean json on stdout
-        model.optimize()
+    # Solve the model.
+    model.setParam("limits/time", options.duration)
+    model.setParam("display/verblevel", 0)  # suppress output to support clean json on stdout
+    model.optimize()
 
-        # Determine which items were chosen.
-        chosen_items = [item for i, item in enumerate(input.data["items"]) if model.getVal(x[i]) > 0.5]
+    # Determine which items were chosen.
+    chosen_items = [item for i, item in enumerate(loaded_input.data["items"]) if model.getVal(x[i]) > 0.5]
 
-        # Prepare the output.
-        input.options.version = version("pyscipopt")
-        statistics = nextmv.Statistics(
-            run=nextmv.RunStatistics(duration=time.time() - start_time),
-            result=nextmv.ResultStatistics(
-                value=model.getObjVal(),
-                custom={
-                    "status": str(model.getStatus()),
-                    "variables": nVars,
-                    "constraints": nCons,
-                },
-            ),
-        )
+    solution = {"items": chosen_items}
+    metrics = {
+        "duration": time.time() - start_time,
+        "value": model.getObjVal(),
+        "status": str(model.getStatus()),
+        "variables": n_vars,
+        "constraints": n_cons,
+        "version": version("pyscipopt"),
+    }
 
-        return nextmv.Output(
-            options=input.options,
-            solution={"items": chosen_items},
-            statistics=statistics,
-        )
+    return solution, metrics
 
 
 if __name__ == "__main__":

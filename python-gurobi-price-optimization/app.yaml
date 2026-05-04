@@ -1,0 +1,52 @@
+# This manifest holds the information the app needs to run on Nextmv.
+
+# Type and runtime specify the language and environment of the app.
+type: python
+runtime: ghcr.io/nextmv-io/runtime/python:3.11
+
+# Python-specific configurations.
+python:
+  # All listed packages will get bundled with the app.
+  pip-requirements: requirements.txt
+
+# List all files/directories that should be included in the app. Globbing
+# (e.g.: configs/*.json) is supported.
+files:
+  - main.py
+  # If you have a Gurobi license, uncomment the following line and make sure to
+  # store your license information in that file.
+  # - gurobi.lic
+
+# Application configurations.
+configuration:
+  # Define the content format of the app, one of: json, multi-file.
+  content:
+    format: json
+  # Define the options (parameters) of the app.
+  options:
+    strict: false
+    items:
+      - name: duration
+        option_type: int
+        default: 30
+        description: Max solver runtime in seconds
+        required: false
+        additional_attributes:
+          min: 1
+          max: 300
+          step: 10
+        ui:
+          control_type: slider
+          display_name: Duration
+      - name: supply
+        option_type: int
+        default: 30
+        description: Total amount of avocado supply (in millions)
+        required: false
+        additional_attributes:
+          min: 10
+          max: 100
+          step: 5
+        ui:
+          control_type: slider
+          display_name: Total Supply

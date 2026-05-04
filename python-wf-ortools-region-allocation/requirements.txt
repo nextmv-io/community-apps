@@ -1,5 +1,5 @@
 nextpipe==0.7.0
-nextmv==1.6.2
+nextmv>=1.7.4.dev0
 requests==2.32.4
 plotly==6.1.0
 pandas==2.2.3

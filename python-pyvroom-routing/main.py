@@ -1,5 +1,4 @@
 import numbers
-import os
 import time
 from datetime import datetime, timedelta
 from importlib.metadata import version
@@ -13,271 +12,259 @@ import vroom
 def main() -> None:
     """Entry point for the program."""
 
-    manifest = nextmv.Manifest.from_yaml(os.path.dirname(os.path.abspath(__file__)))
-    options = manifest.extract_options()
+    loaded_input = nextmv.load()
+    options = loaded_input.options
 
-    input = nextmv.load(options=options)
     if options.default_duration is not None:
-        input.data.setdefault("defaults", {}).setdefault("stops", {})
-        input.data["defaults"]["stops"].setdefault("duration", options.default_duration)
+        loaded_input.data.setdefault("defaults", {}).setdefault("stops", {})
+        loaded_input.data["defaults"]["stops"].setdefault("duration", options.default_duration)
     if options.default_lat is not None and options.default_lon is not None:
         depot = {"lat": options.default_lat, "lon": options.default_lon}
-        input.data.setdefault("defaults", {}).setdefault("vehicles", {})
-        input.data["defaults"]["vehicles"].setdefault("start_location", depot)
-        input.data["defaults"]["vehicles"].setdefault("end_location", depot)
-    apply_defaults(input.data)
-    validate_input(input.data)
-    process_duration_matrix(input.data)
+        loaded_input.data.setdefault("defaults", {}).setdefault("vehicles", {})
+        loaded_input.data["defaults"]["vehicles"].setdefault("start_location", depot)
+        loaded_input.data["defaults"]["vehicles"].setdefault("end_location", depot)
+    apply_defaults(loaded_input.data)
+    validate_input(loaded_input.data)
+    process_duration_matrix(loaded_input.data)
 
     nextmv.log("Solving routing problem:")
-    nextmv.log(f"  - vehicles: {len(input.data.get('vehicles', []))}")
-    nextmv.log(f"  - stops: {len(input.data.get('stops', []))}")
+    nextmv.log(f"  - vehicles: {len(loaded_input.data.get('vehicles', []))}")
+    nextmv.log(f"  - stops: {len(loaded_input.data.get('stops', []))}")
 
-    model = DecisionModel()
-    output = model.solve(input)
-    nextmv.write(output)
+    solution, metrics = solve(loaded_input)
+    nextmv.write(solution=solution, metrics=metrics, options=options)
 
 
-class DecisionModel(nextmv.Model):
-    def solve(self, input: nextmv.Input) -> nextmv.Output:
-        """Solves the given problem and returns the solution."""
+def solve(loaded_input: nextmv.Input) -> tuple[dict[str, Any], dict[str, Any]]:
+    """Solves the given problem and returns the solution and metrics."""
 
-        start_time = time.time()
-        nextmv.redirect_stdout()  # Solver chatter is logged to stderr.
-        input.options.solver = "vroom"
-        input.options.version = version("pyvroom")
+    start_time = time.time()
+    nextmv.redirect_stdout()  # Solver chatter is logged to stderr.
+    loaded_input.options.solver = "vroom"
+    loaded_input.options.version = version("pyvroom")
 
-        # TODO: use duration to limit the runtime of the solver
-        _ = input.options.duration
+    # TODO: use duration to limit the runtime of the solver
+    _ = loaded_input.options.duration
 
-        # Prepare data.
-        speed_factors = [v["speed_factor"] if "speed_factor" in v else 1 for v in input.data["vehicles"]]
-        capacities = [int(round(v["capacity"])) if "capacity" in v else 0 for v in input.data["vehicles"]]
-        quantities = [int(round(s["quantity"])) if "quantity" in s else 0 for s in input.data["stops"]]
-        quantities += [0] * (len(input.data["vehicles"]) * 2)
-        durations = [int(round(s["duration"])) if "duration" in s else 0 for s in input.data["stops"]]
-        durations += [0] * (len(input.data["vehicles"]) * 2)
-        max_duration_big_m = 365 * 24 * 60 * 60  # 1 year - used to remove the max_duration constraint if not provided
-        max_durations = [
-            v["max_duration"] if "max_duration" in v else max_duration_big_m for v in input.data["vehicles"]
-        ]
-        duration_matrix = input.data["duration_matrix"] if "duration_matrix" in input.data else None
+    # Prepare data.
+    speed_factors = [v["speed_factor"] if "speed_factor" in v else 1 for v in loaded_input.data["vehicles"]]
+    capacities = [int(round(v["capacity"])) if "capacity" in v else 0 for v in loaded_input.data["vehicles"]]
+    quantities = [int(round(s["quantity"])) if "quantity" in s else 0 for s in loaded_input.data["stops"]]
+    quantities += [0] * (len(loaded_input.data["vehicles"]) * 2)
+    durations = [int(round(s["duration"])) if "duration" in s else 0 for s in loaded_input.data["stops"]]
+    durations += [0] * (len(loaded_input.data["vehicles"]) * 2)
+    max_duration_big_m = 365 * 24 * 60 * 60  # 1 year - used to remove the max_duration constraint if not provided
+    max_durations = [
+        v["max_duration"] if "max_duration" in v else max_duration_big_m for v in loaded_input.data["vehicles"]
+    ]
+    duration_matrix = loaded_input.data["duration_matrix"] if "duration_matrix" in loaded_input.data else None
 
-        # Create the routing model.
-        problem_instance = vroom.Input()
-        problem_instance.set_durations_matrix(
-            profile="car",
-            matrix_input=duration_matrix,
-        )
+    # Create the routing model.
+    problem_instance = vroom.Input()
+    problem_instance.set_durations_matrix(
+        profile="car",
+        matrix_input=duration_matrix,
+    )
 
-        # Add the vehicles.
-        for i in range(len(input.data["vehicles"])):
-            problem_instance.add_vehicle(
-                vroom.Vehicle(
-                    id=i,
-                    start=i * 2 + len(input.data["stops"]),
-                    end=i * 2 + 1 + len(input.data["stops"]),
-                    profile="car",
-                    capacity=[capacities[i]],
-                    max_travel_time=max_durations[i],
-                    speed_factor=speed_factors[i],
-                )
-            )
-
-        # Add the stops.
-        for i in range(len(input.data["stops"])):
-            job = vroom.Job(
+    # Add the vehicles.
+    for i in range(len(loaded_input.data["vehicles"])):
+        problem_instance.add_vehicle(
+            vroom.Vehicle(
                 id=i,
-                location=i,
-                default_service=durations[i],
-                delivery=[-quantities[i]],
-                pickup=[quantities[i]],
+                start=i * 2 + len(loaded_input.data["stops"]),
+                end=i * 2 + 1 + len(loaded_input.data["stops"]),
+                profile="car",
+                capacity=[capacities[i]],
+                max_travel_time=max_durations[i],
+                speed_factor=speed_factors[i],
             )
-            problem_instance.add_job(job)
-
-        # Solve the problem.
-        solution = problem_instance.solve(
-            exploration_level=input.options.exploration_level, nb_threads=input.options.threads
         )
-        solve_end_time = time.time()
 
-        # Translate the solution into the output format.
-        vehicles_by_idx = dict(enumerate(input.data["vehicles"]))
-        stops_by_idx = dict(enumerate(input.data["stops"]))
-        unplanned_stops = []
-        max_travel_duration = 0
-        max_duration = 0
-        min_travel_duration = None
-        min_duration = None
-        max_stops_in_vehicle = 0
-        min_stops_in_vehicle = len(input.data["stops"])
-        activated_vehicles = 0
-        routes = []
+    # Add the stops.
+    for i in range(len(loaded_input.data["stops"])):
+        job = vroom.Job(
+            id=i,
+            location=i,
+            default_service=durations[i],
+            delivery=[-quantities[i]],
+            pickup=[quantities[i]],
+        )
+        problem_instance.add_job(job)
 
-        if solution:
-            # Determine the routes.
-            vehicle_routes = {}
-            planned_stops = set()
+    # Solve the problem.
+    vroom_solution = problem_instance.solve(
+        exploration_level=loaded_input.options.exploration_level, nb_threads=loaded_input.options.threads
+    )
+    solve_end_time = time.time()
 
-            def convert_stop(
-                t: str,
-                stop: dict[str, Any],
-                row: dict[str, Any],
-                prev_cumulative_travel: int,
-                base_time: datetime | None,
-            ):
-                arrival_time = int(row["arrival"])
-                waiting_time = int(row["waiting_time"])
-                setup = int(row["setup"])
-                service = int(row["service"])
-                cumulative_travel_duration = int(row["duration"])
-                travel_duration = cumulative_travel_duration - prev_cumulative_travel
-                start_time = arrival_time + waiting_time
-                end_time = start_time + setup + service
-                if base_time is not None:
-                    fmt_arrival = format_rfc3339(base_time + timedelta(seconds=arrival_time))
-                    fmt_start = format_rfc3339(base_time + timedelta(seconds=start_time))
-                    fmt_end = format_rfc3339(base_time + timedelta(seconds=end_time))
-                else:
-                    fmt_arrival = arrival_time
-                    fmt_start = start_time
-                    fmt_end = end_time
-                step = {
-                    "stop": stop,
-                    "type": t,
-                    "travel_duration": travel_duration,
-                    "cumulative_travel_duration": cumulative_travel_duration,
-                    "arrival_time": fmt_arrival,
-                    "start_time": fmt_start,
-                    "end_time": fmt_end,
-                    "setup": setup,
-                    "duration": service,
-                    "waiting_time": waiting_time,
-                }
-                return step, cumulative_travel_duration
+    # Translate the solution into the output format.
+    vehicles_by_idx = dict(enumerate(loaded_input.data["vehicles"]))
+    stops_by_idx = dict(enumerate(loaded_input.data["stops"]))
+    unplanned_stops = []
+    max_travel_duration = 0
+    max_duration = 0
+    min_travel_duration = None
+    min_duration = None
+    max_stops_in_vehicle = 0
+    min_stops_in_vehicle = len(loaded_input.data["stops"])
+    activated_vehicles = 0
+    routes = []
 
-            # Iterate dataframe to translate the routes into output format.
-            prev_cumulative_travel_by_vehicle: dict[str, int] = {}
-            base_time_by_vehicle: dict[str, datetime | None] = {}
-            for _, row in solution.routes.iterrows():
-                vehicle = vehicles_by_idx[row["vehicle_id"]]
-                vid = vehicle["id"]
+    if vroom_solution:
+        # Determine the routes.
+        vehicle_routes = {}
+        planned_stops = set()
 
-                if vid not in vehicle_routes:
-                    vehicle_routes[vid] = []
-                    prev_cumulative_travel_by_vehicle[vid] = 0
-                    raw_start = vehicle.get("start_time")
-                    base_time_by_vehicle[vid] = parse_rfc3339(raw_start) if raw_start else None
+        def convert_stop(
+            t: str,
+            stop: dict[str, Any],
+            row: dict[str, Any],
+            prev_cumulative_travel: int,
+            base_time: datetime | None,
+        ):
+            arrival_time = int(row["arrival"])
+            waiting_time = int(row["waiting_time"])
+            setup = int(row["setup"])
+            service = int(row["service"])
+            cumulative_travel_duration = int(row["duration"])
+            travel_duration = cumulative_travel_duration - prev_cumulative_travel
+            start_time = arrival_time + waiting_time
+            end_time = start_time + setup + service
+            if base_time is not None:
+                fmt_arrival = format_rfc3339(base_time + timedelta(seconds=arrival_time))
+                fmt_start = format_rfc3339(base_time + timedelta(seconds=start_time))
+                fmt_end = format_rfc3339(base_time + timedelta(seconds=end_time))
+            else:
+                fmt_arrival = arrival_time
+                fmt_start = start_time
+                fmt_end = end_time
+            step = {
+                "stop": stop,
+                "type": t,
+                "travel_duration": travel_duration,
+                "cumulative_travel_duration": cumulative_travel_duration,
+                "arrival_time": fmt_arrival,
+                "start_time": fmt_start,
+                "end_time": fmt_end,
+                "setup": setup,
+                "duration": service,
+                "waiting_time": waiting_time,
+            }
+            return step, cumulative_travel_duration
 
-                vehicle_route = vehicle_routes[vid]
-                prev_cumulative_travel = prev_cumulative_travel_by_vehicle[vid]
-                base_time = base_time_by_vehicle[vid]
+        # Iterate dataframe to translate the routes into output format.
+        prev_cumulative_travel_by_vehicle: dict[str, int] = {}
+        base_time_by_vehicle: dict[str, datetime | None] = {}
+        for _, row in vroom_solution.routes.iterrows():
+            vehicle = vehicles_by_idx[row["vehicle_id"]]
+            vid = vehicle["id"]
 
-                match row["type"]:
-                    case "start":
-                        if "start_location" in vehicle:
-                            step, prev = convert_stop(
-                                "start",
-                                {
-                                    "id": f"{vid}_start",
-                                    "location": vehicle["start_location"],
-                                },
-                                row,
-                                prev_cumulative_travel,
-                                base_time,
-                            )
-                            vehicle_route.append(step)
-                            prev_cumulative_travel_by_vehicle[vid] = prev
-                    case "end":
-                        if "end_location" in vehicle:
-                            step, prev = convert_stop(
-                                "end",
-                                {
-                                    "id": f"{vid}_end",
-                                    "location": vehicle["end_location"],
-                                },
-                                row,
-                                prev_cumulative_travel,
-                                base_time,
-                            )
-                            vehicle_route.append(step)
-                            prev_cumulative_travel_by_vehicle[vid] = prev
-                    case "job":
-                        stop = stops_by_idx[row["location_index"]]
-                        planned_stops.add(stop["id"])
-                        step, prev = convert_stop("stop", stop, row, prev_cumulative_travel, base_time)
+            if vid not in vehicle_routes:
+                vehicle_routes[vid] = []
+                prev_cumulative_travel_by_vehicle[vid] = 0
+                raw_start = vehicle.get("start_time")
+                base_time_by_vehicle[vid] = parse_rfc3339(raw_start) if raw_start else None
+
+            vehicle_route = vehicle_routes[vid]
+            prev_cumulative_travel = prev_cumulative_travel_by_vehicle[vid]
+            base_time = base_time_by_vehicle[vid]
+
+            match row["type"]:
+                case "start":
+                    if "start_location" in vehicle:
+                        step, prev = convert_stop(
+                            "start",
+                            {
+                                "id": f"{vid}_start",
+                                "location": vehicle["start_location"],
+                            },
+                            row,
+                            prev_cumulative_travel,
+                            base_time,
+                        )
                         vehicle_route.append(step)
                         prev_cumulative_travel_by_vehicle[vid] = prev
-                    case _:
-                        raise ValueError(f"Unknown route type {row['type']}.")
+                case "end":
+                    if "end_location" in vehicle:
+                        step, prev = convert_stop(
+                            "end",
+                            {
+                                "id": f"{vid}_end",
+                                "location": vehicle["end_location"],
+                            },
+                            row,
+                            prev_cumulative_travel,
+                            base_time,
+                        )
+                        vehicle_route.append(step)
+                        prev_cumulative_travel_by_vehicle[vid] = prev
+                case "job":
+                    stop = stops_by_idx[row["location_index"]]
+                    planned_stops.add(stop["id"])
+                    step, prev = convert_stop("stop", stop, row, prev_cumulative_travel, base_time)
+                    vehicle_route.append(step)
+                    prev_cumulative_travel_by_vehicle[vid] = prev
+                case _:
+                    raise ValueError(f"Unknown route type {row['type']}.")
 
-            # Fully assemble routes.
-            for vehicle in input.data["vehicles"]:
-                vehicle_route = vehicle_routes.get(vehicle["id"], [])
-                route_travel_duration = vehicle_route[-1]["cumulative_travel_duration"] if vehicle_route else 0
-                route_stops_duration = sum(
-                    step["setup"] + step["duration"] for step in vehicle_route if step["type"] == "stop"
+        # Fully assemble routes.
+        for vehicle in loaded_input.data["vehicles"]:
+            vehicle_route = vehicle_routes.get(vehicle["id"], [])
+            route_travel_duration = vehicle_route[-1]["cumulative_travel_duration"] if vehicle_route else 0
+            route_stops_duration = sum(
+                step["setup"] + step["duration"] for step in vehicle_route if step["type"] == "stop"
+            )
+            route_duration = route_travel_duration + route_stops_duration
+            route = {
+                "id": vehicle["id"],
+                "route_travel_duration": route_travel_duration,
+                "route_stops_duration": route_stops_duration,
+                "route_duration": route_duration,
+                "route": vehicle_route,
+            }
+            routes.append(route)
+            stop_count = sum(1 for step in vehicle_route if step["type"] == "stop")
+            activated_vehicles += 1 if stop_count > 0 else 0
+            if stop_count > 0:
+                max_travel_duration = max(max_travel_duration, route_travel_duration)
+                max_duration = max(max_duration, route_duration)
+                min_travel_duration = (
+                    route_travel_duration
+                    if min_travel_duration is None
+                    else min(min_travel_duration, route_travel_duration)
                 )
-                route_duration = route_travel_duration + route_stops_duration
-                route = {
-                    "id": vehicle["id"],
-                    "route_travel_duration": route_travel_duration,
-                    "route_stops_duration": route_stops_duration,
-                    "route_duration": route_duration,
-                    "route": vehicle_route,
-                }
-                routes.append(route)
-                stop_count = sum(1 for step in vehicle_route if step["type"] == "stop")
-                activated_vehicles += 1 if stop_count > 0 else 0
-                if stop_count > 0:
-                    max_travel_duration = max(max_travel_duration, route_travel_duration)
-                    max_duration = max(max_duration, route_duration)
-                    min_travel_duration = (
-                        route_travel_duration
-                        if min_travel_duration is None
-                        else min(min_travel_duration, route_travel_duration)
-                    )
-                    min_duration = route_duration if min_duration is None else min(min_duration, route_duration)
-                max_stops_in_vehicle = max(max_stops_in_vehicle, stop_count)
-                min_stops_in_vehicle = min(min_stops_in_vehicle, stop_count)
+                min_duration = route_duration if min_duration is None else min(min_duration, route_duration)
+            max_stops_in_vehicle = max(max_stops_in_vehicle, stop_count)
+            min_stops_in_vehicle = min(min_stops_in_vehicle, stop_count)
 
-            # Determine the unplanned stops.
-            for _, stop in stops_by_idx.items():
-                if stop["id"] not in planned_stops:
-                    unplanned_stops.append({"id": stop["id"], "location": stop["location"]})
+        # Determine the unplanned stops.
+        for _, stop in stops_by_idx.items():
+            if stop["id"] not in planned_stops:
+                unplanned_stops.append({"id": stop["id"], "location": stop["location"]})
 
-            statistics = nextmv.Statistics(
-                run=nextmv.RunStatistics(duration=solve_end_time - start_time),
-                result=nextmv.ResultStatistics(
-                    duration=solve_end_time - start_time,
-                    value=solution.summary.cost,
-                    custom={
-                        "solution_found": True,
-                        "activated_vehicles": activated_vehicles,
-                        "max_travel_duration": max_travel_duration,
-                        "max_duration": max_duration,
-                        "min_travel_duration": min_travel_duration if min_travel_duration is not None else 0,
-                        "min_duration": min_duration if min_duration is not None else 0,
-                        "max_stops_in_vehicle": max_stops_in_vehicle,
-                        "min_stops_in_vehicle": min_stops_in_vehicle,
-                    },
-                ),
-            )
+        metrics = {
+            "duration": solve_end_time - start_time,
+            "value": vroom_solution.summary.cost,
+            "solution_found": True,
+            "activated_vehicles": activated_vehicles,
+            "max_travel_duration": max_travel_duration,
+            "max_duration": max_duration,
+            "min_travel_duration": min_travel_duration if min_travel_duration is not None else 0,
+            "min_duration": min_duration if min_duration is not None else 0,
+            "max_stops_in_vehicle": max_stops_in_vehicle,
+            "min_stops_in_vehicle": min_stops_in_vehicle,
+        }
 
-        else:
-            statistics = nextmv.Statistics(
-                run=nextmv.RunStatistics(duration=solve_end_time - start_time),
-                result=nextmv.ResultStatistics(
-                    duration=solve_end_time - start_time,
-                    value=None,
-                ),
-            )
+    else:
+        metrics = {
+            "duration": solve_end_time - start_time,
+            "value": None,
+            "solution_found": False,
+        }
 
-        return nextmv.Output(
-            options=input.options,
-            solution={"vehicles": routes, "unplanned": unplanned_stops},
-            statistics=statistics,
-        )
+    solution = {"vehicles": routes, "unplanned": unplanned_stops}
+
+    return solution, metrics
 
 
 def apply_defaults(input_data: dict[str, Any]) -> None:

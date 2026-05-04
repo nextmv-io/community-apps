@@ -8,33 +8,37 @@ arrivals.
 
 1. Install packages.
 
-    ```bash
-    pip3 install -r requirements.txt
-    ```
+   * With `pip`
 
-1. Run the app.
+      ```bash
+      pip install .
+      ```
 
-    ```bash
-    python3 main.py -input input.json -output output.json -random_seed -1 -sim_time 20
-    ```
+   * With `uv`
+  
+      ```bash
+      uv sync
+      ```
 
-1. Create local runs of the app.
+2. Run the app.
 
-    ```bash
-    python3 app.py -action local -input_file input.json
-    ```
+   * With `python`
 
-1. Export your Nextmv API key as an environment variable.
+      ```bash
+      cat input.json | python main.py
+      ```
 
-    ```bash
-    export NEXTMV_API_KEY="<YOUR_API_KEY>"
-    ```
+   * With `uv`
 
-1. Sync the local app with the cloud.
+      ```bash
+      cat input.json | uv run main.py
+      ```
 
-    ```bash
-    python3 app.py -action sync -app_id carwash-sim -app_name "Carwash Simulation"
-    ```
+      Or with custom options:
+
+      ```bash
+      cat input.json | uv run main.py -random_seed 42 -sim_time 30
+      ```
 
 <!-- markdownlint-enable MD013 -->
 

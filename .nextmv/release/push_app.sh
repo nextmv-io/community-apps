@@ -27,25 +27,26 @@ fi
 
 # Pushes app to Marketplace.
 cd $APP_DIR
-nextmv app push \
-    --app-id $APP_ID
-nextmv app version create \
+nextmv cloud app push \
+    --app-id $APP_ID \
+    --version-no
+nextmv cloud version create \
     --app-id $APP_ID \
     --version-id $VERSION_ID \
     --name $VERSION_ID \
     --description "Version ${VERSION_ID}"
-nextmv app instance create \
+nextmv cloud instance create \
     --app-id $APP_ID \
     --version-id $VERSION_ID \
     --name $VERSION_ID \
     --description "Instance ${VERSION_ID}" \
     --instance-id $VERSION_ID
-nextmv app update \
+nextmv cloud app update \
     --app-id $APP_ID \
-    --instance-id $VERSION_ID
-nextmv marketplace app version create \
-    --marketplace-app-id $MARKETPLACE_APP_ID \
+    --default-instance-id $VERSION_ID
+nextmv cloud marketplace version create \
+    --app-id $MARKETPLACE_APP_ID \
+    --change-log "Version ${VERSION_ID}" \
     --partner-id "nextmv" \
     --reference-version-id $VERSION_ID \
-    --version-id $VERSION_ID \
-    --changelog "Version ${VERSION_ID}"
+    --version-id $VERSION_ID

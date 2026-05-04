@@ -1,4 +1,5 @@
 import time
+from typing import Any
 
 import nextmv
 from cutstock import cutStockModel
@@ -7,60 +8,47 @@ from cutstock import cutStockModel
 def main() -> None:
     """Entry point for the program."""
 
-    options = nextmv.Options(
-        nextmv.Option("input", str, "", "Path to input file. Default is stdin.", False),
-        nextmv.Option("raw_width", int, 100, "Total width of a pattern", False),
-        nextmv.Option("max_pattern", int, 35, "Maximum possible pattern", False),
-        nextmv.Option("output", str, "", "Path to output file. Default is stdout.", False),
+    loaded_input = nextmv.load()
+    options = loaded_input.options
+
+    solution, metrics = solve(loaded_input, options)
+    nextmv.write(solution=solution, metrics=metrics, options=options)
+
+
+def solve(loaded_input: nextmv.Input, options: nextmv.Options) -> tuple[dict[str, Any], dict[str, Any]]:
+    """Solves the given problem and returns the solution and metrics."""
+
+    max_pattern = options.max_pattern
+    raw_width = options.raw_width
+    start_time = time.time()
+    nextmv.redirect_stdout()  # Solver chatter is logged to stderr.
+
+    demand = dict(zip(loaded_input.data["ID"], loaded_input.data["demand"], strict=False))
+    width = dict(zip(loaded_input.data["ID"], loaded_input.data["width"], strict=False))
+
+    nextmv.log("Solving Cutting Stock Problem:")
+    nextmv.log(f"-   Number of Materials: {len(demand)}")
+
+    start = time.time()
+    [patternFlag, list_of_new_patterns], obj_val, cuts = cutStockModel(
+        d=demand, w=width, r=raw_width, max_pattern=max_pattern
     )
+    solve_duration = round(time.time() - start, 2)
+    total_duration = time.time() - start_time
 
-    input = nextmv.load(options=options, path=options.input)
+    solution = {
+        "solution": cuts,
+    }
 
-    model = CutStockModel()
-    output = model.solve(input)
-    nextmv.write(output, path=options.output)
+    metrics = {
+        "duration": total_duration,
+        "solve_duration": solve_duration,
+        "objective_value": obj_val,
+        "new_patterns": list_of_new_patterns,
+        "requires_more_pattern": patternFlag,
+    }
 
-
-class CutStockModel(nextmv.Model):
-    def solve(self, input: nextmv.Input) -> nextmv.Output:
-        """Solves the given problem and returns the solution."""
-
-        max_pattern = input.options.max_pattern
-        raw_width = input.options.raw_width
-        start_time = time.time()
-        nextmv.redirect_stdout()  # Solver chatter is logged to stderr.
-
-        demand = dict(zip(input.data["ID"], input.data["demand"], strict=False))
-        width = dict(zip(input.data["ID"], input.data["width"], strict=False))
-
-        nextmv.log("Solving Cutting Stock Problem:")
-        nextmv.log(f"-   Number of Materials: {len(demand)}")
-
-        start = time.time()
-        [patternFlag, list_of_new_patterns], obj_val, cuts = cutStockModel(
-            d=demand, w=width, r=raw_width, max_pattern=max_pattern
-        )
-        tot_time = round(time.time() - start, 2)
-
-        statistics = nextmv.Statistics(
-            run=nextmv.RunStatistics(duration=time.time() - start_time),
-            result=nextmv.ResultStatistics(
-                duration=tot_time,
-                value=f"{obj_val}",
-                custom={
-                    "New Patterns": f"{list_of_new_patterns}",
-                    "Requires more Pattern": f"{patternFlag}",
-                },
-            ),
-        )
-
-        return nextmv.Output(
-            options=input.options,
-            solution={
-                "solution": cuts,
-            },
-            statistics=statistics,
-        )
+    return solution, metrics
 
 
 if __name__ == "__main__":

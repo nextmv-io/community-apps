@@ -55,6 +55,11 @@ jobs:
         with:
           python-version: ${{ env.PYTHON_VERSION }}
           cache: "pip"
+      - name: install uv
+        uses: astral-sh/setup-uv@v7
+        with:
+          version: "0.9.29"
+          python-version: ${{ env.PYTHON_VERSION }}
       - name: Set up JDK
         uses: actions/setup-java@v4
         with:

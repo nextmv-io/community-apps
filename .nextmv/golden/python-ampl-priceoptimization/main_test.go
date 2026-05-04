@@ -17,38 +17,26 @@ func TestGolden(t *testing.T) {
 		t,
 		"inputs",
 		golden.Config{
+			UseStdIn: true,
+			UseStdOut: true,
 			Args: []string{
 				"-duration",
 				"30",
 				"-model",
-				"../../../python-ampl-priceoptimization",
+				".",
 			},
 			TransientFields: []golden.TransientField{
 				{
-					Key:         "$.statistics.result.duration",
+					Key:         "$.metrics.duration",
 					Replacement: golden.StableFloat,
-				},
-				{
-					Key:         "$.statistics.run.duration",
-					Replacement: golden.StableFloat,
-				},
-				{
-					Key:         "$.options.output",
-					Replacement: "output.json",
-				},
-				{
-					Key:         "$.options.input",
-					Replacement: "input.json",
 				},
 			},
 			ExecutionConfig: &golden.ExecutionConfig{
-				Command:    "python3",
-				Args:       []string{"../../../python-ampl-priceoptimization/main.py"},
-				InputFlag:  "-input",
-				OutputFlag: "-output",
+				Command:    "uv",
+				Args:       []string{"run", "--directory", "../../../python-ampl-priceoptimization", "main.py"},
 			},
 			DedicatedComparison: []string{
-				"$.statistics.result.value",
+				"$.metrics.value",
 			},
 			Thresholds: golden.Tresholds{
 				Float: 2.00,

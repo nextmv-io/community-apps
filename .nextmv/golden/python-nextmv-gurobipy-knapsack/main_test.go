@@ -17,33 +17,25 @@ func TestGolden(t *testing.T) {
 		t,
 		"inputs",
 		golden.Config{
+			UseStdIn: true,
+			UseStdOut: true,
 			Args: []string{
 				"-TimeLimit",
 				"30",
 			},
 			TransientFields: []golden.TransientField{
 				{
-					Key:         "$.statistics.result.duration",
+					Key:         "$.metrics.total_duration",
 					Replacement: golden.StableFloat,
 				},
 				{
-					Key:         "$.statistics.run.duration",
+					Key:         "$.metrics.solve_duration",
 					Replacement: golden.StableFloat,
-				},
-				{
-					Key:         "$.options.output",
-					Replacement: "output.json",
-				},
-				{
-					Key:         "$.options.input",
-					Replacement: "input.json",
 				},
 			},
 			ExecutionConfig: &golden.ExecutionConfig{
-				Command:    "python3",
-				Args:       []string{"../../../python-nextmv-gurobipy-knapsack/main.py"},
-				InputFlag:  "-input",
-				OutputFlag: "-output",
+				Command:    "uv",
+				Args:       []string{"run", "--directory", "../../../python-nextmv-gurobipy-knapsack", "main.py"},
 			},
 		},
 	)
