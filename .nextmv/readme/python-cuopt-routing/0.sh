@@ -1,1 +1,1 @@
-python main.py < input.json
+pip install .

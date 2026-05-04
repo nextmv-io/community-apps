@@ -1,4 +1,4 @@
-# This manifest holds the information the app needs to run on the Nextmv Cloud.
+# This manifest holds the information the app needs to run on Nextmv.
 type: python
 runtime: ghcr.io/nextmv-io/runtime/python:3.11
 python:
@@ -12,23 +12,12 @@ files:
   - visuals.py
 
 configuration:
+  # Specify the format the app reads and writes.
+  content:
+    format: json # Read JSON from stdin and write JSON to stdout.
   options:
     strict: false
-    validation:
-      enforce: none
     items:
-      - name: input
-        option_type: string
-        default: ""
-        required: false
-        description: Path to input file. Default is stdin.
-        local_only: true
-      - name: output
-        option_type: string
-        default: ""
-        required: false
-        description: Path to output file. Default is stdout.
-        local_only: true
       - name: objective
         option_type: string
         default: average_distance

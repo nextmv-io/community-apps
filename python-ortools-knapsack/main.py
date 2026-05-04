@@ -1,4 +1,5 @@
 import time
+from typing import Any
 
 import nextmv
 from ortools.linear_solver import pywraplp
@@ -18,78 +19,64 @@ STATUS = {
 def main() -> None:
     """Entry point for the program."""
 
-    options = nextmv.Options(
-        nextmv.Option("input", str, "", "Path to input file. Default is stdin.", False),
-        nextmv.Option("output", str, "", "Path to output file. Default is stdout.", False),
-        nextmv.Option("duration", int, 30, "Max runtime duration (in seconds).", False),
-        nextmv.Option("provider", str, "SCIP", "Solver provider.", False),
-    )
-
-    input = nextmv.load(options=options, path=options.input)
+    loaded_input = nextmv.load()
+    options = loaded_input.options
 
     nextmv.log("Solving knapsack problem:")
-    nextmv.log(f"  - items: {len(input.data.get('items', []))}")
-    nextmv.log(f"  - capacity: {input.data.get('weight_capacity', 0)}")
+    nextmv.log(f"  - items: {len(loaded_input.data.get('items', []))}")
+    nextmv.log(f"  - capacity: {loaded_input.data.get('weight_capacity', 0)}")
 
-    model = DecisionModel()
-    output = model.solve(input)
-    nextmv.write(output, path=options.output)
+    solution, metrics = solve(loaded_input.data, options)
+    nextmv.write(solution=solution, metrics=metrics, options=options)
 
 
-class DecisionModel(nextmv.Model):
-    def solve(self, input: nextmv.Input) -> nextmv.Output:
-        """Solves the given problem and returns the solution."""
+def solve(data: dict[str, Any], options: nextmv.Options) -> tuple[dict[str, Any], dict[str, Any]]:
+    """Solves the given problem and returns the solution and metrics."""
 
-        start_time = time.time()
-        nextmv.redirect_stdout()  # Solver chatter is logged to stderr.
+    start_time = time.time()
+    nextmv.redirect_stdout()  # Solver chatter is logged to stderr.
 
-        # Creates the solver.
-        solver = pywraplp.Solver.CreateSolver(input.options.provider)
-        solver.SetTimeLimit(input.options.duration * 1000)
+    # Creates the solver.
+    solver = pywraplp.Solver.CreateSolver(options.provider)
+    solver.SetTimeLimit(options.duration * 1000)
 
-        # Initializes the linear sums.
-        weights = 0.0
-        values = 0.0
+    # Initializes the linear sums.
+    weights = 0.0
+    values = 0.0
 
-        # Creates the decision variables and adds them to the linear sums.
-        items = []
-        for item in input.data["items"]:
-            item_variable = solver.IntVar(0, 1, item["id"])
-            items.append({"item": item, "variable": item_variable})
-            weights += item_variable * item["weight"]
-            values += item_variable * item["value"]
+    # Creates the decision variables and adds them to the linear sums.
+    items = []
+    for item in data["items"]:
+        item_variable = solver.IntVar(0, 1, item["id"])
+        items.append({"item": item, "variable": item_variable})
+        weights += item_variable * item["weight"]
+        values += item_variable * item["value"]
 
-        # This constraint ensures the weight capacity of the knapsack will not be
-        # exceeded.
-        solver.Add(weights <= input.data["weight_capacity"])
+    # This constraint ensures the weight capacity of the knapsack will not be
+    # exceeded.
+    solver.Add(weights <= data["weight_capacity"])
 
-        # Sets the objective function: maximize the value of the chosen items.
-        solver.Maximize(values)
+    # Sets the objective function: maximize the value of the chosen items.
+    solver.Maximize(values)
 
-        # Solves the problem.
-        status = solver.Solve()
+    # Solves the problem.
+    status = solver.Solve()
 
-        # Determines which items were chosen.
-        chosen_items = [item["item"] for item in items if item["variable"].solution_value() > 0.9]
+    # Determines which items were chosen.
+    chosen_items = [item["item"] for item in items if item["variable"].solution_value() > 0.9]
 
-        statistics = nextmv.Statistics(
-            run=nextmv.RunStatistics(duration=time.time() - start_time),
-            result=nextmv.ResultStatistics(
-                duration=solver.WallTime() / 1000,
-                value=solver.Objective().Value(),
-                custom={
-                    "status": STATUS.get(status, "unknown"),
-                    "variables": solver.NumVariables(),
-                    "constraints": solver.NumConstraints(),
-                },
-            ),
-        )
+    solution = {"items": chosen_items}
 
-        return nextmv.Output(
-            options=input.options,
-            solution={"items": chosen_items},
-            statistics=statistics,
-        )
+    metrics = {
+        "run_duration": time.time() - start_time,
+        "result_duration": solver.WallTime() / 1000,
+        "result_value": solver.Objective().Value(),
+        "result_custom_status": STATUS.get(status, "unknown"),
+        "result_custom_variables": solver.NumVariables(),
+        "result_custom_constraints": solver.NumConstraints(),
+    }
+
+    return solution, metrics
 
 
 if __name__ == "__main__":

@@ -1,0 +1,10 @@
+[project]
+name = "python-gurobi-price-optimization"
+version = "0.1.0"
+requires-python = ">=3.10"
+dependencies = [
+    "gurobipy==13.0.0",
+    "nextmv>=1.7.4.dev0",
+    "pandas==2.2.2",
+    "plotly==6.0.1",
+]

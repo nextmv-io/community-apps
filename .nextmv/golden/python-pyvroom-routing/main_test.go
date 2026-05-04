@@ -17,25 +17,21 @@ func TestGolden(t *testing.T) {
 		t,
 		"inputs",
 		golden.Config{
+			UseStdIn:  true,
+			UseStdOut: true,
 			Args: []string{
 				"-duration",
 				"30",
 			},
 			TransientFields: []golden.TransientField{
 				{
-					Key:         "$.statistics.result.duration",
-					Replacement: golden.StableFloat,
-				},
-				{
-					Key:         "$.statistics.run.duration",
+					Key:         "$.metrics.duration",
 					Replacement: golden.StableFloat,
 				},
 			},
-			UseStdIn:  true,
-			UseStdOut: true,
 			ExecutionConfig: &golden.ExecutionConfig{
-				Command: "python3",
-				Args:    []string{"../../../python-pyvroom-routing/main.py"},
+				Command: "uv",
+				Args:    []string{"run", "--directory", "../../../python-pyvroom-routing", "main.py"},
 			},
 		},
 	)

@@ -1,9 +1,22 @@
 {
   "assets": [],
+  "metrics": {
+    "constraints": 7,
+    "objective_value": 16850,
+    "over_supply": 154,
+    "over_supply_cost": 15400,
+    "planned_count": 22,
+    "planned_shifts": 5,
+    "run_duration": 0.123,
+    "shift_cost": 1450,
+    "solver_duration": 0.123,
+    "status": "optimal",
+    "under_supply": 0,
+    "under_supply_cost": 0,
+    "variables": 13
+  },
   "options": {
     "duration": 30,
-    "input": "input.json",
-    "output": "output.json",
     "provider": "cbc"
   },
   "solution": {
@@ -54,27 +67,5 @@
         "time_id": "monday-late"
       }
     ]
-  },
-  "statistics": {
-    "result": {
-      "custom": {
-        "constraints": 7,
-        "over_supply": 154,
-        "over_supply_cost": 15400,
-        "planned_count": 22,
-        "planned_shifts": 5,
-        "shift_cost": 1450,
-        "status": "optimal",
-        "under_supply": 0,
-        "under_supply_cost": 0,
-        "variables": 13
-      },
-      "duration": 0.123,
-      "value": 16850
-    },
-    "run": {
-      "duration": 0.123
-    },
-    "schema": "v1"
   }
 }

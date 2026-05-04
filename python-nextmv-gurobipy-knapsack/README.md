@@ -9,15 +9,37 @@ key. Modify the `app.yaml` file to include the `gurobi.lic` in the files list.
 
 1. Install packages.
 
-    ```bash
-    pip3 install -r requirements.txt
-    ```
+   * With `pip`
+
+      ```bash
+      pip install .
+      ```
+
+   * With `uv`
+  
+      ```bash
+      uv sync
+      ```
 
 2. Run the app.
 
-    ```bash
-    python3 main.py -input input.json -output output.json -TimeLimit 30
-    ```
+   * With `python`
+
+      ```bash
+      cat input.json | python main.py
+      ```
+
+   * With `uv`
+
+      ```bash
+      cat input.json | uv run main.py
+      ```
+
+      Or with custom options:
+
+      ```bash
+      cat input.json | uv run main.py -TimeLimit 30 -MIPGap 0.01
+      ```
 
 Alternatively, you may reference the `main.ipynb` Jupyter notebook which, in
 addition to running locally, showcases how to push the app and run it remotely.

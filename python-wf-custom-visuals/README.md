@@ -31,8 +31,35 @@ environment variable with your Nextmv API key.
 
 ```bash
 export NEXTMV_API_KEY=<your-nextmv-api-key>
-cat input.json | python3 main.py
 ```
+
+1. Install packages.
+
+   - With `pip`
+
+      ```bash
+      pip install .
+      ```
+
+   - With `uv`
+  
+      ```bash
+      uv sync
+      ```
+
+2. Run the app.
+
+   - With `python`
+
+      ```bash
+      cat input.json | python main.py
+      ```
+
+   - With `uv`
+
+      ```bash
+      cat input.json | uv run main.py
+      ```
 
 ## Run the workflow remotely
 

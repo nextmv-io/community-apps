@@ -1,1 +1,1 @@
-nextmv push --app-id <your-app-id>
+python main.py inFileName=inputs/input.dat solFileName=output.txt

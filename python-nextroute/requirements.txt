@@ -1,2 +1,2 @@
 nextroute==1.12.4
-nextmv==1.6.2
+nextmv>=1.7.4.dev0

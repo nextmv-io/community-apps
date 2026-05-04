@@ -17,6 +17,8 @@ func TestGolden(t *testing.T) {
 		t,
 		"inputs",
 		golden.Config{
+			UseStdIn: true,
+			UseStdOut: true,
 			Args: []string{
 				"-solve_duration", "3",
 				// for deterministic tests
@@ -27,19 +29,15 @@ func TestGolden(t *testing.T) {
 				"-solve_startsolutions", "1",
 			},
 			TransientFields: []golden.TransientField{
-				{Key: "$.statistics.result.duration", Replacement: golden.StableFloat},
-				{Key: "$.statistics.run.duration", Replacement: golden.StableFloat},
-				{Key: "$.options.output", Replacement: "output.json"},
-				{Key: "$.options.input", Replacement: "input.json"},
+				{Key: "$.metrics.result.duration", Replacement: golden.StableFloat},
+				{Key: "$.metrics.run.duration", Replacement: golden.StableFloat},
 			},
 			Thresholds: golden.Tresholds{
 				Float: 0.01,
 			},
 			ExecutionConfig: &golden.ExecutionConfig{
-				Command:    "python3",
-				Args:       []string{"../../../python-nextroute/main.py"},
-				InputFlag:  "-input",
-				OutputFlag: "-output",
+				Command:    "uv",
+				Args:       []string{"run", "--directory", "../../../python-nextroute", "main.py"},
 			},
 		},
 	)

@@ -9,9 +9,20 @@ python:
 # (e.g.: configs/*.json) is supported.
 files:
   - main.py
-  - visuals.py
 
 configuration:
   # Specify the format the app reads and writes.
   content:
-    format: "json" # Read JSON from stdin and write JSON to stdout.
+    format: json # Read JSON from stdin and write JSON to stdout.
+  # Define the options (parameters) of the app.
+  options:
+    strict: false
+    items:
+      - name: details
+        option_type: bool
+        default: true
+        description: Print details to logs. Default true.
+        required: false
+        ui:
+          control_type: toggle
+          display_name: Details

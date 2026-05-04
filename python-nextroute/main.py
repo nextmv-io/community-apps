@@ -1,3 +1,5 @@
+from typing import Any
+
 import nextmv
 import nextroute
 
@@ -5,41 +7,28 @@ import nextroute
 def main() -> None:
     """Entry point for the program."""
 
-    parameters = [
-        nextmv.Option("input", str, "", "Path to input file. Default is stdin.", False),
-        nextmv.Option("output", str, "", "Path to output file. Default is stdout.", False),
-    ]
-
-    default_options = nextroute.Options()
-    for name, default_value in default_options.to_dict().items():
-        parameters.append(nextmv.Option(name.lower(), type(default_value), default_value, name, False))
-
-    options = nextmv.Options(*parameters)
-
-    input = nextmv.load(options=options, path=options.input)
+    loaded_input = nextmv.load()
+    options = loaded_input.options
 
     nextmv.log("Solving vehicle routing problem:")
-    nextmv.log(f"  - stops: {len(input.data.get('stops', []))}")
-    nextmv.log(f"  - vehicles: {len(input.data.get('vehicles', []))}")
+    nextmv.log(f"  - stops: {len(loaded_input.data.get('stops', []))}")
+    nextmv.log(f"  - vehicles: {len(loaded_input.data.get('vehicles', []))}")
 
-    model = DecisionModel()
-    output = model.solve(input)
-    nextmv.write(output, path=options.output)
+    solution, metrics = solve(loaded_input)
+    nextmv.write(solution=solution, metrics=metrics, options=options)
 
 
-class DecisionModel(nextmv.Model):
-    def solve(self, input: nextmv.Input) -> nextmv.Output:
-        """Solves the given problem and returns the solution."""
+def solve(loaded_input: nextmv.Input) -> tuple[dict[str, Any], dict[str, Any]]:
+    """Solves the given problem and returns the solution and metrics."""
 
-        nextroute_input = nextroute.schema.Input.from_dict(input.data)
-        nextroute_options = nextroute.Options.extract_from_dict(input.options.to_dict())
-        nextroute_output = nextroute.solve(nextroute_input, nextroute_options)
+    nextroute_input = nextroute.schema.Input.from_dict(loaded_input.data)
+    nextroute_options = nextroute.Options.extract_from_dict(loaded_input.options.to_dict())
+    nextroute_output = nextroute.solve(nextroute_input, nextroute_options)
 
-        return nextmv.Output(
-            options=input.options,
-            solution=nextroute_output.solutions[0].to_dict(),
-            statistics=nextroute_output.statistics.to_dict(),
-        )
+    solution = nextroute_output.solutions[0].to_dict()
+    metrics = nextroute_output.statistics.to_dict()
+
+    return solution, metrics
 
 
 if __name__ == "__main__":
