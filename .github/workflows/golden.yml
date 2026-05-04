@@ -12,7 +12,7 @@ jobs:
       apps: ${{ steps.apps.outputs.matrix }}
     steps:
       - name: git clone
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
       - id: apps
         run: |
           export MATRIX=$(yq -o json '.' workflow-configuration.yml | jq -c '{"apps": .apps}')
@@ -29,9 +29,9 @@ jobs:
       matrix: ${{ fromJson(needs.create-matrix.outputs.apps) }}
     steps:
       - name: git clone
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 
-      - uses: dorny/paths-filter@fbd0ab8f3e69293af611ebaee6363fc25e6d187d  # v4.0.1
+      - uses: dorny/paths-filter@fbd0ab8f3e69293af611ebaee6363fc25e6d187d # v4.0.1
         id: changes
         with:
           filters: |
@@ -53,20 +53,20 @@ jobs:
       # We always need to set up Go as it is also used by the golden file testing framework
       - name: Set up Go
         if: steps.changes.outputs.src == 'true'
-        uses: actions/setup-go@4a3601121dd01d1626a1e23e37211e3254c1c06c  # v6.4.0
+        uses: actions/setup-go@4a3601121dd01d1626a1e23e37211e3254c1c06c # v6.4.0
         with:
           go-version: 1.22
 
       - name: Set up Python
         if: ${{ matrix.apps.language == 'python' && steps.changes.outputs.src == 'true' }}
-        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405  # v6.2.0
+        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
         with:
           python-version: ${{ matrix.apps.language-version }}
           cache: "pip"
 
       - name: install uv
         if: ${{ matrix.apps.language == 'python' && steps.changes.outputs.src == 'true' }}
-        uses: astral-sh/setup-uv@v7
+        uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b # v8.1.0
         with:
           version: "0.9.29"
           python-version: ${{ matrix.apps.language-version }}
@@ -78,20 +78,20 @@ jobs:
 
       - name: Set up Java
         if: ${{ matrix.apps.language == 'java' && steps.changes.outputs.src == 'true' }}
-        uses: actions/setup-java@be666c2fcd27ec809703dec50e508c2fdc7f6654  # v5.2.0
+        uses: actions/setup-java@be666c2fcd27ec809703dec50e508c2fdc7f6654 # v5.2.0
         with:
           java-version: ${{ matrix.apps.language-version }}
           distribution: ${{ matrix.apps.distribution }}
 
       - name: Set up Rust
         if: ${{ matrix.apps.language == 'rust' && steps.changes.outputs.src == 'true' }}
-        uses: actions-rust-lang/setup-rust-toolchain@2b1f5e9b395427c92ee4e3331786ca3c37afe2d7  # v1.16.0
+        uses: actions-rust-lang/setup-rust-toolchain@2b1f5e9b395427c92ee4e3331786ca3c37afe2d7 # v1.16.0
         with:
           toolchain: ${{ matrix.apps.language-version }}
 
       - name: Set up .NET
         if: ${{ matrix.apps.language == 'dotnet' && steps.changes.outputs.src == 'true' }}
-        uses: actions/setup-dotnet@c2fa09f4bde5ebb9d1777cf28262a3eb3db3ced7  # v5.2.0
+        uses: actions/setup-dotnet@c2fa09f4bde5ebb9d1777cf28262a3eb3db3ced7 # v5.2.0
         with:
           dotnet-version: ${{ matrix.apps.language-version }}
 
