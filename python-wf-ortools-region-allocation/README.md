@@ -6,8 +6,8 @@ workflows in order to add additional visual assets to its runs.
 ## Prerequisites
 
 This example assumes that you already have pushed the [Region Allocation][region-allocation]
-app to the Nextmv platform (below steps use [Nextmv CLI][cli] to push the app - refer
-to docs for alternative methods).:
+app to the Nextmv platform (below steps use [Nextmv CLI][cli] to push the app -
+refer to docs for alternative methods).:
 
 1. Create a new custom app in the Nextmv platform with the ID
    `region-allocation`.
