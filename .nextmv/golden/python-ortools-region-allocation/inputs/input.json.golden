@@ -1,9 +1,15 @@
 {
   "assets": [],
+  "metrics": {
+    "constraints": 195,
+    "objective_value": 3604.088114164565,
+    "run_duration": 0.123,
+    "solver_duration": 0.123,
+    "status": "optimal",
+    "variables": 1134
+  },
   "options": {
     "duration": 30,
-    "input": "input.json",
-    "output": "output.json",
     "provider": "SCIP"
   },
   "solution": {
@@ -2152,20 +2158,5 @@
         "plz": "33449"
       }
     ]
-  },
-  "statistics": {
-    "result": {
-      "custom": {
-        "constraints": 195,
-        "status": "optimal",
-        "variables": 1134
-      },
-      "duration": 0.123,
-      "value": 3604.088114164564
-    },
-    "run": {
-      "duration": 0.123
-    },
-    "schema": "v1"
   }
 }

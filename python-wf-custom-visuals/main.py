@@ -85,7 +85,7 @@ class Flow(FlowSpec):
                 "separators": (",", ":"),
             },
             solution=result["solutions"][-1],
-            statistics=result["statistics"],
+            metrics=result["statistics"],
             assets=[
                 nextmv.Asset(
                     name="clusters",
@@ -105,19 +105,15 @@ def main():
     """
     Main function to run above workflow.
     """
-    # Load input data
-    options = nextmv.Options(
-        nextmv.Option("input", str, "", "Path to input file. Default is stdin.", False),
-        nextmv.Option("output", str, "", "Path to output file. Default is stdout.", False),
-    )
-    input = nextmv.load(options=options, path=options.input)
+
+    loaded_input = nextmv.load()
 
     # Run workflow
-    flow = Flow("DecisionFlow", input.data)
+    flow = Flow("DecisionFlow", loaded_input.data)
     flow.run()
 
     # Write out the result
-    nextmv.write(output=flow.get_result(flow.postprocess), path=options.output)
+    nextmv.write(output=flow.get_result(flow.postprocess))
 
 
 def convex_hull_scipy(route: list[dict]) -> list[tuple[float, float]]:

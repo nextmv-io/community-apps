@@ -1,59 +1,68 @@
-# This manifest holds the information the app needs to run on the Nextmv Cloud.
+# This manifest holds the information the app needs to run on Nextmv.
+
+# Type and runtime specify the language and environment of the app.
 type: python
 runtime: ghcr.io/nextmv-io/runtime/python:3.11
 # List all files/directories that should be included in the app. Globbing
 # (e.g.: configs/*.json) is supported.
 files:
   - main.py
+
+# Python-specific configurations.
 python:
-  # Packages the app depends on need to be listed in a requirements.txt file
-  # that is referenced here. All listed packages will get bundled with the app.
+  # All listed packages will get bundled with the app.
   pip-requirements: requirements.txt
 
 configuration:
   content:
-    format: "json"
+    format: json
   options:
     items:
       - name: duration
         option_type: int
         default: 30
-        description: "Max runtime duration (in seconds)."
+        description: Max runtime duration (in seconds).
+        required: false
         ui:
           control_type: input
-          display_name: "Max Runtime (seconds)"
+          display_name: Max Runtime (seconds)
       - name: exploration_level
         option_type: int
         default: 4
-        description: "Exploration level for the solver."
+        description: Exploration level for the solver.
+        required: false
         ui:
           control_type: input
-          display_name: "Exploration Level"
+          display_name: Exploration Level
       - name: threads
         option_type: int
         default: 6
-        description: "Number of threads to use."
+        description: Number of threads to use.
+        required: false
         ui:
           control_type: input
-          display_name: "Threads"
+          display_name: Threads
       - name: default_duration
         option_type: int
         default: null
-        description: "Default service duration (in seconds) for all stops. Stop-level duration values take precedence."
+        description: Default service duration (in seconds) for all stops. Stop-level duration values take precedence.
+        required: false
         ui:
           control_type: input
-          display_name: "Stop Service Duration Default (seconds)"
+          display_name: Stop Service Duration Default (seconds)
       - name: default_lat
         option_type: float
         default: null
-        description: "Latitude of the default start and end location for all vehicles. Vehicle-level start_location and end_location take precedence. If unset, the input data must supply the vehicle locations."
+        description: Latitude of the default start and end location for all vehicles. Vehicle-level start_location and end_location take precedence. If unset, the input data must supply the vehicle locations.
+        required: false
         ui:
           control_type: input
-          display_name: "Vehicle Start Latitude (Default)"
+          display_name: Vehicle Start Latitude (Default)
       - name: default_lon
         option_type: float
         default: null
-        description: "Longitude of the default start and end location for all vehicles. Vehicle-level start_location and end_location take precedence. If unset, the input data must supply the vehicle locations."
+        description: Longitude of the default start and end location for all vehicles. Vehicle-level start_location and end_location take precedence. If unset, the input data must supply the vehicle locations.
+        required: false
         ui:
           control_type: input
-          display_name: "Vehicle Start Longitude (Default)"
+          display_name: Vehicle Start Longitude (Default)

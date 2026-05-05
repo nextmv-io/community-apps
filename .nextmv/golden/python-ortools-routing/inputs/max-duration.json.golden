@@ -1,9 +1,16 @@
 {
   "assets": [],
+  "metrics": {
+    "activated_vehicles": 2,
+    "duration": 0.123,
+    "max_route_duration": 582,
+    "max_stops_in_vehicle": 7,
+    "min_stops_in_vehicle": 3,
+    "objective_value": 1105,
+    "solution_found": true
+  },
   "options": {
-    "duration": 30,
-    "input": "input.json",
-    "output": "output.json"
+    "duration": 30
   },
   "solution": {
     "unplanned": [],
@@ -147,21 +154,5 @@
         "route_travel_distance": 508
       }
     ]
-  },
-  "statistics": {
-    "result": {
-      "custom": {
-        "activated_vehicles": 2,
-        "max_route_duration": 582,
-        "max_stops_in_vehicle": 7,
-        "min_stops_in_vehicle": 3,
-        "solution_found": true
-      },
-      "value": 1105
-    },
-    "run": {
-      "duration": 0.123
-    },
-    "schema": "v1"
   }
 }

@@ -160,7 +160,7 @@ apps:
     app_id:
     marketplace_app_id:
     marketplace_major_version:
-    description: Use a Nextmvified Gurobi notebook for price optimization.
+    description: Use Python and Gurobi - price optimization.
   - name: python-nextroute
     type: python
     app_id:

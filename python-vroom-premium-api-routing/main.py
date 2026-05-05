@@ -1,50 +1,52 @@
 import os
+from typing import Any
 
 import nextmv
 import requests
 from visuals import create_visuals
 
-# Read the input from stdin.
-input = nextmv.load()
 
-options = nextmv.Options(
-    nextmv.Option(
-        "details", bool, True, "Print details to logs. Default true.", False
-    ),
-)
+def main():
+    loaded_input = nextmv.load()
+    options = loaded_input.options
 
-# Load vroom api key from secrets collection
-VROOM_API_KEY = os.getenv("VROOM_API_KEY")
-vroom_api_url = f"https://api.verso-optim.com/vrp/v1/solve?api_key={VROOM_API_KEY}"
-headers = {"Content-Type": "application/json"}
+    solution, metrics = solve(loaded_input.data, options)
 
-# Call VROOM API to solve the problem
-try:
-    response = requests.post(vroom_api_url, headers=headers, json=input.data)
-    response.raise_for_status()
-    vroom_result = response.json()
-    nextmv.log(f"VROOM API call successful: {vroom_result}")
-except requests.exceptions.RequestException as e:
-    nextmv.log(f"Error calling VROOM API: {e}")
-    vroom_result = None
+    # Create visuals with geojson for each route
+    assets = create_visuals(solution)
 
-solution = vroom_result if vroom_result else None
+    nextmv.write(solution=solution, metrics=metrics, options=options, assets=[assets])
 
-# Create visuals with geojson for each route
-assets = create_visuals(solution)
 
-# Pull summary of solution into Nextmvstatistics
-summary = solution.get("summary", {})
+def solve(input_data: dict[str, Any], options: nextmv.Options) -> tuple[dict[str, Any], dict[str, Any]]:
+    """Calls the VROOM API to solve the routing problem."""
 
-# Write output and statistics.
-output = nextmv.Output(
-    solution=solution,
-    statistics=nextmv.Statistics(
-        result=nextmv.ResultStatistics(
-            value=summary.get("cost"),
-            custom=summary,
-        ),
-    ),
-    assets=[assets],
-)
-nextmv.write(output)
+    # Load vroom api key from secrets collection
+    vroom_api_key = os.getenv("VROOM_API_KEY")
+    vroom_api_url = f"https://api.verso-optim.com/vrp/v1/solve?api_key={vroom_api_key}"
+    headers = {"Content-Type": "application/json"}
+
+    # Call VROOM API to solve the problem
+    try:
+        response = requests.post(vroom_api_url, headers=headers, json=input_data)
+        response.raise_for_status()
+        vroom_result = response.json()
+        nextmv.log(f"VROOM API call successful: {vroom_result}")
+    except requests.exceptions.RequestException as e:
+        nextmv.log(f"Error calling VROOM API: {e}")
+        vroom_result = None
+
+    solution = vroom_result if vroom_result else {}
+
+    # Pull summary of solution into metrics
+    summary = solution.get("summary", {})
+    metrics = {
+        "cost": summary.get("cost"),
+        **summary,
+    }
+
+    return solution, metrics
+
+
+if __name__ == "__main__":
+    main()

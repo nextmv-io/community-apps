@@ -5,15 +5,37 @@ solver. We solve a knapsack Mixed Integer Programming problem.
 
 1. Install packages.
 
-    ```bash
-    pip3 install -r requirements.txt
-    ```
+   * With `pip`
 
-1. Run the app.
+      ```bash
+      pip install .
+      ```
 
-    ```bash
-    python3 main.py -input input.json -output output.json -duration 30
-    ```
+   * With `uv`
+  
+      ```bash
+      uv sync
+      ```
+
+2. Run the app.
+
+   * With `python`
+
+      ```bash
+      cat input.json | python main.py
+      ```
+
+   * With `uv`
+
+      ```bash
+      cat input.json | uv run main.py
+      ```
+
+      Or with custom options:
+
+      ```bash
+      cat input.json | uv run main.py -duration 30
+      ```
 
 Alternatively, you may reference the `main.ipynb` Jupyter notebook which, in
 addition to running locally, showcases how to push the app and run it remotely.

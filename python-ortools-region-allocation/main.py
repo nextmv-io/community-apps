@@ -1,5 +1,6 @@
 import math
 import time
+from typing import Any
 
 import nextmv
 from ortools.linear_solver import pywraplp
@@ -14,6 +15,22 @@ STATUS = {
     pywraplp.Solver.NOT_SOLVED: "not_solved",
     pywraplp.Solver.MODEL_INVALID: "model_invalid",
 }
+
+
+def main() -> None:
+    """Entry point for the program."""
+
+    loaded_input = nextmv.load()
+    options = loaded_input.options
+
+    nextmv.log("Solving region allocation:")
+    nextmv.log(f"  - regions: {len(loaded_input.data.get('regions', []))}")
+    nextmv.log(f"  - hubs: {len(loaded_input.data.get('hubs', []))}")
+    nextmv.log(f"  - duration: {options.duration} seconds")
+    nextmv.log(f"  - provider: {options.provider}")
+
+    solution, metrics = solve(loaded_input, options)
+    nextmv.write(solution=solution, metrics=metrics, options=options)
 
 
 def calculate_distance(region: dict, hub: dict) -> float:
@@ -39,112 +56,79 @@ def calculate_distance(region: dict, hub: dict) -> float:
     return c * r
 
 
-class DecisionModel(nextmv.Model):
-    def solve(self, input: nextmv.Input) -> nextmv.Output:
-        """Solves the given problem and returns the solution."""
+def solve(loaded_input: nextmv.Input, options: nextmv.Options) -> tuple[dict[str, Any], dict[str, Any]]:
+    """Solves the given problem and returns the solution and metrics."""
 
-        # Redirect solver chatter to stderr.
-        nextmv.redirect_stdout()
+    # Redirect solver chatter to stderr.
+    nextmv.redirect_stdout()
 
-        # Creates the solver.
-        start_time = time.time()
-        solver = pywraplp.Solver.CreateSolver(input.options.provider)
-        solver.SetTimeLimit(input.options.duration * 1000)
+    # Creates the solver.
+    start_time = time.time()
+    solver = pywraplp.Solver.CreateSolver(options.provider)
+    solver.SetTimeLimit(options.duration * 1000)
 
-        # Prepare the distance matrix.
-        distance_matrix = {}
-        for region in input.data["regions"]:
-            for hub in input.data["hubs"]:
-                distance = calculate_distance(region, hub)
-                distance_matrix[(region["id"], hub["id"])] = distance
+    # Prepare the distance matrix.
+    distance_matrix = {}
+    for region in loaded_input.data["regions"]:
+        for hub in loaded_input.data["hubs"]:
+            distance = calculate_distance(region, hub)
+            distance_matrix[(region["id"], hub["id"])] = distance
 
-        # Creates the decision variables.
-        assignments = {}
-        for region in input.data["regions"]:
-            for hub in input.data["hubs"]:
-                variable = solver.IntVar(0, 1, f"{region['id']}_{hub['id']}")
-                assignments[(region["id"], hub["id"])] = variable
+    # Creates the decision variables.
+    assignments = {}
+    for region in loaded_input.data["regions"]:
+        for hub in loaded_input.data["hubs"]:
+            variable = solver.IntVar(0, 1, f"{region['id']}_{hub['id']}")
+            assignments[(region["id"], hub["id"])] = variable
 
-        # Make sure that each region is assigned to exactly one hub.
-        for region in input.data["regions"]:
-            solver.Add(sum(assignments[(region["id"], hub["id"])] for hub in input.data["hubs"]) == 1)
+    # Make sure that each region is assigned to exactly one hub.
+    for region in loaded_input.data["regions"]:
+        solver.Add(sum(assignments[(region["id"], hub["id"])] for hub in loaded_input.data["hubs"]) == 1)
 
-        # Make sure that the demand of the regions assigned to the hub is covered by its capacity.
-        for hub in input.data["hubs"]:
-            solver.Add(
-                sum(assignments[(region["id"], hub["id"])] * region["demand"] for region in input.data["regions"])
-                <= hub["capacity"]
-            )
-
-        # Set the objective function to minimize the total distance.
-        objective = solver.Objective()
-        for region in input.data["regions"]:
-            for hub in input.data["hubs"]:
-                distance = distance_matrix[(region["id"], hub["id"])]
-                objective.SetCoefficient(assignments[(region["id"], hub["id"])], distance)
-        objective.SetMinimization()
-
-        # Solves the problem.
-        status = solver.Solve()
-
-        # Get the assigned regions.
-        assignments_result = {
-            region["id"]: next(
-                hub["id"] for hub in input.data["hubs"] if assignments[(region["id"], hub["id"])].solution_value() > 0.5
-            )
-            for region in input.data["regions"]
-        }
-        solution = {
-            "assignments": assignments_result,
-            "hubs": input.data["hubs"],
-            "regions": input.data["regions"],
-        }
-
-        # Collect some statistics.
-        statistics = {
-            "run": {
-                "duration": time.time() - start_time,
-            },
-            "result": {
-                "duration": solver.WallTime() / 1000,
-                "value": solver.Objective().Value(),
-                "custom": {
-                    "status": STATUS.get(status, "unknown"),
-                    "variables": solver.NumVariables(),
-                    "constraints": solver.NumConstraints(),
-                },
-            },
-        }
-
-        # Prepare the output.
-        return nextmv.Output(
-            options=input.options,
-            solution=solution,
-            statistics=nextmv.Statistics.from_dict(statistics),
+    # Make sure that the demand of the regions assigned to the hub is covered by its capacity.
+    for hub in loaded_input.data["hubs"]:
+        solver.Add(
+            sum(assignments[(region["id"], hub["id"])] * region["demand"] for region in loaded_input.data["regions"])
+            <= hub["capacity"]
         )
 
+    # Set the objective function to minimize the total distance.
+    objective = solver.Objective()
+    for region in loaded_input.data["regions"]:
+        for hub in loaded_input.data["hubs"]:
+            distance = distance_matrix[(region["id"], hub["id"])]
+            objective.SetCoefficient(assignments[(region["id"], hub["id"])], distance)
+    objective.SetMinimization()
 
-def main() -> None:
-    """Entry point for the program."""
+    # Solves the problem.
+    status = solver.Solve()
 
-    options = nextmv.Options(
-        nextmv.Option("input", str, "", "Path to input file. Default is stdin.", False),
-        nextmv.Option("output", str, "", "Path to output file. Default is stdout.", False),
-        nextmv.Option("duration", int, 30, "Max runtime duration (in seconds).", False),
-        nextmv.Option("provider", str, "SCIP", "Solver provider.", False),
-    )
+    # Get the assigned regions.
+    assignments_result = {
+        region["id"]: next(
+            hub["id"]
+            for hub in loaded_input.data["hubs"]
+            if assignments[(region["id"], hub["id"])].solution_value() > 0.5
+        )
+        for region in loaded_input.data["regions"]
+    }
+    solution = {
+        "assignments": assignments_result,
+        "hubs": loaded_input.data["hubs"],
+        "regions": loaded_input.data["regions"],
+    }
 
-    input = nextmv.load(options=options, path=options.input)
+    # Collect metrics.
+    metrics = {
+        "run_duration": time.time() - start_time,
+        "solver_duration": solver.WallTime() / 1000,
+        "objective_value": solver.Objective().Value(),
+        "status": STATUS.get(status, "unknown"),
+        "variables": solver.NumVariables(),
+        "constraints": solver.NumConstraints(),
+    }
 
-    nextmv.log("Solving region allocation:")
-    nextmv.log(f"  - regions: {len(input.data.get('regions', []))}")
-    nextmv.log(f"  - hubs: {len(input.data.get('hubs', []))}")
-    nextmv.log(f"  - duration: {options.duration} seconds")
-    nextmv.log(f"  - provider: {options.provider}")
-
-    model = DecisionModel()
-    output = model.solve(input)
-    nextmv.write(output, path=options.output)
+    return solution, metrics
 
 
 if __name__ == "__main__":

@@ -1,5 +1,6 @@
 import time
 from importlib.metadata import version
+from typing import Any
 
 import highspy
 import nextmv
@@ -8,75 +9,61 @@ import nextmv
 def main() -> None:
     """Entry point for the program."""
 
-    options = nextmv.Options(
-        nextmv.Option("input", str, "", "Path to input file. Default is stdin.", False),
-        nextmv.Option("output", str, "", "Path to output file. Default is stdout.", False),
-        nextmv.Option("duration", int, 30, "Max runtime duration (in seconds).", False),
-    )
-
-    input = nextmv.load(options=options, path=options.input)
+    loaded_input = nextmv.load()
+    options = loaded_input.options
 
     nextmv.log("Solving knapsack problem:")
-    nextmv.log(f"  - items: {len(input.data.get('items', []))}")
-    nextmv.log(f"  - capacity: {input.data.get('weight_capacity', 0)}")
+    nextmv.log(f"  - items: {len(loaded_input.data.get('items', []))}")
+    nextmv.log(f"  - capacity: {loaded_input.data.get('weight_capacity', 0)}")
 
-    model = DecisionModel()
-    output = model.solve(input)
-    nextmv.write(output, path=options.output)
+    solution, metrics = solve(loaded_input)
+    nextmv.write(solution=solution, metrics=metrics, options=options)
 
 
-class DecisionModel(nextmv.Model):
-    def solve(self, input: nextmv.Input) -> nextmv.Output:
-        """Solves the given problem and returns the solution."""
+def solve(loaded_input: nextmv.Input) -> tuple[dict[str, Any], dict[str, Any]]:
+    """Solves the given problem and returns the solution and metrics."""
 
-        start_time = time.time()
+    start_time = time.time()
 
-        # Creates the solver.
-        solver = highspy.Highs()
-        solver.silent()  # Solver output ignores stdout redirect, silence it.
-        solver.setOptionValue("time_limit", input.options.duration)
+    # Creates the solver.
+    solver = highspy.Highs()
+    solver.silent()  # Solver output ignores stdout redirect, silence it.
+    solver.setOptionValue("time_limit", loaded_input.options.duration)
 
-        # Initializes the linear sums.
-        weights = 0.0
-        values = 0.0
+    # Initializes the linear sums.
+    weights = 0.0
+    values = 0.0
 
-        # Creates the decision variables and adds them to the linear sums.
-        items = []
-        for item in input.data["items"]:
-            item_variable = solver.addVariable(0.0, 1.0, item["value"])
-            items.append({"item": item, "variable": item_variable})
-            weights += item_variable * item["weight"]
-            values += item_variable * item["value"]
+    # Creates the decision variables and adds them to the linear sums.
+    items = []
+    for item in loaded_input.data["items"]:
+        item_variable = solver.addVariable(0.0, 1.0, item["value"])
+        items.append({"item": item, "variable": item_variable})
+        weights += item_variable * item["weight"]
+        values += item_variable * item["value"]
 
-        # This constraint ensures the weight capacity of the knapsack will not be
-        # exceeded.
-        solver.addConstr(weights <= input.data["weight_capacity"])
+    # This constraint ensures the weight capacity of the knapsack will not be
+    # exceeded.
+    solver.addConstr(weights <= loaded_input.data["weight_capacity"])
 
-        # Sets the objective function: maximize the value of the chosen items.
-        status = solver.maximize(values)
+    # Sets the objective function: maximize the value of the chosen items.
+    status = solver.maximize(values)
 
-        # Determines which items were chosen.
-        chosen_items = [item["item"] for item in items if solver.val(item["variable"]) > 0.9]
+    # Determines which items were chosen.
+    chosen_items = [item["item"] for item in items if solver.val(item["variable"]) > 0.9]
 
-        input.options.version = version("highspy")
+    solution = {"items": chosen_items}
 
-        statistics = nextmv.Statistics(
-            run=nextmv.RunStatistics(duration=time.time() - start_time),
-            result=nextmv.ResultStatistics(
-                value=sum(item["value"] for item in chosen_items),
-                custom={
-                    "status": str(status),
-                    "variables": solver.numVariables,
-                    "constraints": solver.numConstrs,
-                },
-            ),
-        )
+    metrics = {
+        "duration": time.time() - start_time,
+        "value": sum(item["value"] for item in chosen_items),
+        "status": str(status),
+        "variables": solver.numVariables,
+        "constraints": solver.numConstrs,
+        "solver_version": version("highspy"),
+    }
 
-        return nextmv.Output(
-            options=input.options,
-            solution={"items": chosen_items},
-            statistics=statistics,
-        )
+    return solution, metrics
 
 
 if __name__ == "__main__":

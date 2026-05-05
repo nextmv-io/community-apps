@@ -13,4 +13,33 @@ python:
 configuration:
   # Specify the format the app reads and writes.
   content:
-    format: "json" # Read JSON from stdin and write JSON to stdout.
+    format: json
+  # Define the options (parameters) of the app.
+  options:
+    strict: false
+    items:
+      - name: duration
+        option_type: int
+        default: 30
+        description: Max runtime duration (in seconds).
+        required: false
+      - name: provider
+        option_type: string
+        default: SCIP
+        description: Solver provider.
+        required: false
+      - name: factor-maximize-weekly-hours-per-worker
+        option_type: float
+        default: 0.0
+        description: Weight to apply for maximizing total weekly hours per worker (up to allowed maximum).
+        required: false
+      - name: factor-balance-total-hours
+        option_type: float
+        default: 0.0
+        description: Weight to apply for balancing worker hours.
+        required: false
+      - name: factor-maximize-preferences
+        option_type: float
+        default: 1.0
+        description: Weight to apply for total preference matches.
+        required: false

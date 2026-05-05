@@ -1,0 +1,8 @@
+[project]
+name = "python-highs-knapsack"
+version = "0.1.0"
+requires-python = ">=3.10"
+dependencies = [
+    "highspy==1.9.0",
+    "nextmv>=1.7.4.dev0",
+]

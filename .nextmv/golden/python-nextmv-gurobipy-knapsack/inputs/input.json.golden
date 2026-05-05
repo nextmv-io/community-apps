@@ -1,5 +1,13 @@
 {
   "assets": [],
+  "metrics": {
+    "constraints": 1,
+    "objective_value": 444,
+    "solve_duration": 0.123,
+    "status": 2,
+    "total_duration": 0.123,
+    "variables": 11
+  },
   "options": {
     "AggFill": -1,
     "Aggregate": 1,
@@ -206,36 +214,50 @@
     "WorkerPool": "",
     "ZeroHalfCuts": -1,
     "ZeroObjNodes": -1,
-    "input": "input.json",
-    "output": "output.json",
     "provider": "gurobi"
   },
   "solution": {
-    "book": 1,
-    "cat": 1,
-    "coat": 1,
-    "dog": 0,
-    "keys": 1,
-    "laptop": 0,
-    "nuts": 1,
-    "phone": 1,
-    "rx": 1,
-    "tablet": 0,
-    "water": 1
-  },
-  "statistics": {
-    "result": {
-      "custom": {
-        "constraints": 1,
-        "status": "OPTIMAL",
-        "variables": 11
+    "items": [
+      {
+        "id": "cat",
+        "value": 100,
+        "weight": 20
       },
-      "duration": 0.123,
-      "value": 444
-    },
-    "run": {
-      "duration": 0.123
-    },
-    "schema": "v1"
+      {
+        "id": "water",
+        "value": 40,
+        "weight": 2
+      },
+      {
+        "id": "phone",
+        "value": 6,
+        "weight": 1
+      },
+      {
+        "id": "book",
+        "value": 63,
+        "weight": 10
+      },
+      {
+        "id": "rx",
+        "value": 81,
+        "weight": 1
+      },
+      {
+        "id": "coat",
+        "value": 44,
+        "weight": 9
+      },
+      {
+        "id": "keys",
+        "value": 92,
+        "weight": 1
+      },
+      {
+        "id": "nuts",
+        "value": 18,
+        "weight": 4
+      }
+    ]
   }
 }

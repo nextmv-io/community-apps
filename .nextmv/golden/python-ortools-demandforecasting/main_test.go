@@ -17,26 +17,16 @@ func TestGolden(t *testing.T) {
 		t,
 		"inputs",
 		golden.Config{
+			UseStdIn: true,
+			UseStdOut: true,
 			Args: []string{
 				"-duration",
 				"30",
 			},
 			TransientFields: []golden.TransientField{
 				{
-					Key:         "$.statistics.result.duration",
+					Key:         "$.metrics.duration",
 					Replacement: golden.StableFloat,
-				},
-				{
-					Key:         "$.statistics.run.duration",
-					Replacement: golden.StableFloat,
-				},
-				{
-					Key:         "$.options.output",
-					Replacement: "output.json",
-				},
-				{
-					Key:         "$.options.input",
-					Replacement: "input.json",
 				},
 			},
 			OutputProcessConfig: golden.OutputProcessConfig{
@@ -48,10 +38,8 @@ func TestGolden(t *testing.T) {
 				},
 			},
 			ExecutionConfig: &golden.ExecutionConfig{
-				Command:    "python3",
-				Args:       []string{"../../../python-ortools-demandforecasting/main.py"},
-				InputFlag:  "-input",
-				OutputFlag: "-output",
+				Command:    "uv",
+				Args:       []string{"run", "--directory", "../../../python-ortools-demandforecasting", "main.py"},
 			},
 			Thresholds: golden.Tresholds{
 				Float: 0.2,

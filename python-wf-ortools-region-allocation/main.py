@@ -43,59 +43,61 @@ class Flow(FlowSpec):
         # Create bar plot of the hub utilization
         utilization_asset = create_utilization_plot(result)
 
-        # Write out the result
-        return nextmv.Output(
-            json_configurations={
-                "indent": None,
-                "separators": (",", ":"),
-            },
-            solution=result["solution"],
-            statistics=result["statistics"],
-            assets=[
-                nextmv.Asset(
-                    name="regions",
-                    content_type="json",
-                    visual=nextmv.Visual(
-                        visual_schema=nextmv.VisualSchema(value=nextmv.VisualSchema.GEOJSON),
-                        label="Assignment",
-                        visual_type="custom-tab",
-                    ),
-                    content=assignment_asset,
+        solution = result["solution"]
+        metrics = result.get("metrics", {})
+        assets = [
+            nextmv.Asset(
+                name="regions",
+                content_type="json",
+                visual=nextmv.Visual(
+                    visual_schema=nextmv.VisualSchema(value=nextmv.VisualSchema.GEOJSON),
+                    label="Assignment",
+                    visual_type="custom-tab",
                 ),
-                nextmv.Asset(
-                    name="demand",
-                    content_type="json",
-                    visual=nextmv.Visual(
-                        visual_schema=nextmv.VisualSchema(value=nextmv.VisualSchema.GEOJSON),
-                        label="Demand",
-                        visual_type="custom-tab",
-                    ),
-                    content=demand_asset,
+                content=assignment_asset,
+            ),
+            nextmv.Asset(
+                name="demand",
+                content_type="json",
+                visual=nextmv.Visual(
+                    visual_schema=nextmv.VisualSchema(value=nextmv.VisualSchema.GEOJSON),
+                    label="Demand",
+                    visual_type="custom-tab",
                 ),
-                nextmv.Asset(
-                    name="utilization",
-                    content_type="json",
-                    visual=nextmv.Visual(
-                        visual_schema=nextmv.VisualSchema(value=nextmv.VisualSchema.PLOTLY),
-                        label="Utilization",
-                        visual_type="custom-tab",
-                    ),
-                    content=utilization_asset,
+                content=demand_asset,
+            ),
+            nextmv.Asset(
+                name="utilization",
+                content_type="json",
+                visual=nextmv.Visual(
+                    visual_schema=nextmv.VisualSchema(value=nextmv.VisualSchema.PLOTLY),
+                    label="Utilization",
+                    visual_type="custom-tab",
                 ),
-            ],
-        )
+                content=utilization_asset,
+            ),
+        ]
+        return solution, metrics, assets
 
 
 def main():
     # Load input data
-    input = nextmv.load()
+    loaded_input = nextmv.load()
+    options = loaded_input.options
 
     # Run workflow
-    flow = Flow("DecisionFlow", input.data)
+    flow = Flow("DecisionFlow", loaded_input.data)
     flow.run()
 
     # Write out the result
-    nextmv.write(flow.get_result(flow.bundle_assets))
+    solution, metrics, assets = flow.get_result(flow.bundle_assets)
+    nextmv.write(
+        solution=solution,
+        metrics=metrics,
+        assets=assets,
+        options=options,
+        json_configurations={"indent": None, "separators": (",", ":")},
+    )
 
 
 def geojson_assignment(result: dict, regions: dict) -> None:

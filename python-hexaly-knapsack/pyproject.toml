@@ -1,0 +1,17 @@
+[project]
+name = "python-hexaly-knapsack"
+version = "0.1.0"
+requires-python = ">=3.10"
+dependencies = [
+    "hexaly==13.0.20240712",
+    "nextmv>=1.7.4.dev0",
+]
+
+[[tool.uv.index]]
+name = "hexaly"
+url = "https://pip.hexaly.com"
+default = true
+
+[[tool.uv.index]]
+name = "pypi"
+url = "https://pypi.org/simple"

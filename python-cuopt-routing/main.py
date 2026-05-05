@@ -2,6 +2,7 @@
 
 
 from datetime import datetime
+from typing import Any
 
 import cudf
 import nextmv
@@ -10,6 +11,20 @@ from haversine import Unit, haversine
 from visual import create_visual
 
 SOLUTION_STATUS = {s.value: s.name for s in routing.SolutionStatus}
+
+
+def main() -> None:
+    loaded_input = nextmv.load()
+    options = loaded_input.options
+
+    solution, metrics = solve(loaded_input.data, options)
+
+    nextmv.write(
+        solution=solution,
+        metrics=metrics,
+        options=options,
+        assets=[create_visual(loaded_input.data, solution)],
+    )
 
 
 def create_distance_matrix(locations: list[list[float]]) -> list[list[float]]:
@@ -30,12 +45,17 @@ def create_distance_matrix(locations: list[list[float]]) -> list[list[float]]:
     return matrix
 
 
-def main() -> None:
+def solve(data: dict[str, Any], options: nextmv.Options) -> tuple[dict[str, Any], dict[str, Any]]:
+    """Solve the routing problem using cuOpt.
+
+    Args:
+        data: Input data containing vehicles and jobs
+        options: Options containing solver parameters
+
+    Returns:
+        Tuple of (solution, metrics)
+    """
     start = datetime.now()
-
-    options = nextmv.Options(nextmv.Option("time_limit", float, default=1))
-
-    data = nextmv.load().data
 
     # Build all locations: vehicle starts + vehicle ends + stops
     all_locations = []  # (lon, lat) coordinates
@@ -90,30 +110,20 @@ def main() -> None:
     solver_settings.set_time_limit(options.time_limit)
 
     nextmv.log("Solving model with cuOpt")
-    solution = routing.Solve(data_model, solver_settings)
+    solution_obj = routing.Solve(data_model, solver_settings)
 
     # Convert solution to dict for output and visualization
-    solution_dict = solution.route.to_dict(orient="records")
+    solution = solution_obj.route.to_dict(orient="records")
 
-    nextmv.write(
-        nextmv.Output(
-            options=options,
-            solution=solution_dict,
-            statistics=nextmv.Statistics(
-                run=nextmv.RunStatistics(
-                    duration=(datetime.now() - start).total_seconds(),
-                ),
-                result=nextmv.ResultStatistics(
-                    value=solution.get_total_objective(),
-                    custom={
-                        "status": SOLUTION_STATUS[solution.get_status()],
-                        "vehicle_count": solution.get_vehicle_count(),
-                    },
-                ),
-            ),
-            assets=[create_visual(data, solution_dict)],
-        ),
-    )
+    # Create metrics
+    metrics = {
+        "duration": (datetime.now() - start).total_seconds(),
+        "value": solution_obj.get_total_objective(),
+        "status": SOLUTION_STATUS[solution_obj.get_status()],
+        "vehicle_count": solution_obj.get_vehicle_count(),
+    }
+
+    return solution, metrics
 
 
 if __name__ == "__main__":

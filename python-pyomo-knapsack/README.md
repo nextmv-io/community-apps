@@ -8,16 +8,37 @@ run remotely using Nextmv Cloud.
 
 1. Install packages.
 
-    ```bash
-    pip3 install -r requirements.txt
-    ```
+   * With `pip`
 
-1. Run the app.
+      ```bash
+      pip install .
+      ```
 
-    ```bash
-    python3 main.py -input input.json -output output.json \
-      -duration 30 -provider cbc
-    ```
+   * With `uv`
+  
+      ```bash
+      uv sync
+      ```
+
+2. Run the app.
+
+   * With `python`
+
+      ```bash
+      cat input.json | python main.py
+      ```
+
+   * With `uv`
+
+      ```bash
+      cat input.json | uv run main.py
+      ```
+
+      Or with custom options:
+
+      ```bash
+      cat input.json | uv run main.py -duration 30 -provider cbc
+      ```
 
 ## Mirror running on Nextmv Cloud locally
 

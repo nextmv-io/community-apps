@@ -1,0 +1,8 @@
+[project]
+name = "python-nextroute"
+version = "0.1.0"
+requires-python = ">=3.10"
+dependencies = [
+    "nextmv>=1.7.4.dev0",
+    "nextroute==1.12.4",
+]

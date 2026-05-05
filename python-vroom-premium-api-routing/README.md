@@ -4,15 +4,31 @@ Simple example for running a Python application on the Nextmv Platform.
 
 1. Install packages.
 
-    ```bash
-    pip3 install -r requirements.txt
-    ```
+   * With `pip`
 
-1. Run the app.
+      ```bash
+      pip install .
+      ```
 
-    ```bash
-    cat input.json | python3 main.py
-    ```
+   * With `uv`
+  
+      ```bash
+      uv sync
+      ```
+
+2. Run the app.
+
+   * With `python`
+
+      ```bash
+      cat input.json | python main.py
+      ```
+
+   * With `uv`
+
+      ```bash
+      cat input.json | uv run main.py
+      ```
 
 ## Features
 

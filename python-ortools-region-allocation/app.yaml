@@ -6,4 +6,17 @@ python:
   pip-requirements: requirements.txt
 configuration:
   content:
-    format: "json"
+    format: json
+  options:
+    strict: false
+    items:
+      - name: duration
+        option_type: int
+        default: 30
+        description: Max runtime duration (in seconds).
+        required: false
+      - name: provider
+        option_type: string
+        default: SCIP
+        description: Solver provider.
+        required: false

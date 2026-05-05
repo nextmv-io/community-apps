@@ -6,15 +6,37 @@ We solve a multi-knapsack Mixed Integer Programming problem.
 
 1. Install packages.
 
-    ```bash
-    pip3 install -r requirements.txt
-    ```
+   * With `pip`
 
-1. Run the app.
+      ```bash
+      pip install .
+      ```
 
-    ```bash
-    python3 main.py -duration 30 -provider SCIP
-    ```
+   * With `uv`
+  
+      ```bash
+      uv sync
+      ```
+
+2. Run the app.
+
+   * With `python`
+
+      ```bash
+      python main.py
+      ```
+
+   * With `uv`
+
+      ```bash
+      uv run main.py
+      ```
+
+      Or with custom options:
+
+      ```bash
+      uv run main.py -duration 30 -provider SCIP
+      ```
 
 ## Next steps
 
