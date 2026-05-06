@@ -42,9 +42,15 @@ def solve(loaded_input: nextmv.Input) -> tuple[dict[str, Any], dict[str, Any]]:
     nextmv.redirect_stdout()  # Solver chatter is logged to stderr.
     loaded_input.options.solver = "vroom"
     loaded_input.options.version = version("pyvroom")
-
-    # TODO: use duration to limit the runtime of the solver
-    _ = loaded_input.options.duration
+    if loaded_input.options.duration is not None and isinstance(loaded_input.options.duration, numbers.Number):
+        if loaded_input.options.duration <= 0:
+            timeout = None  # No timeout if duration is 0 or negative.
+        else:
+            timeout = timedelta(seconds=loaded_input.options.duration)
+    elif loaded_input.options.duration is None:
+        timeout = None
+    else:
+        raise ValueError(f"Invalid duration option {loaded_input.options.duration}.")
 
     # Prepare data.
     speed_factors = [v["speed_factor"] if "speed_factor" in v else 1 for v in loaded_input.data["vehicles"]]
@@ -93,7 +99,9 @@ def solve(loaded_input: nextmv.Input) -> tuple[dict[str, Any], dict[str, Any]]:
 
     # Solve the problem.
     vroom_solution = problem_instance.solve(
-        exploration_level=loaded_input.options.exploration_level, nb_threads=loaded_input.options.threads
+        exploration_level=loaded_input.options.exploration_level,
+        nb_threads=loaded_input.options.threads,
+        timeout=timeout,
     )
     solve_end_time = time.time()
 

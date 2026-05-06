@@ -20,7 +20,7 @@
     "exploration_level": 4,
     "solver": "vroom",
     "threads": 6,
-    "version": "1.15.0"
+    "version": "1.15.2"
   },
   "solution": {
     "unplanned": [
