@@ -251,43 +251,31 @@ def solve(input: nextmv.Input, duration: int, options: Any) -> nextmv.Output:
             max_stops_in_vehicle = max(max_stops_in_vehicle, stop_count)
             min_stops_in_vehicle = min(min_stops_in_vehicle, stop_count)
 
-        statistics = nextmv.Statistics(
-            run=nextmv.RunStatistics(duration=end_time - start_time),
-            result=nextmv.ResultStatistics(
-                value=result.cost(),
-                custom={
-                    "solution_found": True,
-                    "activated_vehicles": activated_vehicles,
-                    "max_travel_duration": max_route_duration,
-                    "max_duration": max_duration,
-                    "min_travel_duration": min_route_duration if min_route_duration is not None else 0,
-                    "min_duration": min_duration if min_duration is not None else 0,
-                    "max_stops_in_vehicle": max_stops_in_vehicle,
-                    "min_stops_in_vehicle": min_stops_in_vehicle,
-                },
-            ),
-        )
-
         return nextmv.Output(
             options=input.options,
             solution={"vehicles": routes, "unplanned": unplanned},
-            statistics=statistics,
+            metrics={
+                "duration": end_time - start_time,
+                "value": result.cost(),
+                "solution_found": True,
+                "activated_vehicles": activated_vehicles,
+                "max_travel_duration": max_route_duration,
+                "max_duration": max_duration,
+                "min_travel_duration": min_route_duration if min_route_duration is not None else 0,
+                "min_duration": min_duration if min_duration is not None else 0,
+                "max_stops_in_vehicle": max_stops_in_vehicle,
+                "min_stops_in_vehicle": min_stops_in_vehicle,
+            },
         )
     else:
-        statistics = nextmv.Statistics(
-            run=nextmv.RunStatistics(duration=end_time - start_time),
-            result=nextmv.ResultStatistics(
-                value=None,
-                custom={
-                    "solution_found": False,
-                },
-            ),
-        )
-
         return nextmv.Output(
             options=input.options,
             solution={"vehicles": routes, "unplanned": []},
-            statistics=statistics,
+            metrics={
+                "duration": end_time - start_time,
+                "value": None,
+                "solution_found": False,
+            },
         )
 
 
