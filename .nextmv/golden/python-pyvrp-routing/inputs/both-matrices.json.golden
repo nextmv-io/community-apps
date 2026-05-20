@@ -2,8 +2,27 @@
   "assets": [],
   "options": {
     "duration": 2,
+    "exhaustive_on_best": null,
+    "feas_tolerance": null,
+    "history_length": null,
     "input": "input.json",
-    "output": "output.json"
+    "max_penalty": null,
+    "max_perturbations": null,
+    "min_penalty": null,
+    "min_perturbations": null,
+    "num_iters_no_improvement": null,
+    "num_neighbours": null,
+    "output": "output.json",
+    "penalty_decrease": null,
+    "penalty_increase": null,
+    "solutions_between_updates": null,
+    "solver": "PyVRP",
+    "symmetric_neighbours": null,
+    "symmetric_proximity": null,
+    "target_feasible": null,
+    "version": "0.13.4",
+    "weight_time_warp": null,
+    "weight_wait_time": null
   },
   "solution": {
     "unplanned": [],
