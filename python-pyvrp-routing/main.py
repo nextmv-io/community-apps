@@ -1,6 +1,7 @@
 import numbers
 import time
 from datetime import datetime, timedelta
+from importlib.metadata import version
 from typing import Any
 
 import nextmv
@@ -31,7 +32,7 @@ def main() -> None:
 
     model = DecisionModel()
     output = model.solve(input, options.duration)
-    nextmv.write(output, path=options.output)
+    nextmv.write(output, path=options.output, options=input.options)
 
 
 def make_stop_time(base_dt: datetime | None, seconds: int) -> str | None:
@@ -46,6 +47,8 @@ class DecisionModel(nextmv.Model):
         """Solves the given problem and returns the solution."""
 
         nextmv.redirect_stdout()  # Solver chatter is logged to stderr.
+        input.options.solver = "PyVRP"
+        input.options.version = version("pyvrp")
 
         vehicles = input.data["vehicles"]
         stops = input.data["stops"]
