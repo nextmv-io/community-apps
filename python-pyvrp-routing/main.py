@@ -1,4 +1,5 @@
 import numbers
+import os
 import time
 from datetime import datetime, timedelta
 from importlib.metadata import version
@@ -6,18 +7,16 @@ from typing import Any
 
 import nextmv
 import numpy as np
-from pyvrp import Model
+from pyvrp import IteratedLocalSearchParams, Model, PenaltyParams, SolveParams
+from pyvrp.search import NeighbourhoodParams, PerturbationParams
 from pyvrp.stop import MaxRuntime
 
 
 def main() -> None:
     """Entry point for the program."""
 
-    options = nextmv.Options(
-        nextmv.Option("input", str, "", "Path to input file. Default is stdin.", False),
-        nextmv.Option("output", str, "", "Path to output file. Default is stdout.", False),
-        nextmv.Option("duration", int, 30, "Max runtime duration (in seconds).", False),
-    )
+    manifest = nextmv.Manifest.from_yaml(os.path.dirname(os.path.abspath(__file__)))
+    options = manifest.extract_options()
 
     # Read and prepare the input data.
     input = nextmv.load(options=options, path=options.input)
@@ -31,7 +30,7 @@ def main() -> None:
     nextmv.log(f"  - stops: {len(input.data.get('stops', []))}")
 
     model = DecisionModel()
-    output = model.solve(input, options.duration)
+    output = model.solve(input, options.duration, options)
     nextmv.write(output, path=options.output, options=input.options)
 
 
@@ -43,7 +42,7 @@ def make_stop_time(base_dt: datetime | None, seconds: int) -> str | None:
 
 
 class DecisionModel(nextmv.Model):
-    def solve(self, input: nextmv.Input, duration: int) -> nextmv.Output:
+    def solve(self, input: nextmv.Input, duration: int, options: Any) -> nextmv.Output:
         """Solves the given problem and returns the solution."""
 
         nextmv.redirect_stdout()  # Solver chatter is logged to stderr.
@@ -174,7 +173,11 @@ class DecisionModel(nextmv.Model):
 
         # Solve the problem.
         start_time = time.time()
-        result = m.solve(stop=MaxRuntime(duration), display=False)
+        result = m.solve(
+            stop=MaxRuntime(duration),
+            display=False,
+            params=solve_params_from_options(options),
+        )
         end_time = time.time()
 
         routes = []
@@ -434,6 +437,66 @@ class DecisionModel(nextmv.Model):
             vehicle_route.append(end_entry)
 
         return vehicle_route, planned_stop_ids
+
+
+def solve_params_from_options(options: Any) -> SolveParams:
+    """Builds a SolveParams from manifest options, skipping any that are unset (None).
+
+    Only options explicitly provided by the caller are forwarded to each
+    parameter dataclass; unset options fall back to PyVRP's own defaults.
+    """
+
+    def _get(name: str) -> Any:
+        return getattr(options, name, None)
+
+    ils_kwargs: dict[str, Any] = {}
+    if (v := _get("num_iters_no_improvement")) is not None:
+        ils_kwargs["num_iters_no_improvement"] = v
+    if (v := _get("history_length")) is not None:
+        ils_kwargs["history_length"] = v
+    if (v := _get("exhaustive_on_best")) is not None:
+        ils_kwargs["exhaustive_on_best"] = v
+
+    penalty_kwargs: dict[str, Any] = {}
+    if (v := _get("solutions_between_updates")) is not None:
+        penalty_kwargs["solutions_between_updates"] = v
+    if (v := _get("penalty_increase")) is not None:
+        penalty_kwargs["penalty_increase"] = v
+    if (v := _get("penalty_decrease")) is not None:
+        penalty_kwargs["penalty_decrease"] = v
+    if (v := _get("target_feasible")) is not None:
+        penalty_kwargs["target_feasible"] = v
+    if (v := _get("feas_tolerance")) is not None:
+        penalty_kwargs["feas_tolerance"] = v
+    if (v := _get("min_penalty")) is not None:
+        penalty_kwargs["min_penalty"] = v
+    if (v := _get("max_penalty")) is not None:
+        penalty_kwargs["max_penalty"] = v
+
+    neighbourhood_kwargs: dict[str, Any] = {}
+    if (v := _get("weight_wait_time")) is not None:
+        neighbourhood_kwargs["weight_wait_time"] = v
+    if (v := _get("weight_time_warp")) is not None:
+        neighbourhood_kwargs["weight_time_warp"] = v
+    if (v := _get("num_neighbours")) is not None:
+        neighbourhood_kwargs["num_neighbours"] = v
+    if (v := _get("symmetric_proximity")) is not None:
+        neighbourhood_kwargs["symmetric_proximity"] = v
+    if (v := _get("symmetric_neighbours")) is not None:
+        neighbourhood_kwargs["symmetric_neighbours"] = v
+
+    perturbation_kwargs: dict[str, Any] = {}
+    if (v := _get("min_perturbations")) is not None:
+        perturbation_kwargs["min_perturbations"] = v
+    if (v := _get("max_perturbations")) is not None:
+        perturbation_kwargs["max_perturbations"] = v
+
+    return SolveParams(
+        ils=IteratedLocalSearchParams(**ils_kwargs),
+        penalty=PenaltyParams(**penalty_kwargs),
+        neighbourhood=NeighbourhoodParams(**neighbourhood_kwargs),
+        perturbation=PerturbationParams(**perturbation_kwargs),
+    )
 
 
 def apply_defaults(input_data: dict[str, Any]) -> None:
