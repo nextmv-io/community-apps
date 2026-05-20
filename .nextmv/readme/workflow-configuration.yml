@@ -478,7 +478,13 @@ apps:
       - name: 0.sh
         silent: true
       - name: 1.sh
-        stderr: true
+        silent: true
+      - name: 2.sh
+        silent: true
+      - name: 3.sh
+        silent: true
+      - name: 4.sh
+        silent: true
   - name: python-scip-knapsack
     scripts:
       - name: 0.sh
