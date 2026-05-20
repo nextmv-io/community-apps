@@ -1,42 +1,34 @@
 {
   "assets": [],
+  "metrics": {
+    "activated_vehicles": 1,
+    "duration": 0.123,
+    "max_duration": 187,
+    "max_stops_in_vehicle": 2,
+    "max_travel_duration": 187,
+    "min_duration": 187,
+    "min_stops_in_vehicle": 2,
+    "min_travel_duration": 187,
+    "solution_found": true,
+    "value": 187
+  },
   "options": {
+    "default_duration": null,
+    "default_lat": null,
+    "default_lon": null,
     "duration": 30,
     "exploration_level": 4,
-    "input": "input.json",
-    "output": "output.json",
     "solver": "vroom",
     "threads": 6,
-    "version": "1.14.0"
+    "version": "1.15.2"
   },
   "solution": {
     "unplanned": [
       {
-        "id": "location-1",
+        "id": "stop-3",
         "location": {
-          "lat": 51.9624,
-          "lon": 7.6228
-        }
-      },
-      {
-        "id": "location-3",
-        "location": {
-          "lat": 51.9638,
-          "lon": 7.6233
-        }
-      },
-      {
-        "id": "location-7",
-        "location": {
-          "lat": 51.9694,
-          "lon": 7.6385
-        }
-      },
-      {
-        "id": "location-8",
-        "location": {
-          "lat": 51.9616,
-          "lon": 7.6628
+          "lat": 51.9622,
+          "lon": 7.675
         }
       }
     ],
@@ -45,181 +37,84 @@
         "id": "vehicle-1",
         "route": [
           {
-            "arrival": 0,
+            "arrival_time": 0,
+            "cumulative_travel_duration": 0,
             "duration": 0,
-            "service": 0,
+            "end_time": 0,
             "setup": 0,
+            "start_time": 0,
             "stop": {
               "id": "vehicle-1_start",
               "location": {
-                "lat": 51.9622,
+                "lat": 51.9422,
                 "lon": 7.625
               }
             },
+            "travel_duration": 0,
             "type": "start",
             "waiting_time": 0
           },
           {
-            "arrival": 272,
-            "duration": 272,
-            "service": 0,
+            "arrival_time": 45,
+            "cumulative_travel_duration": 45,
+            "duration": 0,
+            "end_time": 45,
             "setup": 0,
+            "start_time": 45,
             "stop": {
-              "id": "location-2",
+              "id": "stop-1",
               "location": {
-                "lat": 51.9584,
-                "lon": 7.6353
-              }
+                "lat": 51.9522,
+                "lon": 7.625
+              },
+              "quantity": 1
             },
+            "travel_duration": 45,
             "type": "stop",
             "waiting_time": 0
           },
           {
-            "arrival": 346,
-            "duration": 346,
-            "service": 0,
+            "arrival_time": 136,
+            "cumulative_travel_duration": 136,
+            "duration": 0,
+            "end_time": 136,
             "setup": 0,
+            "start_time": 136,
             "stop": {
-              "id": "location-10",
+              "id": "stop-2",
               "location": {
-                "lat": 51.9582,
-                "lon": 7.6299
-              }
+                "lat": 51.9922,
+                "lon": 7.625
+              },
+              "quantity": 1
             },
+            "travel_duration": 91,
             "type": "stop",
             "waiting_time": 0
           },
           {
-            "arrival": 355,
-            "duration": 355,
-            "service": 0,
+            "arrival_time": 187,
+            "cumulative_travel_duration": 187,
+            "duration": 0,
+            "end_time": 187,
             "setup": 0,
-            "stop": {
-              "id": "location-6",
-              "location": {
-                "lat": 51.9577,
-                "lon": 7.6292
-              }
-            },
-            "type": "stop",
-            "waiting_time": 0
-          },
-          {
-            "arrival": 534,
-            "duration": 534,
-            "service": 0,
-            "setup": 0,
+            "start_time": 187,
             "stop": {
               "id": "vehicle-1_end",
               "location": {
-                "lat": 51.9622,
+                "lat": 51.9972,
                 "lon": 7.625
               }
             },
+            "travel_duration": 51,
             "type": "end",
             "waiting_time": 0
           }
         ],
-        "route_travel_duration": 534
-      },
-      {
-        "id": "vehicle-2",
-        "route": [
-          {
-            "arrival": 0,
-            "duration": 0,
-            "service": 0,
-            "setup": 0,
-            "stop": {
-              "id": "vehicle-2_start",
-              "location": {
-                "lat": 51.9622,
-                "lon": 7.625
-              }
-            },
-            "type": "start",
-            "waiting_time": 0
-          },
-          {
-            "arrival": 201,
-            "duration": 201,
-            "service": 0,
-            "setup": 0,
-            "stop": {
-              "id": "location-5",
-              "location": {
-                "lat": 51.9509,
-                "lon": 7.6045
-              }
-            },
-            "type": "stop",
-            "waiting_time": 0
-          },
-          {
-            "arrival": 417,
-            "duration": 417,
-            "service": 0,
-            "setup": 0,
-            "stop": {
-              "id": "location-9",
-              "location": {
-                "lat": 51.9667,
-                "lon": 7.6217
-              }
-            },
-            "type": "stop",
-            "waiting_time": 0
-          },
-          {
-            "arrival": 498,
-            "duration": 498,
-            "service": 0,
-            "setup": 0,
-            "stop": {
-              "id": "location-4",
-              "location": {
-                "lat": 51.9635,
-                "lon": 7.6163
-              }
-            },
-            "type": "stop",
-            "waiting_time": 0
-          },
-          {
-            "arrival": 590,
-            "duration": 590,
-            "service": 0,
-            "setup": 0,
-            "stop": {
-              "id": "vehicle-2_end",
-              "location": {
-                "lat": 51.9622,
-                "lon": 7.625
-              }
-            },
-            "type": "end",
-            "waiting_time": 0
-          }
-        ],
-        "route_travel_duration": 590
+        "route_duration": 187,
+        "route_stops_duration": 0,
+        "route_travel_duration": 187
       }
     ]
-  },
-  "statistics": {
-    "result": {
-      "custom": {
-        "activated_vehicles": 2,
-        "max_route_duration": 590,
-        "max_stops_in_vehicle": 3,
-        "min_stops_in_vehicle": 3,
-        "solution_found": true
-      },
-      "duration": 0.123,
-      "value": 1124
-    },
-    "run": {
-      "duration": 0.123
-    },
-    "schema": "v1"
   }
 }

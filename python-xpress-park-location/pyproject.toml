@@ -1,0 +1,13 @@
+[project]
+name = "python-xpress-park-location"
+version = "0.1.0"
+requires-python = ">=3.11"
+dependencies = [
+    "nextmv>=1.7.4.dev0",
+    "numpy==2.4.2",
+    "plotly==6.5.2",
+    "xpress==9.8.0",
+]
+
+[tool.setuptools]
+packages = []

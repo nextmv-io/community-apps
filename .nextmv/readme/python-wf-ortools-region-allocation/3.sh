@@ -1,1 +1,1 @@
-nextmv app push -a region-allocation-workflow
+uv sync

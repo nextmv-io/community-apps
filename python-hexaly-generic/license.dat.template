@@ -1,0 +1,5 @@
+CLOUD_KEY = secret-123
+CLOUD_SECRET = secret
+
+[DEFAULT_PARAMETERS]
+verbosity = 0

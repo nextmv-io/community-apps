@@ -1,12 +1,23 @@
 {
   "assets": [],
+  "metrics": {
+    "active_workers": 5,
+    "constraints": 59,
+    "mean_hours_worked": 8,
+    "preferences_matched": 4,
+    "run_duration": 0.123,
+    "solve_duration": 0.123,
+    "status": "optimal",
+    "total_workers": 5,
+    "value": 4,
+    "variables": 30,
+    "variance_hours_worked": 0
+  },
   "options": {
     "duration": 30,
     "factor_balance_total_hours": 0,
     "factor_maximize_preferences": 1,
     "factor_maximize_weekly_hours_per_worker": 0,
-    "input": "input.json",
-    "output": "output.json",
     "provider": "SCIP"
   },
   "solution": {
@@ -42,25 +53,5 @@
         "worker_id": "Dylan Mccormack"
       }
     ]
-  },
-  "statistics": {
-    "result": {
-      "custom": {
-        "active_workers": 5,
-        "constraints": 59,
-        "mean_hours_worked": 8,
-        "preferences_matched": 4,
-        "status": "optimal",
-        "total_workers": 5,
-        "variables": 30,
-        "variance_hours_worked": 0
-      },
-      "duration": 0.123,
-      "value": 4
-    },
-    "run": {
-      "duration": 0.123
-    },
-    "schema": "v1"
   }
 }

@@ -1,11 +1,50 @@
-# This manifest holds the information the app needs to run on the Nextmv Cloud.
+# This manifest holds the information the app needs to run on Nextmv.
+
+# Type and runtime specify the language and environment of the app.
 type: python
 runtime: ghcr.io/nextmv-io/runtime/python:3.11
+
+# Python-specific configurations.
 python:
   # All listed packages will get bundled with the app.
   pip-requirements: requirements.txt
+
 # List all files/directories that should be included in the app. Globbing
 # (e.g.: configs/*.json) is supported.
 files:
   - main.py
   - cutstock.py
+
+# Application configurations.
+configuration:
+  # Define the content format of the app, one of: json, multi-file.
+  content:
+    format: json
+  # Define the options (parameters) of the app.
+  options:
+    strict: false
+    items:
+      - name: raw_width
+        option_type: int
+        default: 100
+        description: Total width of a pattern
+        required: false
+        additional_attributes:
+          min: 1
+          max: 500
+          step: 10
+        ui:
+          control_type: slider
+          display_name: Raw Width
+      - name: max_pattern
+        option_type: int
+        default: 35
+        description: Maximum possible pattern
+        required: false
+        additional_attributes:
+          min: 1
+          max: 100
+          step: 5
+        ui:
+          control_type: slider
+          display_name: Max Pattern

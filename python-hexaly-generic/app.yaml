@@ -9,13 +9,16 @@ python:
 # (e.g.: configs/*.json) is supported.
 files:
   - main.py
+  # If you have a Hexaly license, uncomment the following line and make sure to
+  # store your license information in that file.
+  # - license.dat
 
 configuration:
   # Specify the format the app reads and writes.
   content:
-    format: "multi-file" # Read and write files from disk.
+    format: multi-file # Read and write files from disk.
     multi-file:
       input:
-        path: "." # Read files from the current working directory.
+        path: . # Read files from the current working directory.
       output:
-        solutions: "." # Write solution files to the current working directory.
+        solutions: . # Write solution files to the current working directory.

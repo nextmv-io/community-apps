@@ -2,6 +2,7 @@ import io
 import os
 import time
 from platform import uname
+from typing import Any
 
 import nextmv
 import pandas as pd
@@ -34,83 +35,73 @@ STATUS = [
 def main() -> None:
     """Entry point for the program."""
 
-    options = nextmv.Options(
-        nextmv.Option("input", str, "", "Path to input file. Default is stdin.", False),
-        nextmv.Option("output", str, "", "Path to output file. Default is stdout.", False),
-        nextmv.Option("duration", int, 30, "Max runtime duration (in seconds).", False),
-        nextmv.Option("provider", str, "highs", "Solver provider.", False),
-        nextmv.Option("runpath", str, ".", "Path to the directory with the run file.", False),
-        nextmv.Option("modelpath", str, ".", "Path to the directory with the model file.", False),
-    )
-
-    input = nextmv.load(options=options, path=options.input)
+    loaded_input = nextmv.load()
+    options = loaded_input.options
 
     nextmv.log("Solving stochastic facility location problem:")
-    nextmv.log(f"  - facilities: {input.data.get('FACILITIES', [])}")
-    nextmv.log(f"  - customers: {input.data.get('CUSTOMERS', 0)}")
+    nextmv.log(f"  - facilities: {loaded_input.data.get('FACILITIES', [])}")
+    nextmv.log(f"  - customers: {loaded_input.data.get('CUSTOMERS', 0)}")
 
-    model = DecisionModel()
-    output = model.solve(input)
-    nextmv.write(output, path=options.output)
+    solution, metrics = solve(loaded_input)
+    nextmv.write(solution=solution, metrics=metrics, options=options)
 
 
-class DecisionModel(nextmv.Model):
-    def solve(self, input: nextmv.Input) -> nextmv.Output:
-        """Solves the given problem and returns the solution."""
+def solve(loaded_input: nextmv.Input) -> tuple[dict[str, Any], dict[str, Any]]:
+    """Solves the given problem and returns the solution and metrics."""
 
-        start_time = time.time()
-        nextmv.redirect_stdout()  # Solver chatter is logged to stderr.
+    start_time = time.time()
+    nextmv.redirect_stdout()  # Solver chatter is logged to stderr.
 
-        # Activate license.
-        license_used = activate_license()
-        input.options.license_used = license_used
+    # Activate license.
+    license_used = activate_license()
+    loaded_input.options.license_used = license_used
 
-        # Defines the model.
-        ampl = AMPL()
-        ampl.read(f"{input.options.modelpath}/floc_bend.mod")
-        ampl.set["FACILITIES"] = input.data["FACILITIES"]
-        ampl.set["CUSTOMERS"] = input.data["CUSTOMERS"]
-        ampl.set["SCENARIOS"] = input.data["SCENARIOS"]
-        ampl.param["prob"] = input.data["prob"]
-        ampl.param["fixed_cost"] = pd.read_json(io.StringIO(input.data["fixed_cost"]), orient="table")
-        ampl.param["facility_capacity"] = pd.read_json(io.StringIO(input.data["facility_capacity"]), orient="table")
-        ampl.param["variable_cost"] = pd.read_json(io.StringIO(input.data["variable_cost"]), orient="table")
-        ampl.param["customer_demand"] = pd.read_json(io.StringIO(input.data["customer_demand"]), orient="table")
+    # Defines the model.
+    ampl = AMPL()
+    ampl.read(f"{loaded_input.options.modelpath}/floc_bend.mod")
+    ampl.set["FACILITIES"] = loaded_input.data["FACILITIES"]
+    ampl.set["CUSTOMERS"] = loaded_input.data["CUSTOMERS"]
+    ampl.set["SCENARIOS"] = loaded_input.data["SCENARIOS"]
+    ampl.param["prob"] = loaded_input.data["prob"]
+    ampl.param["fixed_cost"] = pd.read_json(io.StringIO(loaded_input.data["fixed_cost"]), orient="table")
+    ampl.param["facility_capacity"] = pd.read_json(io.StringIO(loaded_input.data["facility_capacity"]), orient="table")
+    ampl.param["variable_cost"] = pd.read_json(io.StringIO(loaded_input.data["variable_cost"]), orient="table")
+    ampl.param["customer_demand"] = pd.read_json(io.StringIO(loaded_input.data["customer_demand"]), orient="table")
 
-        # Sets the solver and options.
-        provider = input.options.provider
-        ampl.option["solver"] = provider
-        if provider in SUPPORTED_PROVIDER_DURATIONS.keys():
-            opt_name = f"{provider}_options"
-            if not ampl.option[opt_name]:
-                ampl.option[opt_name] = ""
-            ampl.option[opt_name] += f" {SUPPORTED_PROVIDER_DURATIONS[provider]}={input.options.duration}"
-        solve_output = ampl.get_output(f"include {input.options.runpath}/floc_bend.run;")
+    # Sets the solver and options.
+    provider = loaded_input.options.provider
+    ampl.option["solver"] = provider
+    if provider in SUPPORTED_PROVIDER_DURATIONS.keys():
+        opt_name = f"{provider}_options"
+        if not ampl.option[opt_name]:
+            ampl.option[opt_name] = ""
+        ampl.option[opt_name] += f" {SUPPORTED_PROVIDER_DURATIONS[provider]}={loaded_input.options.duration}"
+    solve_output = ampl.get_output(f"include {loaded_input.options.runpath}/floc_bend.run;")
 
-        statistics = nextmv.Statistics(
-            run=nextmv.RunStatistics(duration=time.time() - start_time),
-            result=nextmv.ResultStatistics(
-                duration=ampl.get_value("_total_solve_time"),
-                value=round(ampl.get_value("operating_cost"), 6),
-                custom={
-                    "status": ampl.solve_result,
-                    "variables": ampl.get_value("_nvars"),
-                    "constraints": ampl.get_value("_ncons"),
-                },
-            ),
-        )
+    # Map the numeric solve result to a status string
+    solve_result_num = ampl.get_value("solve_result_num")
+    status = "unknown"
+    for status_range in STATUS:
+        if status_range["lb"] <= solve_result_num <= status_range["ub"]:
+            status = status_range["status"]
+            break
 
-        solution = {
-            "facility_open": ampl.get_data("facility_open").to_pandas().to_json(orient="table"),
-            "total_cost": ampl.get_value("total_cost"),
-            "solve_output": solve_output,
-        }
+    metrics = {
+        "run_duration": time.time() - start_time,
+        "solve_duration": ampl.get_value("_total_solve_time"),
+        "value": round(ampl.get_value("operating_cost"), 6),
+        "status": status,
+        "variables": ampl.get_value("_nvars"),
+        "constraints": ampl.get_value("_ncons"),
+    }
 
-        return nextmv.Output(
-            options=input.options,
-            solution=solution,
-            statistics=statistics,
-        )
+    solution = {
+        "facility_open": ampl.get_data("facility_open").to_pandas().to_json(orient="table"),
+        "total_cost": ampl.get_value("total_cost"),
+        "solve_output": solve_output,
+    }
+
+    return solution, metrics
 
 
 def activate_license() -> str:

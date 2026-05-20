@@ -1,0 +1,8 @@
+[project]
+name = "python-cplex-knapsack"
+version = "0.1.0"
+requires-python = ">=3.10"
+dependencies = [
+    "cplex==22.1.2.0",
+    "nextmv>=1.7.4.dev0",
+]

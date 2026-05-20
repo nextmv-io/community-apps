@@ -3,6 +3,7 @@ Template for working with Hexaly.
 """
 
 import time
+from typing import Any
 
 import nextmv
 from hexaly import optimizer
@@ -20,84 +21,69 @@ STATUS = {
 def main() -> None:
     """Entry point for the program."""
 
-    options = nextmv.Options(
-        nextmv.Option("input", str, "", "Path to input file. Default is stdin.", False),
-        nextmv.Option("output", str, "", "Path to output file. Default is stdout.", False),
-        nextmv.Option("duration", int, 30, "Max runtime duration (in seconds).", False),
-    )
-
-    input = nextmv.load(options=options, path=options.input)
+    loaded_input = nextmv.load()
+    options = loaded_input.options
 
     nextmv.log("Solving knapsack problem:")
-    nextmv.log(f"  - items: {len(input.data.get('items', []))}")
-    nextmv.log(f"  - capacity: {input.data.get('weight_capacity', 0)}")
+    nextmv.log(f"  - items: {len(loaded_input.data.get('items', []))}")
+    nextmv.log(f"  - capacity: {loaded_input.data.get('weight_capacity', 0)}")
 
-    model = DecisionModel()
-    output = model.solve(input)
-    nextmv.write(output, path=options.output)
+    solution, metrics = solve(loaded_input)
+    nextmv.write(solution=solution, metrics=metrics, options=options)
 
 
-class DecisionModel(nextmv.Model):
-    def solve(self, input: nextmv.Input) -> nextmv.Output:
-        """Solves the given problem and returns the solution."""
+def solve(loaded_input: nextmv.Input) -> tuple[dict[str, Any], dict[str, Any]]:
+    """Solves the given problem and returns the solution and metrics."""
 
-        start_time = time.time()
-        nextmv.redirect_stdout()  # Solver chatter is logged to stderr.
+    start_time = time.time()
+    nextmv.redirect_stdout()  # Solver chatter is logged to stderr.
 
-        # Creates the solver.
-        solver = optimizer.HexalyOptimizer()
-        model = solver.model
-        solver.param.time_limit = input.options.duration
+    # Creates the solver.
+    solver = optimizer.HexalyOptimizer()
+    model = solver.model
+    solver.param.time_limit = loaded_input.options.duration
 
-        # Makes the solver write to stderr so that logs show up in Nextmv Console.
-        solver.param.verbosity = 1
+    # Makes the solver write to stderr so that logs show up in Nextmv Console.
+    solver.param.verbosity = 1
 
-        # Initializes the linear sums.
-        weights = 0.0
-        values = 0.0
+    # Initializes the linear sums.
+    weights = 0.0
+    values = 0.0
 
-        # Creates the decision variables and adds them to the linear sums.
-        items = []
-        for item in input.data["items"]:
-            item_variable = model.bool()
-            items.append({"item": item, "variable": item_variable})
-            weights += item_variable * item["weight"]
-            values += item_variable * item["value"]
+    # Creates the decision variables and adds them to the linear sums.
+    items = []
+    for item in loaded_input.data["items"]:
+        item_variable = model.bool()
+        items.append({"item": item, "variable": item_variable})
+        weights += item_variable * item["weight"]
+        values += item_variable * item["value"]
 
-        # This constraint ensures the weight capacity of the knapsack will not be
-        # exceeded.
-        model.constraint(weights <= input.data["weight_capacity"])
+    # This constraint ensures the weight capacity of the knapsack will not be
+    # exceeded.
+    model.constraint(weights <= loaded_input.data["weight_capacity"])
 
-        # Sets the objective function: maximize the value of the chosen items.
-        model.maximize(values)
+    # Sets the objective function: maximize the value of the chosen items.
+    model.maximize(values)
 
-        # Closes the model and solves the problem.
-        model.close()
-        solver.solve()
+    # Closes the model and solves the problem.
+    model.close()
+    solver.solve()
 
-        # Determines which items were chosen.
-        chosen_items = [item["item"] for item in items if item["variable"].value > 0.9]
+    # Determines which items were chosen.
+    chosen_items = [item["item"] for item in items if item["variable"].value > 0.9]
 
-        input.options.provider = "hexaly"
-        statistics = nextmv.Statistics(
-            run=nextmv.RunStatistics(
-                duration=time.time() - start_time,
-                iterations=solver.statistics.nb_iterations,
-            ),
-            result=nextmv.ResultStatistics(
-                duration=solver.statistics.get_running_time(),
-                value=values.value,
-                custom={
-                    "status": STATUS.get(solver.solution.status, "unknown"),
-                },
-            ),
-        )
+    loaded_input.options.provider = "hexaly"
 
-        return nextmv.Output(
-            options=input.options,
-            solution={"items": chosen_items},
-            statistics=statistics,
-        )
+    solution = {"items": chosen_items}
+    metrics = {
+        "run_duration": time.time() - start_time,
+        "iterations": solver.statistics.nb_iterations,
+        "result_duration": solver.statistics.get_running_time(),
+        "value": values.value,
+        "status": STATUS.get(solver.solution.status, "unknown"),
+    }
+
+    return solution, metrics
 
 
 if __name__ == "__main__":

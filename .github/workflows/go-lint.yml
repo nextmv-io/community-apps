@@ -21,7 +21,7 @@ jobs:
           ]
     steps:
       - name: git clone
-        uses: actions/checkout@v4
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 
       - name: set go version
         run: |
@@ -31,14 +31,14 @@ jobs:
         working-directory: .nextmv/
 
       - name: set up go
-        uses: actions/setup-go@v5
+        uses: actions/setup-go@4a3601121dd01d1626a1e23e37211e3254c1c06c # v6.4.0
         with:
           go-version: ${{ env.GO_VERSION }}
 
       - name: golangci-lint
-        uses: golangci/golangci-lint-action@v4
+        uses: golangci/golangci-lint-action@1e7e51e771db61008b38414a730f564565cf7c20 # v9.2.0
         with:
-          version: v1.56.2
+          version: v2.12.1
           working-directory: ${{ matrix.MOD_PATH }}
 
   go-lint-success:

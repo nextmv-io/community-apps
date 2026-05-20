@@ -17,285 +17,251 @@ STATUS = {
 def main() -> None:
     """Entry point for the program."""
 
-    options = nextmv.Options(
-        nextmv.Option("input", str, "", "Path to input file. Default is stdin.", False),
-        nextmv.Option("output", str, "", "Path to output file. Default is stdout.", False),
-        nextmv.Option("duration", int, 30, "Max runtime duration (in seconds).", False),
-        nextmv.Option("provider", str, "SCIP", "Solver provider.", False),
-        nextmv.Option(
-            "factor-maximize-weekly-hours-per-worker",
-            float,
-            0.0,
-            "Weight to apply for maximizing total weekly hours per worker (up to allowed maximum).",
-            False,
-        ),
-        nextmv.Option(
-            "factor-balance-total-hours",
-            float,
-            0.0,
-            "Weight to apply for balancing worker hours.",
-            False,
-        ),
-        nextmv.Option(
-            "factor-maximize-preferences",
-            float,
-            1.0,
-            "Weight to apply for total preference matches.",
-            False,
-        ),
-    )
-
-    input = nextmv.load(options=options, path=options.input)
+    loaded_input = nextmv.load()
+    options = loaded_input.options
 
     nextmv.log("Solving shift-assignment:")
-    nextmv.log(f"  - shifts: {len(input.data.get('shifts', []))}")
-    nextmv.log(f"  - workers: {len(input.data.get('workers', []))}")
-    nextmv.log(f"  - rules: {len(input.data.get('rules', []))}")
+    nextmv.log(f"  - shifts: {len(loaded_input.data.get('shifts', []))}")
+    nextmv.log(f"  - workers: {len(loaded_input.data.get('workers', []))}")
+    nextmv.log(f"  - rules: {len(loaded_input.data.get('rules', []))}")
 
-    model = DecisionModel()
-    output = model.solve(input)
-    nextmv.write(output, path=options.output)
+    solution, metrics = solve(loaded_input)
+    nextmv.write(solution=solution, metrics=metrics, options=options)
 
 
-class DecisionModel(nextmv.Model):
-    def solve(self, input: nextmv.Input) -> nextmv.Output:
-        """Solves the given problem and returns the solution."""
+def solve(loaded_input: nextmv.Input) -> tuple[dict[str, Any], dict[str, Any]]:
+    """Solves the given problem and returns the solution and metrics."""
 
-        start_time = time.time()
-        nextmv.redirect_stdout()  # Solver chatter is logged to stderr.
+    start_time = time.time()
+    nextmv.redirect_stdout()  # Solver chatter is logged to stderr.
 
-        # Creates the solver.
-        solver = pywraplp.Solver.CreateSolver(input.options.provider)
-        solver.SetTimeLimit(input.options.duration * 1000)
+    # Creates the solver.
+    solver = pywraplp.Solver.CreateSolver(loaded_input.options.provider)
+    solver.SetTimeLimit(loaded_input.options.duration * 1000)
 
-        # Prepare data
-        workers, shifts, rules_per_worker, earliest_shift_start_time, latest_shift_end_time = convert_input(input.data)
+    # Prepare data
+    workers, shifts, rules_per_worker, earliest_shift_start_time, latest_shift_end_time = convert_input(
+        loaded_input.data
+    )
 
-        # Create binary variables indicating whether an worker is assigned to a shift
-        x_assign = {}
-        total_hours = {}
-        absolute_deviations = {}
+    # Create binary variables indicating whether an worker is assigned to a shift
+    x_assign = {}
+    total_hours = {}
+    absolute_deviations = {}
 
-        for e in workers:
-            for s in shifts:
-                x_assign[(e["id"], s["id"])] = solver.BoolVar(f"Assignment_{e['id']}_{s['id']}")
-
-            # Create auxiliary variables for total hours worked by each worker
-            total_hours[e["id"]] = solver.NumVar(0, solver.infinity(), f"TotalHours_{e['id']}")
-
-            # Create auxiliary variables for deviation from mean hours worked
-            absolute_deviations[e["id"]] = solver.NumVar(0, solver.infinity(), f"AbsoluteDeviation_{e['id']}")
-
-        # >>> Constraints
-
-        # Each shift must have the required number of workers
+    for e in workers:
         for s in shifts:
+            x_assign[(e["id"], s["id"])] = solver.BoolVar(f"Assignment_{e['id']}_{s['id']}")
+
+        # Create auxiliary variables for total hours worked by each worker
+        total_hours[e["id"]] = solver.NumVar(0, solver.infinity(), f"TotalHours_{e['id']}")
+
+        # Create auxiliary variables for deviation from mean hours worked
+        absolute_deviations[e["id"]] = solver.NumVar(0, solver.infinity(), f"AbsoluteDeviation_{e['id']}")
+
+    # >>> Constraints
+
+    # Each shift must have the required number of workers
+    for s in shifts:
+        solver.Add(
+            solver.Sum([x_assign[(e["id"], s["id"])] for e in workers]) == s["count"],
+            f"Shift_{s['id']}",
+        )
+
+    for e in workers:
+        rules = rules_per_worker[e["id"]]
+
+        # Each worker must be assigned to at least their minimum number of shifts
+        if "min_shifts" in rules:
             solver.Add(
-                solver.Sum([x_assign[(e["id"], s["id"])] for e in workers]) == s["count"],
-                f"Shift_{s['id']}",
+                solver.Sum([x_assign[(e["id"], s["id"])] for s in shifts]) >= rules["min_shifts"],
+                f"worker_{e['id']}",
             )
 
-        for e in workers:
-            rules = rules_per_worker[e["id"]]
+        # Each worker must be assigned to at most their maximum number of shifts
+        if "max_shifts" in rules:
+            solver.Add(
+                solver.Sum([x_assign[(e["id"], s["id"])] for s in shifts]) <= rules["max_shifts"],
+                f"worker_{e['id']}",
+            )
 
-            # Each worker must be assigned to at least their minimum number of shifts
-            if "min_shifts" in rules:
+        # Ensure that the minimum rest time between shifts is respected
+        if "min_rest_hours_between_shifts" in rules:
+            rest_time = datetime.timedelta(hours=rules["min_rest_hours_between_shifts"])
+            for s1, shift1 in enumerate(shifts):
+                for s2, shift2 in enumerate(shifts):
+                    if s1 >= s2:
+                        continue
+                    if (
+                        shift1["end_time"] + rest_time < shift2["start_time"]
+                        or shift2["end_time"] + rest_time < shift1["start_time"]
+                    ):
+                        continue
+                    # The two shifts are closer to each other than the minimum rest time, so we need to ensure that
+                    # the worker is not assigned to both.
+                    solver.Add(
+                        x_assign[(e["id"], shift1["id"])] + x_assign[(e["id"], shift2["id"])] <= 1,
+                        f"Rest_{e['id']}_{shift1['id']}_{shift2['id']}",
+                    )
+
+        # Ensure that availabilities are respected
+        for s in shifts:
+            if not any(
+                a["start_time"] <= s["start_time"] and a["end_time"] >= s["end_time"] for a in e["availability"]
+            ):
+                x_assign[(e["id"], s["id"])].SetBounds(0, 0)
+
+            # Ensure that workers are qualified for the shift
+            if "qualification" not in s or s["qualification"] == "":
+                # No qualifications required for shift (worker can be assigned)
+                continue
+            if "qualifications" not in e:
+                # A qualification is required for the shift, but the worker has none (worker cannot be assigned)
+                x_assign[(e["id"], s["id"])].SetBounds(0, 0)
+                continue
+            if s["qualification"] not in e["qualifications"]:
+                # The worker does not have the required qualification (worker cannot be assigned)
+                x_assign[(e["id"], s["id"])].SetBounds(0, 0)
+
+        for day in range((latest_shift_end_time - earliest_shift_start_time).days + 1):
+            # Ensure that the minimum and maximum work hours per day are respected
+            day_start = earliest_shift_start_time + datetime.timedelta(days=day)
+            day_end = day_start + datetime.timedelta(days=1)
+            if "max_work_hours_per_day" in rules:
                 solver.Add(
-                    solver.Sum([x_assign[(e["id"], s["id"])] for s in shifts]) >= rules["min_shifts"],
-                    f"worker_{e['id']}",
+                    solver.Sum(
+                        [
+                            x_assign[(e["id"], s["id"])] * overlap(s, day_start, day_end)
+                            for s in shifts
+                            if overlap(s, day_start, day_end) > 0
+                        ]
+                    )
+                    <= rules["max_work_hours_per_day"],
+                    f"MaxWorkHours_{e['id']}_{day}",
                 )
-
-            # Each worker must be assigned to at most their maximum number of shifts
-            if "max_shifts" in rules:
+            if "min_work_hours_per_day" in rules:
                 solver.Add(
-                    solver.Sum([x_assign[(e["id"], s["id"])] for s in shifts]) <= rules["max_shifts"],
-                    f"worker_{e['id']}",
+                    solver.Sum(
+                        [
+                            x_assign[(e["id"], s["id"])] * overlap(s, day_start, day_end)
+                            for s in shifts
+                            if overlap(s, day_start, day_end) > 0
+                        ]
+                    )
+                    >= rules["min_work_hours_per_day"],
+                    f"MinWorkHours_{e['id']}_{day}",
                 )
-
-            # Ensure that the minimum rest time between shifts is respected
-            if "min_rest_hours_between_shifts" in rules:
-                rest_time = datetime.timedelta(hours=rules["min_rest_hours_between_shifts"])
-                for s1, shift1 in enumerate(shifts):
-                    for s2, shift2 in enumerate(shifts):
-                        if s1 >= s2:
-                            continue
-                        if (
-                            shift1["end_time"] + rest_time < shift2["start_time"]
-                            or shift2["end_time"] + rest_time < shift1["start_time"]
-                        ):
-                            continue
-                        # The two shifts are closer to each other than the minimum rest time, so we need to ensure that
-                        # the worker is not assigned to both.
-                        solver.Add(
-                            x_assign[(e["id"], shift1["id"])] + x_assign[(e["id"], shift2["id"])] <= 1,
-                            f"Rest_{e['id']}_{shift1['id']}_{shift2['id']}",
-                        )
-
-            # Ensure that availabilities are respected
-            for s in shifts:
-                if not any(
-                    a["start_time"] <= s["start_time"] and a["end_time"] >= s["end_time"] for a in e["availability"]
-                ):
-                    x_assign[(e["id"], s["id"])].SetBounds(0, 0)
-
-                # Ensure that workers are qualified for the shift
-                if "qualification" not in s or s["qualification"] == "":
-                    # No qualifications required for shift (worker can be assigned)
-                    continue
-                if "qualifications" not in e:
-                    # A qualification is required for the shift, but the worker has none (worker cannot be assigned)
-                    x_assign[(e["id"], s["id"])].SetBounds(0, 0)
-                    continue
-                if s["qualification"] not in e["qualifications"]:
-                    # The worker does not have the required qualification (worker cannot be assigned)
-                    x_assign[(e["id"], s["id"])].SetBounds(0, 0)
-
-            for day in range((latest_shift_end_time - earliest_shift_start_time).days + 1):
-                # Ensure that the minimum and maximum work hours per day are respected
-                day_start = earliest_shift_start_time + datetime.timedelta(days=day)
-                day_end = day_start + datetime.timedelta(days=1)
-                if "max_work_hours_per_day" in rules:
-                    solver.Add(
-                        solver.Sum(
-                            [
-                                x_assign[(e["id"], s["id"])] * overlap(s, day_start, day_end)
-                                for s in shifts
-                                if overlap(s, day_start, day_end) > 0
-                            ]
-                        )
-                        <= rules["max_work_hours_per_day"],
-                        f"MaxWorkHours_{e['id']}_{day}",
-                    )
-                if "min_work_hours_per_day" in rules:
-                    solver.Add(
-                        solver.Sum(
-                            [
-                                x_assign[(e["id"], s["id"])] * overlap(s, day_start, day_end)
-                                for s in shifts
-                                if overlap(s, day_start, day_end) > 0
-                            ]
-                        )
-                        >= rules["min_work_hours_per_day"],
-                        f"MinWorkHours_{e['id']}_{day}",
-                    )
-                # Ensure total hours worked by each worker are correctly calculated
-                for e in workers:
-                    solver.Add(
-                        total_hours[e["id"]]
-                        == solver.Sum(
-                            [
-                                x_assign[(e["id"], s["id"])] * (s["end_time"] - s["start_time"]).total_seconds() / 3600
-                                for s in shifts
-                            ]
-                        ),
-                        f"TotalHours_{e['id']}",
-                    )
-
-            # Ensure that the maximum work hours per week are respected
-            if "max_work_hours_per_week" in rules:
-                for week in range((latest_shift_end_time - earliest_shift_start_time).days // 7 + 1):
-                    week_start = earliest_shift_start_time + datetime.timedelta(weeks=week)
-                    week_end = week_start + datetime.timedelta(days=7)
-                    solver.Add(
-                        solver.Sum(
-                            [
-                                x_assign[(e["id"], s["id"])] * overlap(s, week_start, week_end)
-                                for s in shifts
-                                if overlap(s, week_start, week_end) > 0
-                            ]
-                        )
-                        <= rules["max_work_hours_per_week"],
-                        f"MaxWorkHours_{e['id']}_Week{week}",
-                    )
-
-        # Calculate deviation from mean hours worked
-        balance_hours_weight = input.options.factor_balance_total_hours
-        if balance_hours_weight > 0:
-            avg_hours = solver.Sum([total_hours[e["id"]] for e in workers]) / len(workers)
+            # Ensure total hours worked by each worker are correctly calculated
             for e in workers:
-                deviation = total_hours[e["id"]] - avg_hours
-                solver.Add(absolute_deviations[e["id"]] >= deviation)
-                solver.Add(absolute_deviations[e["id"]] >= -deviation)
+                solver.Add(
+                    total_hours[e["id"]]
+                    == solver.Sum(
+                        [
+                            x_assign[(e["id"], s["id"])] * (s["end_time"] - s["start_time"]).total_seconds() / 3600
+                            for s in shifts
+                        ]
+                    ),
+                    f"TotalHours_{e['id']}",
+                )
 
-        # >>> Objective
-        objective = solver.Objective()
-        preference_weight = input.options.factor_maximize_preferences
-        weekly_hours_weight = input.options.factor_maximize_weekly_hours_per_worker
+        # Ensure that the maximum work hours per week are respected
+        if "max_work_hours_per_week" in rules:
+            for week in range((latest_shift_end_time - earliest_shift_start_time).days // 7 + 1):
+                week_start = earliest_shift_start_time + datetime.timedelta(weeks=week)
+                week_end = week_start + datetime.timedelta(days=7)
+                solver.Add(
+                    solver.Sum(
+                        [
+                            x_assign[(e["id"], s["id"])] * overlap(s, week_start, week_end)
+                            for s in shifts
+                            if overlap(s, week_start, week_end) > 0
+                        ]
+                    )
+                    <= rules["max_work_hours_per_week"],
+                    f"MaxWorkHours_{e['id']}_Week{week}",
+                )
 
+    # Calculate deviation from mean hours worked
+    balance_hours_weight = loaded_input.options.factor_balance_total_hours
+    if balance_hours_weight > 0:
+        avg_hours = solver.Sum([total_hours[e["id"]] for e in workers]) / len(workers)
         for e in workers:
-            # Maximize preferences
-            for s in shifts:
-                pref = e["preferences"].get(s["id"], 0)
-                if pref > 0:
-                    objective.SetCoefficient(x_assign[(e["id"], s["id"])], pref * preference_weight)
+            deviation = total_hours[e["id"]] - avg_hours
+            solver.Add(absolute_deviations[e["id"]] >= deviation)
+            solver.Add(absolute_deviations[e["id"]] >= -deviation)
 
-            # Minimize variance in total hours worked
-            if balance_hours_weight > 0:
-                objective.SetCoefficient(absolute_deviations[e["id"]], -balance_hours_weight)
+    # >>> Objective
+    objective = solver.Objective()
+    preference_weight = loaded_input.options.factor_maximize_preferences
+    weekly_hours_weight = loaded_input.options.factor_maximize_weekly_hours_per_worker
 
-            # Maximize total hours worked up to the maximum allowed
-            if weekly_hours_weight > 0:
-                objective.SetCoefficient(total_hours[e["id"]], weekly_hours_weight)
+    for e in workers:
+        # Maximize preferences
+        for s in shifts:
+            pref = e["preferences"].get(s["id"], 0)
+            if pref > 0:
+                objective.SetCoefficient(x_assign[(e["id"], s["id"])], pref * preference_weight)
 
-        objective.SetMaximization()
+        # Minimize variance in total hours worked
+        if balance_hours_weight > 0:
+            objective.SetCoefficient(absolute_deviations[e["id"]], -balance_hours_weight)
 
-        # Solves the problem.
-        status = solver.Solve()
+        # Maximize total hours worked up to the maximum allowed
+        if weekly_hours_weight > 0:
+            objective.SetCoefficient(total_hours[e["id"]], weekly_hours_weight)
 
-        # Convert to solution format.
-        schedule = {}
-        active_workers, total_workers, mean_hours_worked, variance_hours_worked, preferences_matched = 0, 0, 0, 0, 0
-        value = None
-        if status == pywraplp.Solver.OPTIMAL or status == pywraplp.Solver.FEASIBLE:
-            schedule = {
-                "assigned_shifts": [
-                    {
-                        "start_time": s["start_time"],
-                        "end_time": s["end_time"],
-                        "worker_id": e["id"],
-                        "shift_id": s["id"],
-                    }
-                    for e in workers
-                    for s in shifts
-                    if x_assign[(e["id"], s["id"])].solution_value() > 0.5
-                ],
-            }
-            active_workers = len({s["worker_id"] for s in schedule["assigned_shifts"]})
-            total_workers = len(workers)
-            value = solver.Objective().Value()
-            mean_hours_worked = sum(total_hours[e["id"]].solution_value() for e in workers) / len(workers)
-            variance_hours_worked = sum(
-                (total_hours[e["id"]].solution_value() - mean_hours_worked) ** 2 for e in workers
-            ) / len(workers)
-            preferences_matched = sum(
-                e["preferences"].get(s["shift_id"], 0)
+    objective.SetMaximization()
+
+    # Solves the problem.
+    status = solver.Solve()
+
+    # Convert to solution format.
+    schedule = {}
+    active_workers, total_workers, mean_hours_worked, variance_hours_worked, preferences_matched = 0, 0, 0, 0, 0
+    value = None
+    if status == pywraplp.Solver.OPTIMAL or status == pywraplp.Solver.FEASIBLE:
+        schedule = {
+            "assigned_shifts": [
+                {
+                    "start_time": s["start_time"],
+                    "end_time": s["end_time"],
+                    "worker_id": e["id"],
+                    "shift_id": s["id"],
+                }
                 for e in workers
-                for s in schedule["assigned_shifts"]
-                if s["worker_id"] == e["id"]
-            )
-        statistics = nextmv.Statistics(
-            run=nextmv.RunStatistics(duration=time.time() - start_time),
-            result=nextmv.ResultStatistics(
-                duration=solver.WallTime() / 1000,
-                value=value,
-                custom={
-                    "status": STATUS.get(status, "unknown"),
-                    "variables": solver.NumVariables(),
-                    "constraints": solver.NumConstraints(),
-                    "active_workers": active_workers,
-                    "total_workers": total_workers,
-                    "mean_hours_worked": mean_hours_worked,
-                    "variance_hours_worked": variance_hours_worked,
-                    "preferences_matched": preferences_matched,
-                },
-            ),
+                for s in shifts
+                if x_assign[(e["id"], s["id"])].solution_value() > 0.5
+            ],
+        }
+        active_workers = len({s["worker_id"] for s in schedule["assigned_shifts"]})
+        total_workers = len(workers)
+        value = solver.Objective().Value()
+        mean_hours_worked = sum(total_hours[e["id"]].solution_value() for e in workers) / len(workers)
+        variance_hours_worked = sum(
+            (total_hours[e["id"]].solution_value() - mean_hours_worked) ** 2 for e in workers
+        ) / len(workers)
+        preferences_matched = sum(
+            e["preferences"].get(s["shift_id"], 0)
+            for e in workers
+            for s in schedule["assigned_shifts"]
+            if s["worker_id"] == e["id"]
         )
 
-        return nextmv.Output(
-            options=input.options,
-            solution=schedule,
-            statistics=statistics,
-        )
+    metrics = {
+        "run_duration": time.time() - start_time,
+        "solve_duration": solver.WallTime() / 1000,
+        "value": value,
+        "status": STATUS.get(status, "unknown"),
+        "variables": solver.NumVariables(),
+        "constraints": solver.NumConstraints(),
+        "active_workers": active_workers,
+        "total_workers": total_workers,
+        "mean_hours_worked": mean_hours_worked,
+        "variance_hours_worked": variance_hours_worked,
+        "preferences_matched": preferences_matched,
+    }
+
+    return schedule, metrics
 
 
 def overlap(shift: dict, start: datetime.datetime, end: datetime.datetime) -> float:

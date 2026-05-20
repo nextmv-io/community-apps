@@ -5,16 +5,38 @@ Pyvroom package. We solve a vehicle routing problem.
 
 1. Install packages.
 
-    ```bash
-    pip3 install -r requirements.txt
-    ```
+   * With `pip`
 
-1. Run the app.
+      ```bash
+      pip install .
+      ```
 
-    ```bash
-    python3 main.py -input input.json -output output.json \
-        -duration 30 -exploration_level 4 -threads 6
-    ```
+   * With `uv`
+  
+      ```bash
+      uv sync
+      ```
+
+2. Run the app.
+
+   * With `python`
+
+      ```bash
+      cat input.json | python main.py
+      ```
+
+   * With `uv`
+
+      ```bash
+      cat input.json | uv run main.py
+      ```
+
+      Or with custom options:
+
+      ```bash
+      cat input.json | uv run main.py \
+         -duration 30 -exploration_level 4 -threads 6
+      ```
 
 ## Mirror running on Nextmv Cloud locally
 
@@ -26,7 +48,7 @@ Cloud, you can use the following command:
 ```bash
 cat input.json | docker run -i --rm \
 -v $(pwd):/app ghcr.io/nextmv-io/runtime/python:latest \
-sh -c 'python3 /app/main.py'
+sh -c 'pip install -r requirements.txt > /dev/null && python3 /app/main.py'
 ```
 
 You can also debug the application by running it in a Dev Container. This

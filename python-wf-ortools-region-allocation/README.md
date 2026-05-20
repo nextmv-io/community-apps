@@ -6,8 +6,8 @@ workflows in order to add additional visual assets to its runs.
 ## Prerequisites
 
 This example assumes that you already have pushed the [Region Allocation][region-allocation]
-app to the Nextmv platform (below steps use [Nextmv CLI][cli] to push the app - refer
-to docs for alternative methods).:
+app to the Nextmv platform (below steps use [Nextmv CLI][cli] to push the app -
+refer to docs for alternative methods).:
 
 1. Create a new custom app in the Nextmv platform with the ID
    `region-allocation`.
@@ -25,46 +25,33 @@ to docs for alternative methods).:
 
 ## Push example to Nextmv platform and run it
 
-1. Switch to the directory of this example (if still in the previous directory).
+1. Install packages.
 
-    ```bash
-    cd ../python-wf-ortools-region-allocation
-    ```
+   * With `pip`
 
-1. Create a new _**workflow**_ app in the Nextmv platform with the ID
-   `region-allocation-workflow`.
-1. Push the workflow to the Nextmv platform.
+      ```bash
+      pip install .
+      ```
 
-    ```bash
-    nextmv app push -a region-allocation-workflow
-    ```
+   * With `uv`
+  
+      ```bash
+      uv sync
+      ```
 
-1. Create a version of the code that was just pushed.
+2. Run the app.
 
-    ```bash
-    nextmv app version create -a region-allocation-workflow -v v1.0.0 -n v1.0.0
-    ```
+   * With `python`
 
-1. Create a new instance using the version.
+      ```bash
+      cat input.json | python main.py
+      ```
 
-    ```bash
-    nextmv app instance create \
-        -a region-allocation-workflow \
-        -v v1.0.0 \
-        -i main \
-        -n "Main Instance"
-    ```
+   * With `uv`
 
-1. Create a secrets collection via [console][console] and add your
-   `NEXTMV_API_KEY` as an environment variable to it.
-1. Assign the secrets collection to the instance you created in the previous
-   step.
-
-1. Make a run.
-
-    ```bash
-    nextmv app run -a region-allocation-workflow --instance-id main --input input.json
-    ```
+      ```bash
+      cat input.json | uv run main.py
+      ```
 
 ## Sneak peek
 
@@ -81,8 +68,8 @@ Allocation of the regions to the hubs visualized as a map:
 
 ## Next steps
 
-- Add run tracking to your own code.
-- Visit our [general docs][docs], [workflow docs][workflow] and [blog][blog].
+* Add run tracking to your own code.
+* Visit our [general docs][docs], [workflow docs][workflow] and [blog][blog].
   Need more assistance? [Contact][contact] us!
 
 [region-allocation]: ../python-ortools-region-allocation

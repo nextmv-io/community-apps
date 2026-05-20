@@ -1,11 +1,11 @@
 from dataclasses import dataclass
-from enum import Enum
+from enum import StrEnum
 
 import yaml
 from log import log
 
 
-class AppType(str, Enum):
+class AppType(StrEnum):
     """Represents the type of app."""
 
     GO = "go"

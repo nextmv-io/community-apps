@@ -209,3 +209,6 @@ license.dat*
 
 # Xpress stuff
 problem.lp
+
+# Ignore local Nextmv app execution folder (only inside application folders, not root)
+*/.nextmv/

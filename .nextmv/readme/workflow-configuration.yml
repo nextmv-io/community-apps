@@ -111,6 +111,12 @@ apps:
       - name: 1.sh
         silent: true
       - name: 2.sh
+        silent: true
+      - name: 3.sh
+        silent: true
+      - name: 4.sh
+        silent: true
+      - name: 5.sh
         skip: true
   - name: python-ampl-knapsack
     scripts:
@@ -119,7 +125,11 @@ apps:
       - name: 1.sh
         silent: true
       - name: 2.sh
-        skip: true
+        silent: true
+      - name: 3.sh
+        silent: true
+      - name: 4.sh
+        silent: true
   - name: python-ampl-priceoptimization
     scripts:
       - name: 0.sh
@@ -127,18 +137,32 @@ apps:
       - name: 1.sh
         silent: true
       - name: 2.sh
+        silent: true
+      - name: 3.sh
+        silent: true
+      - name: 4.sh
+        silent: true
+      - name: 5.sh
         skip: true
   - name: python-cplex-knapsack
     scripts:
       - name: 0.sh
-        silent: true
+        skip: true
       - name: 1.sh
-        silent: true
+        skip: true
       - name: 2.sh
+        skip: true
+      - name: 3.sh
+        skip: true
+      - name: 4.sh
         skip: true
   - name: python-cuopt-routing
     scripts:
       - name: 0.sh
+        skip: true
+      - name: 1.sh
+        skip: true
+      - name: 2.sh
         skip: true
   # TODO: enable when GAMS fixes breaking changes.
   - name: python-gams-cutstock
@@ -147,18 +171,48 @@ apps:
         skip: true
       - name: 1.sh
         skip: true
+      - name: 2.sh
+        skip: true
+      - name: 3.sh
+        skip: true
+      - name: 4.sh
+        skip: true
   - name: python-gamspy-traveling-salesman
     scripts:
       - name: 0.sh
         silent: true
       - name: 1.sh
-        stderr: true
+        silent: true
+      - name: 2.sh
+        silent: true
+      - name: 3.sh
+        silent: true
+      - name: 4.sh
+        silent: true
   - name: python-gurobi-knapsack
     scripts:
       - name: 0.sh
         silent: true
+      - name: 1.sh
+        silent: true
       - name: 2.sh
-        skip: true
+        silent: true
+      - name: 3.sh
+        silent: true
+      - name: 4.sh
+        silent: true
+  - name: python-gurobi-price-optimization
+    scripts:
+      - name: 0.sh
+        silent: true
+      - name: 1.sh
+        silent: true
+      - name: 2.sh
+        silent: true
+      - name: 3.sh
+        silent: true
+      - name: 4.sh
+        silent: true
   - name: python-hello-world
     scripts:
       - name: 0.sh
@@ -166,21 +220,33 @@ apps:
       - name: 1.sh
         silent: true
       - name: 2.sh
+        silent: true
+      - name: 3.sh
+        silent: true
+      - name: 4.sh
+        silent: true
+  - name: python-hexaly-generic
+    scripts:
+      - name: 0.sh
+        silent: true
+      - name: 1.sh
+        silent: true
+      - name: 2.sh
+        skip: true
+      - name: 3.sh
+        skip: true
+      - name: 4.sh
+        skip: true
+      - name: 5.sh
+        skip: true
+      - name: 6.sh
         skip: true
   - name: python-hexaly-knapsack
     scripts:
       - name: 0.sh
         silent: true
       - name: 1.sh
-        skip: true
-      - name: 2.sh
-        skip: true
-  - name: python-hexaly-generic
-    scripts:
-      - name: 0.sh
         silent: true
-      - name: 1.sh
-        skip: true
       - name: 2.sh
         skip: true
       - name: 3.sh
@@ -194,45 +260,75 @@ apps:
       - name: 0.sh
         silent: true
       - name: 1.sh
-        stderr: true
+        silent: true
       - name: 2.sh
-        skip: true
+        silent: true
+      - name: 3.sh
+        silent: true
+      - name: 4.sh
+        silent: true
   - name: python-nextmv-gurobipy-knapsack
     scripts:
       - name: 0.sh
         silent: true
+      - name: 1.sh
+        silent: true
       - name: 2.sh
-        skip: true
+        silent: true
+      - name: 3.sh
+        silent: true
+      - name: 4.sh
+        silent: true
   - name: python-nextroute
     scripts:
       - name: 0.sh
         silent: true
       - name: 1.sh
         silent: true
+      - name: 2.sh
+        silent: true
+      - name: 3.sh
+        silent: true
+      - name: 4.sh
+        silent: true
   - name: python-ortools-costflow
     scripts:
       - name: 0.sh
         silent: true
       - name: 1.sh
-        stderr: true
+        silent: true
       - name: 2.sh
-        skip: true
+        silent: true
+      - name: 3.sh
+        silent: true
+      - name: 4.sh
+        silent: true
   - name: python-ortools-demandforecasting
     scripts:
       - name: 0.sh
         silent: true
       - name: 1.sh
-        stderr: true
+        silent: true
       - name: 2.sh
+        silent: true
+      - name: 3.sh
+        silent: true
+      - name: 4.sh
+        silent: true
+      - name: 5.sh
         skip: true
   - name: python-ortools-knapsack
     scripts:
       - name: 0.sh
         silent: true
       - name: 1.sh
-        stderr: true
+        silent: true
       - name: 2.sh
-        skip: true
+        silent: true
+      - name: 3.sh
+        silent: true
+      - name: 4.sh
+        silent: true
   - name: python-ortools-knapsack-multicsv
     scripts:
       - name: 0.sh
@@ -240,82 +336,142 @@ apps:
       - name: 1.sh
         silent: true
       - name: 2.sh
-        skip: true
+        silent: true
+      - name: 3.sh
+        silent: true
+      - name: 4.sh
+        silent: true
   - name: python-ortools-multiknapsack-multiexcel
     scripts:
       - name: 0.sh
         silent: true
       - name: 1.sh
-        stderr: true
+        silent: true
+      - name: 2.sh
+        silent: true
+      - name: 3.sh
+        silent: true
+      - name: 4.sh
+        silent: true
   - name: python-ortools-region-allocation
     scripts:
       - name: 0.sh
         silent: true
       - name: 1.sh
-        stderr: true
+        silent: true
       - name: 2.sh
+        silent: true
+      - name: 3.sh
+        silent: true
+      - name: 4.sh
+        silent: true
+      - name: 5.sh
         skip: true
   - name: python-ortools-routing
     scripts:
       - name: 0.sh
         silent: true
       - name: 1.sh
-        stderr: true
+        silent: true
       - name: 2.sh
-        skip: true
+        silent: true
+      - name: 3.sh
+        silent: true
+      - name: 4.sh
+        silent: true
   - name: python-ortools-shiftassignment
     scripts:
       - name: 0.sh
         silent: true
       - name: 1.sh
-        stderr: true
+        silent: true
       - name: 2.sh
-        skip: true
+        silent: true
+      - name: 3.sh
+        silent: true
+      - name: 4.sh
+        silent: true
   - name: python-ortools-shiftplanning
     scripts:
       - name: 0.sh
         silent: true
       - name: 1.sh
-        stderr: true
+        silent: true
       - name: 2.sh
-        skip: true
+        silent: true
+      - name: 3.sh
+        silent: true
+      - name: 4.sh
+        silent: true
   - name: python-pyomo-knapsack
     scripts:
       - name: 0.sh
         silent: true
       - name: 1.sh
-        stderr: true
+        silent: true
       - name: 2.sh
+        silent: true
+      - name: 3.sh
+        silent: true
+      - name: 4.sh
+        silent: true
+      - name: 5.sh
         skip: true
   - name: python-pyomo-shiftassignment
     scripts:
       - name: 0.sh
         silent: true
       - name: 1.sh
-        stderr: true
+        silent: true
       - name: 2.sh
+        silent: true
+      - name: 3.sh
+        silent: true
+      - name: 4.sh
+        silent: true
+      - name: 5.sh
         skip: true
   - name: python-pyomo-shiftplanning
     scripts:
       - name: 0.sh
         silent: true
       - name: 1.sh
-        stderr: true
+        silent: true
       - name: 2.sh
+        silent: true
+      - name: 3.sh
+        silent: true
+      - name: 4.sh
+        silent: true
+      - name: 5.sh
         skip: true
   - name: python-pyoptinterface-knapsack
     scripts:
       - name: 0.sh
         silent: true
       - name: 1.sh
-        stderr: true
+        silent: true
       - name: 2.sh
+        silent: true
+      - name: 3.sh
+        silent: true
+      - name: 4.sh
+        silent: true
+      - name: 5.sh
         skip: true
   - name: python-pyvroom-routing
     scripts:
       - name: 0.sh
         silent: true
+      - name: 1.sh
+        silent: true
       - name: 2.sh
+        silent: true
+      - name: 3.sh
+        silent: true
+      - name: 4.sh
+        silent: true
+      - name: 5.sh
         skip: true
   - name: python-pyvrp-routing
     scripts:
@@ -328,7 +484,13 @@ apps:
       - name: 0.sh
         silent: true
       - name: 1.sh
-        stderr: true
+        silent: true
+      - name: 2.sh
+        silent: true
+      - name: 3.sh
+        silent: true
+      - name: 4.sh
+        silent: true
   - name: python-simpy-carwash-simulation
     scripts:
       - name: 0.sh
@@ -340,7 +502,7 @@ apps:
       - name: 3.sh
         silent: true
       - name: 4.sh
-        skip: true
+        silent: true
   - name: python-tr-ortools-region-allocation
     scripts:
       - name: 0.sh
@@ -352,28 +514,24 @@ apps:
       - name: 0.sh
         silent: true
       - name: 1.sh
-        skip: true
-  - name: python-xpress-facility-location
-    scripts:
-      - name: 0.sh
-        silent: true
-  - name: python-xpress-knapsack
-    scripts:
-      - name: 0.sh
         silent: true
       - name: 2.sh
         skip: true
-  - name: python-xpress-park-location
-    scripts:
-      - name: 0.sh
-        silent: true
-      - name: 1.sh
-        silent: true
+      - name: 3.sh
+        skip: true
   - name: python-wf-custom-visuals
     scripts:
       - name: 0.sh
         skip: true
       - name: 1.sh
+        skip: true
+      - name: 2.sh
+        skip: true
+      - name: 3.sh
+        skip: true
+      - name: 4.sh
+        skip: true
+      - name: 5.sh
         skip: true
   - name: python-wf-databricks
     scripts:
@@ -393,16 +551,56 @@ apps:
         skip: true
   - name: python-wf-ortools-region-allocation
     scripts:
+      - name: 0.sh
+        skip: true
       - name: 1.sh
         skip: true
+      - name: 2.sh
+        silent: true
       - name: 3.sh
-        skip: true
+        silent: true
       - name: 4.sh
         skip: true
       - name: 5.sh
         skip: true
       - name: 6.sh
         skip: true
+  - name: python-xpress-facility-location
+    scripts:
+      - name: 0.sh
+        silent: true
+      - name: 1.sh
+        silent: true
+      - name: 2.sh
+        silent: true
+      - name: 3.sh
+        silent: true
+      - name: 4.sh
+        silent: true
+  - name: python-xpress-knapsack
+    scripts:
+      - name: 0.sh
+        silent: true
+      - name: 1.sh
+        silent: true
+      - name: 2.sh
+        silent: true
+      - name: 3.sh
+        silent: true
+      - name: 4.sh
+        silent: true
+  - name: python-xpress-park-location
+    scripts:
+      - name: 0.sh
+        silent: true
+      - name: 1.sh
+        silent: true
+      - name: 2.sh
+        silent: true
+      - name: 3.sh
+        silent: true
+      - name: 4.sh
+        silent: true
   - name: rust-goodlp-knapsack
     scripts:
       - name: 0.sh

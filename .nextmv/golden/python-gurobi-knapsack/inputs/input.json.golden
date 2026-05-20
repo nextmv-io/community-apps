@@ -1,10 +1,16 @@
 {
   "assets": [],
+  "metrics": {
+    "constraints": 1,
+    "provider": "gurobi",
+    "result_duration": 0.123,
+    "result_value": 444,
+    "run_duration": 0.123,
+    "status": "optimal",
+    "variables": 11
+  },
   "options": {
-    "duration": 30,
-    "input": "input.json",
-    "output": "output.json",
-    "provider": "gurobi"
+    "duration": 30
   },
   "solution": {
     "items": [
@@ -49,20 +55,5 @@
         "weight": 4
       }
     ]
-  },
-  "statistics": {
-    "result": {
-      "custom": {
-        "constraints": 1,
-        "status": "optimal",
-        "variables": 11
-      },
-      "duration": 0.123,
-      "value": 444
-    },
-    "run": {
-      "duration": 0.123
-    },
-    "schema": "v1"
   }
 }

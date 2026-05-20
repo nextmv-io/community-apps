@@ -1,10 +1,15 @@
 {
   "assets": [],
+  "metrics": {
+    "constraints": 1,
+    "duration": 0.123,
+    "pyoptinterface_version": "0.4.0",
+    "status": "TerminationStatusCode.OPTIMAL",
+    "value": 444,
+    "variables": 11
+  },
   "options": {
-    "duration": 30,
-    "input": "input.json",
-    "output": "output.json",
-    "version": "0.4.0"
+    "duration": 30
   },
   "solution": {
     "items": [
@@ -49,19 +54,5 @@
         "weight": 4
       }
     ]
-  },
-  "statistics": {
-    "result": {
-      "custom": {
-        "constraints": 1,
-        "status": "TerminationStatusCode.OPTIMAL",
-        "variables": 11
-      },
-      "value": 444
-    },
-    "run": {
-      "duration": 0.123
-    },
-    "schema": "v1"
   }
 }

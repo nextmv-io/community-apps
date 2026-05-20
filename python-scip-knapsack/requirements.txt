@@ -1,2 +1,2 @@
 pyscipopt==5.6.0
-nextmv==1.6.2
+nextmv>=1.7.4.dev0

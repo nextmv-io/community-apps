@@ -1,0 +1,61 @@
+{
+  "regions": [
+    "Great_Lakes",
+    "Midsouth",
+    "Northeast",
+    "Northern_New_England",
+    "SouthCentral",
+    "Southeast",
+    "West",
+    "Plains"
+  ],
+  "cost_per_wasted_product": 0.1,
+  "peak": 1,
+  "transport_costs": {
+    "Great_Lakes": 0.3,
+    "Midsouth": 0.1,
+    "Northeast": 0.4,
+    "Northern_New_England": 0.5,
+    "SouthCentral": 0.3,
+    "Southeast": 0.2,
+    "West": 0.2,
+    "Plains": 0.2
+  },
+  "year": 2022,
+  "minimum_product_price": 0,
+  "maximum_product_price": 2,
+  "minimum_product_allocations": {
+    "Great_Lakes": 0.03,
+    "Midsouth": 0.02,
+    "Northeast": 0.04,
+    "Northern_New_England": 0.01,
+    "Plains": 0.02,
+    "SouthCentral": 0.03,
+    "Southeast": 0.02,
+    "West": 0.05
+  },
+  "maximum_product_allocations": {
+    "Great_Lakes": 5.2,
+    "Midsouth": 4.8,
+    "Northeast": 6.5,
+    "Northern_New_England": 2.1,
+    "Plains": 3.9,
+    "SouthCentral": 5.8,
+    "Southeast": 4.3,
+    "West": 8.2
+  },
+  "coefficients": {
+    "Intercept": 3.5,
+    "price": -1.2,
+    "year_index": 0.05,
+    "peak": 0.8,
+    "C(region)[T.Great_Lakes]": 0.0,
+    "C(region)[T.Midsouth]": -0.15,
+    "C(region)[T.Northeast]": 0.25,
+    "C(region)[T.Northern_New_England]": -0.3,
+    "C(region)[T.Plains]": -0.1,
+    "C(region)[T.SouthCentral]": 0.1,
+    "C(region)[T.Southeast]": -0.05,
+    "C(region)[T.West]": 0.4
+  }
+}

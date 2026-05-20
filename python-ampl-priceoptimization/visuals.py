@@ -1,19 +1,19 @@
 import json
+from typing import Any
 
 import nextmv
 import plotly.graph_objects as go
 
 
-def create_visuals(solutions: dict, statistics: nextmv.Statistics) -> list[nextmv.Asset]:
-    statistics = statistics.to_dict()
+def create_visuals(solutions: dict, metrics: dict[str, Any]) -> list[nextmv.Asset]:
     regions = solutions["regions"]
     prices = tuple(solutions["price"].values())
     quantities = tuple(solutions["quantity"].values())
-    demand_forecast = tuple(statistics["result"]["custom"]["expected_demand"].values())
+    demand_forecast = tuple(metrics["expected_demand"].values())
 
     # Added sales & waste data
-    sales = tuple(statistics["result"]["custom"]["expected_sales"].values())
-    waste = tuple(statistics["result"]["custom"]["expected_waste"].values())
+    sales = tuple(metrics["expected_sales"].values())
+    waste = tuple(metrics["expected_waste"].values())
 
     # First figure: Price & Quantity
     fig_forecast_quantities = go.Figure()

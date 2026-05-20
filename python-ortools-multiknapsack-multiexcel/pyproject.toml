@@ -1,0 +1,13 @@
+[project]
+name = "python-ortools-multiknapsack-multiexcel"
+version = "0.1.0"
+requires-python = ">=3.10"
+dependencies = [
+    "nextmv>=1.7.4.dev0",
+    "openpyxl==3.1.5",
+    "ortools==9.14.6206",
+    "pandas==2.3.1",
+]
+
+[tool.setuptools]
+packages = []
