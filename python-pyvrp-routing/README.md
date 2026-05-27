@@ -1,7 +1,7 @@
 # Nextmv Python PyVRP Routing
 
-Example for running a Python application on the Nextmv Platform using the
-PyVRP package. We solve a vehicle routing problem.
+This app demonstrates how to solve a Vehicle Routing Problem (VRP) using the
+`pyvrp` package and run it on the Nextmv Platform.
 
 1. Install packages.
 

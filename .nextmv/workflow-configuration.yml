@@ -256,7 +256,7 @@ apps:
     app_id:
     marketplace_app_id:
     marketplace_major_version:
-    description: Use Python and Pyvroom - VRP.
+    description: Use Python and PyVRP - VRP.
   - name: python-scip-knapsack
     type: python
     app_id:
