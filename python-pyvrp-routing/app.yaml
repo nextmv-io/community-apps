@@ -1,0 +1,165 @@
+# This manifest holds the information the app needs to run on the Nextmv Cloud.
+type: python
+runtime: ghcr.io/nextmv-io/runtime/python:3.11
+# List all files/directories that should be included in the app. Globbing
+# (e.g.: configs/*.json) is supported.
+files:
+  - main.py
+python:
+  # Packages the app depends on need to be listed in pyproject.toml.
+  # All listed packages will get bundled with the app.
+  pip-requirements: pyproject.toml # Can be a requirements.txt
+
+configuration:
+  # Specify the format the app reads and writes.
+  content:
+    format: "json" # Read JSON from stdin and write JSON to stdout.
+  options:
+    items:
+      - name: input
+        option_type: string
+        description: The input file path
+        local_only: true
+      - name: output
+        option_type: string
+        description: The output file path
+        local_only: true
+      - name: duration
+        option_type: int
+        default: 30
+        description: Max runtime duration (in seconds).
+        required: false
+        ui:
+          control_type: input
+          display_name: Max Runtime (seconds)
+
+      # IteratedLocalSearchParams
+      - name: num_iters_no_improvement
+        option_type: int
+        description: Number of iterations without improvement before the search stops.
+        required: false
+        ui:
+          control_type: input
+          display_name: Iterations No Improvement
+      - name: history_length
+        option_type: int
+        description: Number of solutions to retain in the solution history.
+        required: false
+        ui:
+          control_type: input
+          display_name: History Length
+      - name: exhaustive_on_best
+        option_type: bool
+        description: Whether to run an exhaustive local search whenever a new best solution is found.
+        required: false
+        ui:
+          control_type: toggle
+          display_name: Exhaustive Search on Best
+
+      # PenaltyParams
+      - name: solutions_between_updates
+        option_type: int
+        description: Number of solutions between penalty parameter updates.
+        required: false
+        ui:
+          control_type: input
+          display_name: Solutions Between Penalty Updates
+      - name: penalty_increase
+        option_type: float
+        description: Multiplier used to increase penalty parameters (must be >= 1.0).
+        required: false
+        ui:
+          control_type: input
+          display_name: Penalty Increase Factor
+      - name: penalty_decrease
+        option_type: float
+        description: Multiplier used to decrease penalty parameters (must be in [0, 1]).
+        required: false
+        ui:
+          control_type: input
+          display_name: Penalty Decrease Factor
+      - name: target_feasible
+        option_type: float
+        description: Target fraction of feasible solutions during search (must be in [0, 1]).
+        required: false
+        ui:
+          control_type: slider
+          display_name: Target Feasible Fraction
+        additional_attributes:
+          min: 0.0
+          max: 1.0
+          step: 0.05
+      - name: feas_tolerance
+        option_type: float
+        description: Tolerance around target_feasible used when updating penalty parameters (must be in [0, 1]).
+        required: false
+        ui:
+          control_type: input
+          display_name: Feasibility Tolerance
+      - name: min_penalty
+        option_type: float
+        description: Minimum value for penalty parameters (must be >= 0).
+        required: false
+        ui:
+          control_type: input
+          display_name: Minimum Penalty
+      - name: max_penalty
+        option_type: float
+        description: Maximum value for penalty parameters (must be >= min_penalty).
+        required: false
+        ui:
+          control_type: input
+          display_name: Maximum Penalty
+
+      # NeighbourhoodParams
+      - name: weight_wait_time
+        option_type: float
+        description: Relative weight given to wait time when computing proximity.
+        required: false
+        ui:
+          control_type: input
+          display_name: Weight Wait Time
+      - name: weight_time_warp
+        option_type: float
+        description: Relative weight given to time warp when computing proximity.
+        required: false
+        ui:
+          control_type: input
+          display_name: Weight Time Warp
+      - name: num_neighbours
+        option_type: int
+        description: Number of nearest neighbours to consider for each client (must be > 0).
+        required: false
+        ui:
+          control_type: input
+          display_name: Number of Neighbours
+      - name: symmetric_proximity
+        option_type: bool
+        description: Whether to symmetrise the proximity matrix.
+        required: false
+        ui:
+          control_type: toggle
+          display_name: Symmetric Proximity
+      - name: symmetric_neighbours
+        option_type: bool
+        description: Whether to symmetrise the neighbours list.
+        required: false
+        ui:
+          control_type: toggle
+          display_name: Symmetric Neighbours
+
+      # PerturbationParams
+      - name: min_perturbations
+        option_type: int
+        description: Minimum number of perturbations to apply in double-bridge moves.
+        required: false
+        ui:
+          control_type: input
+          display_name: Min Perturbations
+      - name: max_perturbations
+        option_type: int
+        description: Maximum number of perturbations to apply in double-bridge moves.
+        required: false
+        ui:
+          control_type: input
+          display_name: Max Perturbations
