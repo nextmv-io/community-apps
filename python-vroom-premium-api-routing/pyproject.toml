@@ -6,7 +6,7 @@ dependencies = [
     "nextmv>=1.7.4.dev0",
     "plotly==6.0.1",
     "polyline==1.4.0",
-    "requests==2.32.4",
+    "requests==2.34.2",
 ]
 
 [tool.setuptools]
