@@ -8,7 +8,7 @@
     "min_stops_in_vehicle": 5,
     "objective_value": 1062,
     "result": {
-      "duration": 0.004960060119628906,
+      "duration": 0.123,
       "value": 1062
     },
     "solution_found": true

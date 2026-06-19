@@ -17,7 +17,7 @@ func TestGolden(t *testing.T) {
 		t,
 		"inputs",
 		golden.Config{
-			UseStdIn: true,
+			UseStdIn:  true,
 			UseStdOut: true,
 			Args: []string{
 				"-duration",
@@ -28,10 +28,14 @@ func TestGolden(t *testing.T) {
 					Key:         "$.metrics.duration",
 					Replacement: golden.StableFloat,
 				},
+				{
+					Key:         "$.metrics.result.duration",
+					Replacement: golden.StableFloat,
+				},
 			},
 			ExecutionConfig: &golden.ExecutionConfig{
-				Command:    "uv",
-				Args:       []string{"run", "--directory", "../../../python-ortools-routing", "main.py"},
+				Command: "uv",
+				Args:    []string{"run", "--directory", "../../../python-ortools-routing", "main.py"},
 			},
 		},
 	)

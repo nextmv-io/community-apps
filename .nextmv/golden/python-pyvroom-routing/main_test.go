@@ -28,6 +28,10 @@ func TestGolden(t *testing.T) {
 					Key:         "$.metrics.duration",
 					Replacement: golden.StableFloat,
 				},
+				{
+					Key:         "$.metrics.result.duration",
+					Replacement: golden.StableFloat,
+				},
 			},
 			ExecutionConfig: &golden.ExecutionConfig{
 				Command: "uv",

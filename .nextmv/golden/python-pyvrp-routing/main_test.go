@@ -23,11 +23,11 @@ func TestGolden(t *testing.T) {
 			},
 			TransientFields: []golden.TransientField{
 				{
-					Key:         "$.statistics.result.duration",
+					Key:         "$.metrics.result.duration",
 					Replacement: golden.StableFloat,
 				},
 				{
-					Key:         "$.statistics.run.duration",
+					Key:         "$.metrics.run.duration",
 					Replacement: golden.StableFloat,
 				},
 				{

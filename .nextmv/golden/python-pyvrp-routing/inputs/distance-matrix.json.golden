@@ -2,7 +2,7 @@
   "assets": [],
   "metrics": {
     "activated_vehicles": 2,
-    "duration": 2.0108189582824707,
+    "duration": 2.000586986541748,
     "max_duration": 319,
     "max_stops_in_vehicle": 2,
     "max_travel_duration": 319,
@@ -10,7 +10,7 @@
     "min_stops_in_vehicle": 1,
     "min_travel_duration": 128,
     "result": {
-      "duration": 2.0108189582824707,
+      "duration": 0.123,
       "value": 447
     },
     "solution_found": true,

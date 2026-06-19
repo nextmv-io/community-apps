@@ -1,9 +1,9 @@
 {
   "assets": [],
   "metrics": {
-    "duration": 2.000469923019409,
+    "duration": 2.000372886657715,
     "result": {
-      "duration": 2.000469923019409,
+      "duration": 0.123,
       "value": null
     },
     "solution_found": false,
