@@ -265,6 +265,7 @@ def solve(input: nextmv.Input, duration: int, options: Any) -> nextmv.Output:
                 "min_duration": min_duration if min_duration is not None else 0,
                 "max_stops_in_vehicle": max_stops_in_vehicle,
                 "min_stops_in_vehicle": min_stops_in_vehicle,
+                "result": {"value": result.cost(), "duration": end_time - start_time},
             },
         )
     else:
@@ -275,6 +276,7 @@ def solve(input: nextmv.Input, duration: int, options: Any) -> nextmv.Output:
                 "duration": end_time - start_time,
                 "value": None,
                 "solution_found": False,
+                "result": {"value": None, "duration": end_time - start_time},
             },
         )
 

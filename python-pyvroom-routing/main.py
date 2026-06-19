@@ -261,6 +261,7 @@ def solve(loaded_input: nextmv.Input) -> tuple[dict[str, Any], dict[str, Any]]:
             "min_duration": min_duration if min_duration is not None else 0,
             "max_stops_in_vehicle": max_stops_in_vehicle,
             "min_stops_in_vehicle": min_stops_in_vehicle,
+            "result": {"value": vroom_solution.summary.cost, "duration": solve_end_time - start_time},
         }
 
     else:
@@ -268,6 +269,7 @@ def solve(loaded_input: nextmv.Input) -> tuple[dict[str, Any], dict[str, Any]]:
             "duration": solve_end_time - start_time,
             "value": None,
             "solution_found": False,
+            "result": {"value": None, "duration": solve_end_time - start_time},
         }
 
     solution = {"vehicles": routes, "unplanned": unplanned_stops}
