@@ -9,6 +9,10 @@
     "min_duration": 5348,
     "min_stops_in_vehicle": 3,
     "min_travel_duration": 4448,
+    "result": {
+      "duration": 0.0010709762573242188,
+      "value": 4448
+    },
     "solution_found": true,
     "value": 4448
   },

@@ -1,5 +1,14 @@
 {
   "assets": [],
+  "metrics": {
+    "duration": 2.000469923019409,
+    "result": {
+      "duration": 2.000469923019409,
+      "value": null
+    },
+    "solution_found": false,
+    "value": null
+  },
   "options": {
     "duration": 2,
     "exhaustive_on_best": null,
@@ -27,16 +36,5 @@
   "solution": {
     "unplanned": [],
     "vehicles": []
-  },
-  "statistics": {
-    "result": {
-      "custom": {
-        "solution_found": false
-      }
-    },
-    "run": {
-      "duration": 0.123
-    },
-    "schema": "v1"
   }
 }
