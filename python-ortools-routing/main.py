@@ -197,11 +197,13 @@ def solve(input: nextmv.Input, options: nextmv.Options) -> tuple[dict[str, Any],
             "max_route_duration": max_route_duration,
             "max_stops_in_vehicle": max_stops_in_vehicle,
             "min_stops_in_vehicle": min_stops_in_vehicle,
+            "result": {"value": solution.ObjectiveValue(), "duration": end_time - start_time},
         }
     else:
         metrics = {
             "duration": end_time - start_time,
             "solution_found": False,
+            "result": {"value": None, "duration": end_time - start_time},
         }
 
     return {"vehicles": routes, "unplanned": []}, metrics

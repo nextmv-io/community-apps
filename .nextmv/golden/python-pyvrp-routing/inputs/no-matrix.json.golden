@@ -1,5 +1,21 @@
 {
   "assets": [],
+  "metrics": {
+    "activated_vehicles": 2,
+    "duration": 2.000432252883911,
+    "max_duration": 164,
+    "max_stops_in_vehicle": 2,
+    "max_travel_duration": 164,
+    "min_duration": 52,
+    "min_stops_in_vehicle": 1,
+    "min_travel_duration": 52,
+    "result": {
+      "duration": 0.123,
+      "value": 216
+    },
+    "solution_found": true,
+    "value": 216
+  },
   "options": {
     "duration": 2,
     "exhaustive_on_best": null,
@@ -161,24 +177,5 @@
         "route_travel_duration": 52
       }
     ]
-  },
-  "statistics": {
-    "result": {
-      "custom": {
-        "activated_vehicles": 2,
-        "max_duration": 164,
-        "max_stops_in_vehicle": 2,
-        "max_travel_duration": 164,
-        "min_duration": 52,
-        "min_stops_in_vehicle": 1,
-        "min_travel_duration": 52,
-        "solution_found": true
-      },
-      "value": 216
-    },
-    "run": {
-      "duration": 0.123
-    },
-    "schema": "v1"
   }
 }

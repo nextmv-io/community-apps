@@ -121,6 +121,7 @@ def solve(data: dict[str, Any], options: nextmv.Options) -> tuple[dict[str, Any]
         "value": solution_obj.get_total_objective(),
         "status": SOLUTION_STATUS[solution_obj.get_status()],
         "vehicle_count": solution_obj.get_vehicle_count(),
+        "result": {"value": solution_obj.get_total_objective(), "duration": (datetime.now() - start).total_seconds()},
     }
 
     return solution, metrics
