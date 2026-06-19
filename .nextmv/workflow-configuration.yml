@@ -251,6 +251,12 @@ apps:
     marketplace_app_id: routing.pyvroom
     marketplace_major_version: v1
     description: Use Python and Pyvroom - VRP.
+  - name: python-pyvrp-routing
+    type: python
+    app_id:
+    marketplace_app_id:
+    marketplace_major_version:
+    description: Use Python and PyVRP - VRP.
   - name: python-scip-knapsack
     type: python
     app_id:

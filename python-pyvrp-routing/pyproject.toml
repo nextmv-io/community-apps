@@ -1,0 +1,8 @@
+[project]
+name = "python-pyvrp-routing"
+version = "0.1.0"
+requires-python = ">=3.11"
+dependencies = [
+    "nextmv>=1.7.4.dev0",
+    "pyvrp==0.13.4",
+]

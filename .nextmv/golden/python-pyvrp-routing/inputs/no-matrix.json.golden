@@ -1,0 +1,184 @@
+{
+  "assets": [],
+  "options": {
+    "duration": 2,
+    "exhaustive_on_best": null,
+    "feas_tolerance": null,
+    "history_length": null,
+    "input": "input.json",
+    "max_penalty": null,
+    "max_perturbations": null,
+    "min_penalty": null,
+    "min_perturbations": null,
+    "num_iters_no_improvement": null,
+    "num_neighbours": null,
+    "output": "output.json",
+    "penalty_decrease": null,
+    "penalty_increase": null,
+    "solutions_between_updates": null,
+    "solver": "PyVRP",
+    "symmetric_neighbours": null,
+    "symmetric_proximity": null,
+    "target_feasible": null,
+    "version": "0.13.4",
+    "weight_time_warp": null,
+    "weight_wait_time": null
+  },
+  "solution": {
+    "unplanned": [],
+    "vehicles": [
+      {
+        "id": "vehicle-1",
+        "route": [
+          {
+            "arrival_time": "2024-03-19T11:00:00+00:00",
+            "cumulative_travel_distance": 0,
+            "cumulative_travel_duration": 0,
+            "end_time": "2024-03-19T11:00:00+00:00",
+            "start_time": "2024-03-19T11:00:00+00:00",
+            "stop": {
+              "id": "vehicle-1-start",
+              "location": {
+                "lat": 51.9622,
+                "lon": 7.625
+              }
+            },
+            "travel_distance": 0,
+            "travel_duration": 0
+          },
+          {
+            "arrival_time": "2024-03-19T11:01:22+00:00",
+            "cumulative_travel_distance": 823,
+            "cumulative_travel_duration": 82,
+            "duration": 0,
+            "end_time": "2024-03-19T11:01:22+00:00",
+            "start_time": "2024-03-19T11:01:22+00:00",
+            "stop": {
+              "id": "location-2",
+              "location": {
+                "lat": 51.9584,
+                "lon": 7.6353
+              }
+            },
+            "travel_distance": 823,
+            "travel_duration": 82
+          },
+          {
+            "arrival_time": "2024-03-19T11:02:44+00:00",
+            "cumulative_travel_distance": 1646,
+            "cumulative_travel_duration": 164,
+            "end_time": "2024-03-19T11:02:44+00:00",
+            "start_time": "2024-03-19T11:02:44+00:00",
+            "stop": {
+              "id": "vehicle-1-end",
+              "location": {
+                "lat": 51.9622,
+                "lon": 7.625
+              }
+            },
+            "travel_distance": 823,
+            "travel_duration": 82
+          }
+        ],
+        "route_duration": 164,
+        "route_stops_duration": 0,
+        "route_travel_distance": 1646,
+        "route_travel_duration": 164
+      },
+      {
+        "id": "vehicle-2",
+        "route": [
+          {
+            "arrival_time": "2024-03-19T11:00:00+00:00",
+            "cumulative_travel_distance": 0,
+            "cumulative_travel_duration": 0,
+            "end_time": "2024-03-19T11:00:00+00:00",
+            "start_time": "2024-03-19T11:00:00+00:00",
+            "stop": {
+              "id": "vehicle-2-start",
+              "location": {
+                "lat": 51.9622,
+                "lon": 7.625
+              }
+            },
+            "travel_distance": 0,
+            "travel_duration": 0
+          },
+          {
+            "arrival_time": "2024-03-19T11:00:21+00:00",
+            "cumulative_travel_distance": 213,
+            "cumulative_travel_duration": 21,
+            "duration": 0,
+            "end_time": "2024-03-19T11:00:21+00:00",
+            "start_time": "2024-03-19T11:00:21+00:00",
+            "stop": {
+              "id": "location-3",
+              "location": {
+                "lat": 51.9638,
+                "lon": 7.6233
+              }
+            },
+            "travel_distance": 213,
+            "travel_duration": 21
+          },
+          {
+            "arrival_time": "2024-03-19T11:00:37+00:00",
+            "cumulative_travel_distance": 372,
+            "cumulative_travel_duration": 37,
+            "duration": 0,
+            "end_time": "2024-03-19T11:00:37+00:00",
+            "start_time": "2024-03-19T11:00:37+00:00",
+            "stop": {
+              "id": "location-1",
+              "location": {
+                "lat": 51.9624,
+                "lon": 7.6228
+              }
+            },
+            "travel_distance": 159,
+            "travel_duration": 16
+          },
+          {
+            "arrival_time": "2024-03-19T11:00:52+00:00",
+            "cumulative_travel_distance": 524,
+            "cumulative_travel_duration": 52,
+            "end_time": "2024-03-19T11:00:52+00:00",
+            "start_time": "2024-03-19T11:00:52+00:00",
+            "stop": {
+              "id": "vehicle-2-end",
+              "location": {
+                "lat": 51.9622,
+                "lon": 7.625
+              }
+            },
+            "travel_distance": 152,
+            "travel_duration": 15
+          }
+        ],
+        "route_duration": 52,
+        "route_stops_duration": 0,
+        "route_travel_distance": 524,
+        "route_travel_duration": 52
+      }
+    ]
+  },
+  "statistics": {
+    "result": {
+      "custom": {
+        "activated_vehicles": 2,
+        "max_duration": 164,
+        "max_stops_in_vehicle": 2,
+        "max_travel_duration": 164,
+        "min_duration": 52,
+        "min_stops_in_vehicle": 1,
+        "min_travel_duration": 52,
+        "solution_found": true
+      },
+      "value": 216
+    },
+    "run": {
+      "duration": 0.123
+    },
+    "schema": "v1"
+  }
+}
