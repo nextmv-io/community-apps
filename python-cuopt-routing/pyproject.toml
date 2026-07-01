@@ -1,0 +1,9 @@
+[project]
+name = "python-cuopt-routing"
+version = "0.1.0"
+requires-python = ">=3.10"
+dependencies = [
+    "colour==0.1.5",
+    "haversine==2.8.1",
+    "nextmv>=1.7.4.dev0",
+]

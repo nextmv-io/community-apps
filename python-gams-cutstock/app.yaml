@@ -7,7 +7,7 @@ runtime: ghcr.io/nextmv-io/runtime/python:3.11
 # Python-specific configurations.
 python:
   # All listed packages will get bundled with the app.
-  pip-requirements: requirements.txt
+  pip-requirements: pyproject.toml # Can be a requirements.txt
 
 # List all files/directories that should be included in the app. Globbing
 # (e.g.: configs/*.json) is supported.
