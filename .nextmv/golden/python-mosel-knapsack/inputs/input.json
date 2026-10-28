@@ -1,0 +1,60 @@
+{
+  "items": [
+    {
+      "id": "cat",
+      "value": 100,
+      "weight": 20
+    },
+    {
+      "id": "dog",
+      "value": 20,
+      "weight": 45
+    },
+    {
+      "id": "water",
+      "value": 40,
+      "weight": 2
+    },
+    {
+      "id": "phone",
+      "value": 6,
+      "weight": 1
+    },
+    {
+      "id": "book",
+      "value": 63,
+      "weight": 10
+    },
+    {
+      "id": "rx",
+      "value": 81,
+      "weight": 1
+    },
+    {
+      "id": "tablet",
+      "value": 28,
+      "weight": 8
+    },
+    {
+      "id": "coat",
+      "value": 44,
+      "weight": 9
+    },
+    {
+      "id": "laptop",
+      "value": 51,
+      "weight": 13
+    },
+    {
+      "id": "keys",
+      "value": 92,
+      "weight": 1
+    },
+    {
+      "id": "nuts",
+      "value": 18,
+      "weight": 4
+    }
+  ],
+  "weight_capacity": 50
+}
