@@ -84,6 +84,8 @@ run on Nextmv Cloud.
   problem. Demonstrates how to use devcontainers.
 * [python-xpress-facility-location]: Use Python and Xpress to solve a facility
   location problem.
+* [python-mosel-generic]: Use Python to run any FICO Xpress Mosel model with its
+  data files.
 
 [subscription-apps]: https://nextmv.io/docs/platform/deploy-app/subscription-apps
 [installation]: https://nextmv.io/docs/platform/installation
@@ -120,4 +122,5 @@ run on Nextmv Cloud.
 [python-pyvroom-routing]: ./python-pyvroom-routing/README.md
 [python-xpress-facility-location]: ./python-xpress-facility-location/README.md
 [python-xpress-knapsack]: ./python-xpress-knapsack/README.md
+[python-mosel-generic]: ./python-mosel-generic/README.md
 [python-pyoptinterface-knapsack]: ./python-pyoptinterface-knapsack/README.md

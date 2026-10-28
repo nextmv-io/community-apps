@@ -1,0 +1,7 @@
+VALUE: [("cat") 100 ("dog") 20 ("water") 40 ("phone") 6 ("book") 63
+        ("rx") 81 ("tablet") 28 ("coat") 44 ("laptop") 51 ("keys") 92
+        ("nuts") 18 ("watch") 43 ("charger") 3 ("pillow") 25]
+WEIGHT: [("cat") 20 ("dog") 45 ("water") 2 ("phone") 1 ("book") 10
+         ("rx") 1 ("tablet") 15 ("coat") 30 ("laptop") 25 ("keys") 1
+         ("nuts") 6 ("watch") 7 ("charger") 2 ("pillow") 18]
+CAPACITY: 50
