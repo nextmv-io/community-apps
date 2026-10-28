@@ -1,0 +1,110 @@
+# Nextmv Python Mosel Generic
+
+Example for running any [FICO Xpress Mosel][mosel] model on the Nextmv
+Platform. The app runs a Mosel model (`.mos` or compiled `.bim`) together with
+its data files. As an example, the `inputs/` directory contains a knapsack
+model with its data file.
+
+The app works as follows:
+
+- All files in the input directory (`inputs/`) are made available to the
+  model. Relative file paths in the model (e.g., in `initializations from`)
+  resolve against this directory.
+- The model file is the first `.mos` file (alternatively, the first `.bim`
+  file) found in the input directory. Use the `model_file` option to pick a
+  specific one.
+- All other options are passed to the model as Mosel parameters (e.g.,
+  `-DURATION 10` or `DURATION=10` sets the `DURATION` parameter).
+- All files created or modified by the model are returned as solution files
+  (`outputs/solutions/`). Mosel output is logged to stderr.
+- Basic metrics (execution status, problem status, objective value) are
+  written to `outputs/metrics.json`.
+
+1. Setup license:
+    1. **Community**: Without further setup, the Xpress community license is
+       used, which is limited in problem size.
+    1. **Local**: If you have a full Xpress license, name it `xpauth.xpr` and
+       place it next to `main.py`. Modify the `app.yaml` file to include the
+       `xpauth.xpr` in the files list. Alternatively, set the `XPAUTH_PATH`
+       environment variable to point to your license file.
+    1. **Platform**: You can also define the license as a [secret][secret] in
+       your Nextmv Application. This can be easily done via
+       [console][console]. Define a file secret with the name `xpauth.xpr`
+       and the content of your license file.
+
+1. Install packages.
+
+   - With `pip`
+
+      ```bash
+      pip install -r requirements.txt
+      ```
+
+   - With `uv`
+
+      ```bash
+      uv sync
+      ```
+
+1. Put your model file and any other necessary files in the `inputs/`
+   directory. See the example files in the `inputs/` directory for reference.
+
+1. Run the app.
+
+   - With `python`
+
+      ```bash
+      python main.py -DURATION 10
+      ```
+
+   - With `uv`
+
+      ```bash
+      uv run main.py -DURATION 10
+      ```
+
+1. If above steps were successful, you can push the app to the Nextmv Platform.
+   E.g., using the [Nextmv CLI][install-cli]:
+
+    ```bash
+    nextmv cloud app push --app-id <your-app-id>
+    ```
+
+1. You can then run the app on the Nextmv Platform by using the CLI:
+
+    ```bash
+    nextmv cloud run create --app-id <your-app-id> \
+        --input inputs/ \
+        --options 'DURATION=10,SOLFILE=solution.csv'
+    ```
+
+   Or you can run it via the [Nextmv Console][console].
+
+## Mirror running on Nextmv Cloud locally
+
+Docker needs to be installed.
+
+To run the application in the same Docker image as the one used on Nextmv
+Cloud, you can use the following command:
+
+<!-- markdownlint-disable MD013 -->
+```bash
+docker run -i --rm \
+-v $(pwd):/app ghcr.io/nextmv-io/runtime/python:3.11 \
+sh -c 'cd /app && pip install -r requirements.txt && python3 main.py'
+```
+<!-- markdownlint-enable MD013 -->
+
+## Next steps
+
+- Replace the model and data in `inputs/` with your own.
+- Visit our [docs][docs] and [blog][blog]. Need more assistance?
+  [Contact][contact] us!
+
+[mosel]: https://www.fico.com/fico-xpress-optimization/docs/latest/mosel/mosel_lang/dhtml/moselreflang.html
+[docs]: https://docs.nextmv.io
+[console]: https://cloud.nextmv.io
+[secret]: https://www.nextmv.io/docs/using-nextmv/reference/secret-collections
+[install-cli]: https://docs.nextmv.io/docs/using-nextmv/setup/install#nextmv-cli
+[blog]: https://www.nextmv.io/blog
+[contact]: https://www.nextmv.io/contact

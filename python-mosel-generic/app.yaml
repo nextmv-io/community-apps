@@ -1,0 +1,37 @@
+# This manifest holds the information the app needs to run on the Nextmv Cloud.
+type: python
+runtime: ghcr.io/nextmv-io/runtime/python:3.11
+python:
+  # All listed packages will get bundled with the app.
+  pip-requirements: pyproject.toml # Can be a requirements.txt
+
+# List all files/directories that should be included in the app. Globbing
+# (e.g.: configs/*.json) is supported.
+files:
+  - main.py
+  # If you have a full Xpress license, uncomment the following line and make
+  # sure to store your license in that file. Alternatively, provide it as a
+  # file secret.
+  # - xpauth.xpr
+
+configuration:
+  # Specify the format the app reads and writes.
+  content:
+    format: multi-file # Read and write files from disk.
+    multi-file:
+      input:
+        path: inputs # The Mosel model and its data files.
+      output:
+        solutions: outputs/solutions # Files written by the model.
+        metrics: outputs/metrics.json
+  # Options are passed to the model as Mosel parameters.
+  options:
+    strict: false
+    items:
+      - name: model_file
+        option_type: string
+        default: ""
+        description: >-
+          Model file (.mos or .bim) to run, relative to the input directory.
+          If empty, the first .mos (or .bim) file found is used.
+        required: false
