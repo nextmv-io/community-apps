@@ -14,6 +14,10 @@ INPUT_DIR = "inputs"
 # Mosel parameters.
 MODEL_FILE_OPTION = "model_file"
 
+# Options with this prefix are Xpress controls (e.g., xprs_maxtime). They are
+# passed as control parameters of the mmxprs module instead of model parameters.
+SOLVER_OPTION_PREFIX = "xprs_"
+
 # Name of a full Xpress license file (e.g., provided as a secret).
 LICENSE_FILE = "xpauth.xpr"
 
@@ -35,6 +39,10 @@ def main() -> None:
     # Parse options from command line arguments.
     options = parse_options()
     model_file = options.pop(MODEL_FILE_OPTION, "")
+    options = {
+        f"mmxprs.{key.lower()}" if key.lower().startswith(SOLVER_OPTION_PREFIX) else key: value
+        for key, value in options.items()
+    }
     nextmv.log("Mosel parameters:")
     for key, value in options.items():
         nextmv.log(f"  - {key}: {value}")

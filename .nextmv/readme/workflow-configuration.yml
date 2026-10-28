@@ -282,6 +282,10 @@ apps:
       - name: 5.sh
         skip: true
       - name: 6.sh
+        silent: true
+      - name: 7.sh
+        silent: true
+      - name: 8.sh
         skip: true
   - name: python-nextmv-gurobipy-knapsack
     scripts:
