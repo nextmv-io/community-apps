@@ -49,6 +49,8 @@ decision apps that run on the Nextmv Platform.
   shift planning problem.
 * [python-xpress-knapsack]: Use Python and FICO Xpress to solve a knapsack
   problem.
+* [python-mosel-knapsack]: Use Python and FICO Xpress Mosel to solve a knapsack
+  problem.
 
 ## Other, more complex, examples
 
@@ -120,4 +122,5 @@ run on Nextmv Cloud.
 [python-pyvroom-routing]: ./python-pyvroom-routing/README.md
 [python-xpress-facility-location]: ./python-xpress-facility-location/README.md
 [python-xpress-knapsack]: ./python-xpress-knapsack/README.md
+[python-mosel-knapsack]: ./python-mosel-knapsack/README.md
 [python-pyoptinterface-knapsack]: ./python-pyoptinterface-knapsack/README.md

@@ -1,0 +1,69 @@
+{
+  "assets": [],
+  "metrics": {
+    "duration": 0.123,
+    "provider": "xpress",
+    "solver_duration": 0.123,
+    "status": "optimal",
+    "value": 444
+  },
+  "options": {
+    "capacity": null,
+    "duration": 30,
+    "max_items": null,
+    "xprs_cutstrategy": null,
+    "xprs_defaultalg": null,
+    "xprs_heurstrategy": null,
+    "xprs_maxmipsol": null,
+    "xprs_maxtime": null,
+    "xprs_mipabsstop": null,
+    "xprs_miprelstop": null,
+    "xprs_outputlog": null,
+    "xprs_presolve": null,
+    "xprs_threads": null
+  },
+  "solution": {
+    "items": [
+      {
+        "id": "cat",
+        "value": 100,
+        "weight": 20
+      },
+      {
+        "id": "water",
+        "value": 40,
+        "weight": 2
+      },
+      {
+        "id": "phone",
+        "value": 6,
+        "weight": 1
+      },
+      {
+        "id": "book",
+        "value": 63,
+        "weight": 10
+      },
+      {
+        "id": "rx",
+        "value": 81,
+        "weight": 1
+      },
+      {
+        "id": "coat",
+        "value": 44,
+        "weight": 9
+      },
+      {
+        "id": "keys",
+        "value": 92,
+        "weight": 1
+      },
+      {
+        "id": "nuts",
+        "value": 18,
+        "weight": 4
+      }
+    ]
+  }
+}
