@@ -1,0 +1,13 @@
+[project]
+name = "python-mosel-knapsack"
+version = "0.1.0"
+requires-python = ">=3.10"
+dependencies = [
+    "mosellibs==9.9.1",
+    "moselpy==9.9.1",
+    "nextmv>=1.7.4.dev0",
+    "xpresslibs==9.9.1",
+]
+
+[tool.setuptools]
+packages = []

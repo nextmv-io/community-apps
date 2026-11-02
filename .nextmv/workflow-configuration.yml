@@ -137,6 +137,12 @@ apps:
     marketplace_app_id:
     marketplace_major_version:
     description: Use Python and Xpress Mosel - mos models.
+  - name: python-mosel-knapsack
+    type: python
+    app_id:
+    marketplace_app_id:
+    marketplace_major_version:
+    description: Use Python and Xpress Mosel - knapsack.
   - name: python-nextmv-gurobipy-knapsack
     type: python
     app_id:
