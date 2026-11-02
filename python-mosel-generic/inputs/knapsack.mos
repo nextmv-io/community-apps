@@ -1,0 +1,34 @@
+model "Knapsack"
+  uses "mmxprs"
+
+  ! Parameters can be set via the options of a run.
+  parameters
+    DATAFILE = "knapsack.dat"
+    SOLFILE = "solution.csv"
+    DURATION = 30
+  end-parameters
+
+  declarations
+    ITEMS: set of string
+    VALUE, WEIGHT: array(ITEMS) of real
+    CAPACITY: real
+    take: array(ITEMS) of mpvar
+  end-declarations
+
+  initializations from DATAFILE
+    VALUE WEIGHT CAPACITY
+  end-initializations
+
+  forall(i in ITEMS) take(i) is_binary
+  sum(i in ITEMS) WEIGHT(i) * take(i) <= CAPACITY
+
+  setparam("XPRS_MAXTIME", -DURATION)
+  maximize(sum(i in ITEMS) VALUE(i) * take(i))
+  writeln("Objective value: ", getobjval)
+
+  ! Files written by the model are returned as solution files.
+  fopen(SOLFILE, F_OUTPUT)
+  writeln("item,value,weight")
+  forall(i in ITEMS | take(i).sol > 0.5) writeln(i, ",", VALUE(i), ",", WEIGHT(i))
+  fclose(F_OUTPUT)
+end-model
