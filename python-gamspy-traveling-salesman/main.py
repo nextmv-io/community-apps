@@ -133,7 +133,8 @@ def tsp_model(
     eq_degree = gp.Equation(m, "eq_degree", domain=[n1])
     eq_degree[k] = gp.Sum(edges[i, k], X[i, k]) + gp.Sum(edges[k, j], X[k, j]) == 2
 
-    if not distance[i, j].records.equals(distance[j, i].records):
+    distance_matrix = distance_recs.pivot(index="row.city", columns="to_city", values="distance")
+    if not np.allclose(distance_matrix, distance_matrix.T):
         raise Exception("Distance matrix is not symmetric. Quitting!")
 
     s = gp.Set(
