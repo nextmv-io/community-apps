@@ -1,0 +1,56 @@
+model "Knapsack"
+  uses "mmxprs"
+
+  ! Parameters are set via the options of the app (see app.yaml).
+  parameters
+    DURATION = 30
+    CAPACITY = -1.0 ! Overrides the capacity of the input, if non-negative.
+    MAX_ITEMS = -1  ! Maximum number of items to pack, if non-negative.
+  end-parameters
+
+  declarations
+    ITEMS: set of string
+    VALUE, WEIGHT: array(ITEMS) of real
+    WEIGHT_CAPACITY: real
+    take: array(ITEMS) of mpvar
+    ! Results.
+    CHOSEN: set of string
+    OBJECTIVE, SOLVER_DURATION: real
+    STATUS: string
+  end-declarations
+
+  ! The data is passed in by main.py.
+  initializations from "moselpy:"
+    VALUE WEIGHT WEIGHT_CAPACITY
+  end-initializations
+  if CAPACITY >= 0 then
+    WEIGHT_CAPACITY := CAPACITY
+  end-if
+
+  forall(i in ITEMS) take(i) is_binary
+  sum(i in ITEMS) WEIGHT(i) * take(i) <= WEIGHT_CAPACITY
+  if MAX_ITEMS >= 0 then
+    sum(i in ITEMS) take(i) <= MAX_ITEMS
+  end-if
+
+  setparam("XPRS_MAXTIME", -DURATION)
+  maximize(sum(i in ITEMS) VALUE(i) * take(i))
+
+  case getprobstat of
+    XPRS_OPT: STATUS := "optimal"
+    XPRS_UNF: STATUS := "suboptimal"
+    XPRS_INF: STATUS := "infeasible"
+    XPRS_UNB: STATUS := "unbounded"
+    else STATUS := "unknown"
+  end-case
+  if getprobstat = XPRS_OPT or getparam("XPRS_MIPSOLS") > 0 then
+    OBJECTIVE := getobjval
+    CHOSEN := union(i in ITEMS | take(i).sol > 0.5) {i}
+  end-if
+  SOLVER_DURATION := getparam("XPRS_TIME")
+
+  ! The results are passed back to main.py.
+  initializations to "moselpy:"
+    CHOSEN OBJECTIVE STATUS SOLVER_DURATION
+  end-initializations
+end-model

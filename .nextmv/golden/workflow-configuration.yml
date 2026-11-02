@@ -32,6 +32,9 @@ apps:
   - name: python-highs-knapsack
     language: python
     language-version: 3.11
+  - name: python-mosel-knapsack
+    language: python
+    language-version: 3.11
   - name: python-nextmv-gurobipy-knapsack
     language: python
     language-version: 3.11
