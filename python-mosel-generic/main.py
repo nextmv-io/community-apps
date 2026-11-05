@@ -1,14 +1,17 @@
+import json
 import os
 import shutil
 import sys
 import tempfile
 import time
+import warnings
 from typing import Any
 
 import nextmv
 
-# Input directory as configured in the app.yaml (multi-file content format).
+# Input and metrics paths as configured in the app.yaml (multi-file content format).
 INPUT_DIR = "inputs"
+METRICS_FILE = os.path.join("outputs", "metrics.json")
 
 # Option consumed by this runner. All other options are passed to the model as
 # Mosel parameters.
@@ -91,9 +94,12 @@ def main() -> None:
         nextmv.Output(
             output_format=nextmv.OutputFormat.MULTI_FILE,
             solution_files=solution_files,
-            metrics=metrics,
         ),
     )
+    # Metrics are written flat (not nested under a "metrics" key), so that they
+    # show up with their plain names on the Platform.
+    with open(METRICS_FILE, "w") as f:
+        json.dump(metrics, f, indent=2)
 
     shutil.rmtree(work_dir, ignore_errors=True)
     if model.exec_status != mp.ExecStatus.OK:
@@ -111,6 +117,8 @@ def setup_license() -> None:
             nextmv.log(f"Using Xpress license file {path}.")
             return
     nextmv.log("No Xpress license file found, using the community license.")
+    # Already logged above, so silence the equivalent warning of moselpy.
+    warnings.filterwarnings("ignore", message="No full Xpress license found")
 
 
 def parse_options() -> dict[str, str]:

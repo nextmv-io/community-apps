@@ -1,5 +1,6 @@
 import os
 import time
+import warnings
 from typing import Any
 
 import nextmv
@@ -95,6 +96,8 @@ def setup_license() -> None:
         nextmv.log(f"Using Xpress license file {LICENSE_FILE}.")
         return
     nextmv.log("No Xpress license file found, using the community license.")
+    # Already logged above, so silence the equivalent warning of moselpy.
+    warnings.filterwarnings("ignore", message="No full Xpress license found")
 
 
 if __name__ == "__main__":
