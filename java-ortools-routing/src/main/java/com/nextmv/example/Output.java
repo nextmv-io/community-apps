@@ -5,10 +5,45 @@ import java.util.ArrayList;
 
 import com.google.gson.Gson;
 import com.google.gson.annotations.SerializedName;
+import com.nextmv.example.Input.Location;
 
+/**
+ * Output represents the solution itself and other additional information
+ * about the run such as statistics.
+ * The implementation is merely a data structure that can be serialized to JSON.
+ */
 public class Output {
+  public final class OutputOptions {
+    private String input;
+    private String output;
+    private int duration;
+
+    public OutputOptions(String input, String output, int duration) {
+      this.input = input;
+      this.output = output;
+      this.duration = duration;
+    }
+  }
+
+  public final class OutputVehicle {
+    public final class VehicleStop {
+      public String id;
+      public Location location;
+    }
+
+    public String id;
+    public List<VehicleStop> route;
+    public double route_travel_duration;
+  }
+
+  public final class UnplannedStop {
+    public String id;
+    public Location location;
+  }
+
   private final class Solution {
-    private List<Vehicle> vehicles;
+    private List<OutputVehicle> vehicles;
+    private List<UnplannedStop> unplannedStops;
     private double value;
   }
 
@@ -39,47 +74,45 @@ public class Output {
     private StatisticsResult result;
   }
 
-  private final List<Solution> solutions;
+  private final Solution solution;
   private final Statistics statistics;
 
   public Output(
-      List<Vehicle> vehicles,
+      List<OutputVehicle> vehicles,
+      List<UnplannedStop> unplannedStops,
+      double value,
       double duration,
       double runDuration) {
-    this.solutions = new ArrayList<Solution>();
-    Solution solution = new Solution();
-    solution.vehicles = vehicles;
-    this.solutions.add(solution);
+    this.solution = new Solution();
+    this.solution.vehicles = vehicles;
+    this.solution.unplannedStops = unplannedStops;
+    this.solution.value = value;
     this.statistics = new Statistics();
     this.statistics.run = new StatisticsRun();
     this.statistics.run.duration = runDuration;
     this.statistics.result = new StatisticsResult();
     this.statistics.result.duration = duration;
-    
-    // we are using the sum of the route distances as the value
-    solution.value = vehicles.stream()
-    .mapToDouble(v -> v.getDistance()).sum();
     this.statistics.result.value = solution.value;
-    
+
     // Fill custom section.
     this.statistics.result.custom = new StatisticsResultCustom();
 
     // A vehicle is activated if it has at least three stops. The first and last
     // stop are the depot, so the vehicle has at least one customer stop.
     this.statistics.result.custom.activatedVehicles = (int) vehicles.stream()
-        .filter(v -> v.getStops().size() > 3).count();
-      
+        .filter(v -> v.().size() > 3).count();
+
     // Find the vehicle with the maximum route distance.
     this.statistics.result.custom.maxRouteDistance = (int) vehicles.stream()
         .mapToDouble(v -> v.getDistance()).max().orElse(0);
 
     // Find the vehicle with the maximum number of stops.
     this.statistics.result.custom.maxStopsInVehicle = (int) vehicles.stream()
-        .mapToDouble(v -> v.getStops().size()-2).max().orElse(0);
+        .mapToDouble(v -> v.getStops().size() - 2).max().orElse(0);
 
     // Find the vehicle with the minimum number of stops.
     this.statistics.result.custom.minStopsInVehicle = (int) vehicles.stream()
-        .mapToDouble(v -> v.getStops().size()-2).min().orElse(0);
+        .mapToDouble(v -> v.getStops().size() - 2).min().orElse(0);
   }
 
   public static void write(String path, Output output) {
